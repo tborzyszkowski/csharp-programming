@@ -1,5 +1,6 @@
 {
     "chat.tools.terminal.autoApprove": {
-        "rtk": true
+        "rtk": true,
+        "_*": true
     }
 }
