@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant Main
+    participant Dog
+    participant Animal
+    
+    Main->>Dog: new Dog("Rex", "Labrador")
+    activate Dog
+    Dog->>Dog: : base("Rex")
+    activate Animal
+    Dog->>Animal: public Animal(string name)
+    Animal->>Animal: Name = "Rex"
+    Animal->>Animal: Age = 0
+    deactivate Animal
+    Dog->>Dog: Breed = "Labrador"
+    deactivate Dog
+    Dog-->>Main: new Dog instance

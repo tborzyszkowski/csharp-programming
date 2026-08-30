@@ -1,0 +1,20 @@
+graph LR
+    A["Zakres Dostępu"]
+    
+    A --> B["public<br/>wszędzie"]
+    A --> C["protected<br/>tylko pochodne"]
+    A --> D["private<br/>tylko klasa"]
+    A --> E["internal<br/>assembly"]
+    
+    F["C# protected<br/>= pochodne"]
+    G["Java protected<br/>= pochodne + package"]
+    
+    B --> H["✅ Base<br/>✅ Derived<br/>✅ External"]
+    C --> I["✅ Base<br/>✅ Derived<br/>❌ External"]
+    D --> J["✅ Base<br/>❌ Derived<br/>❌ External"]
+    E --> K["✅ Base<br/>❌ Derived*<br/>✅ Internal"]
+    
+    style B fill:#90EE90
+    style C fill:#FFD700
+    style D fill:#FF6B6B
+    style E fill:#87CEEB

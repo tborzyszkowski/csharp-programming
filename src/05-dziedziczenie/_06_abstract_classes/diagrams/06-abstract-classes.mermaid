@@ -1,0 +1,17 @@
+graph LR
+    A["Abstract Class"]
+    
+    A --> B["Abstract Members<br/>(MUSZĄ override)"]
+    A --> C["Virtual Members<br/>(MOGĄ override)"]
+    A --> D["Regular Members<br/>(dostępne)"]
+    
+    E["Nie można:<br/>new Animal()"]
+    F["Można:<br/>var dog = new Dog()"]
+    
+    A --> E
+    A --> F
+    
+    style A fill:#FFD700
+    style B fill:#FF6B6B
+    style C fill:#90EE90
+    style D fill:#87CEEB

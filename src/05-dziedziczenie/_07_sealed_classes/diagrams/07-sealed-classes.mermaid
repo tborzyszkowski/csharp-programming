@@ -1,0 +1,19 @@
+graph LR
+    A["sealed class<br/>(nie można dziedziczić)"]
+    B["Można instancjonować"]
+    C["Koniec hierarchii"]
+    
+    D["sealed override<br/>(nie można override'ować)"]
+    E["Zostaje implementacja"]
+    F["Brak dalszego override"]
+    
+    A --> B
+    A --> C
+    
+    D --> E
+    D --> F
+    
+    style A fill:#FF6B6B
+    style D fill:#FFD700
+    style C fill:#87CEEB
+    style F fill:#87CEEB

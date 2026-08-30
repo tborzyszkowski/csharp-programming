@@ -1,0 +1,22 @@
+graph LR
+    A["virtual + override<br/>(Polimorfizm)"] 
+    B["Zmienna: Animal<br/>Obiekt: Dog"]
+    C["Wywoływana:<br/>Dog.Speak()"]
+    
+    D["new<br/>(Ukrycie)"]
+    E["Zmienna: Base<br/>Obiekt: Derived"]
+    F["Wywoływana:<br/>Base.Method()"]
+    
+    A --> B --> C
+    D --> E --> F
+    
+    G["✅ Polimorfizm"]
+    H["❌ Nie polimorfizm"]
+    
+    C --> G
+    F --> H
+    
+    style A fill:#90EE90
+    style D fill:#FF6B6B
+    style G fill:#90EE90
+    style H fill:#FFB6C1

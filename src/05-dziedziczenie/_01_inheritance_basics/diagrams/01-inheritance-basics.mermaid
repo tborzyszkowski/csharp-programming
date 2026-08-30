@@ -1,0 +1,16 @@
+graph LR
+    A["object<br/>(Bazowa wszystkich)"] --> B["Animal<br/>(Klasa bazowa)"]
+    B --> C["Dog<br/>(Klasa pochodna)"]
+    B --> D["Cat<br/>(Klasa pochodna)"]
+    B --> E["Bird<br/>(Klasa pochodna)"]
+    C --> F["Puppy<br/>(Łańcuch)"]
+    
+    G["Reusability"] --> B
+    H["Polimorfizm"] --> B
+    I["Hierarchia"] --> B
+    
+    style A fill:#FFB6C1
+    style B fill:#87CEEB
+    style C fill:#90EE90
+    style D fill:#FFD700
+    style E fill:#DDA0DD
