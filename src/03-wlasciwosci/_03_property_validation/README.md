@@ -171,8 +171,8 @@ person.Name = "John";  // Event fires
 
 ```bash
 cd code/
-rtk dotnet run
-rtk dotnet test
+dotnet run
+dotnet test
 ```
 
 **Przejdź do**: [Zadania do samodzielnego wykonania](tasks/README.md)

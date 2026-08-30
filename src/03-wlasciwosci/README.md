@@ -244,10 +244,10 @@ var phone = person.Phone ?? "N/A";  // Null-coalescing
 cd _01_properties_vs_fields/code/
 
 # 2. Uruchom demonstrację
-rtk dotnet run
+dotnet run
 
 # 3. Uruchom testy
-rtk dotnet test
+dotnet test
 
 # 4. Otwórz kod w VS Code
 code Program.cs
@@ -346,7 +346,7 @@ Po ukończeniu tego modułu student powinien:
 Przed pierwszym wykładem:
 
 - [ ] Przeczytaj README każdego tematu
-- [ ] Uruchom `rtk dotnet run` w każdym temacie
+- [ ] Uruchom `dotnet run` w każdym temacie
 - [ ] Przejrzyj diagramy (Mermaid)
 - [ ] Przygotuj pytania do studentów
 - [ ] Skopiuj zadania do LMS (jeśli używasz)
@@ -376,13 +376,13 @@ Chcesz szybko zacząć? Oto najkrótszy możliwy początek:
 ```bash
 # Temat 1: Właściwości vs Pola
 cd _01_properties_vs_fields/code
-rtk dotnet run
-rtk dotnet test
+dotnet run
+dotnet test
 
 # Temat 2: Auto Properties
 cd ../../_02_auto_properties/code
-rtk dotnet run
-rtk dotnet test
+dotnet run
+dotnet test
 
 # ... i tak dalej dla każdego tematu
 ```
@@ -449,10 +449,4 @@ Masz pytania? Sprawdź:
 - ✅ **7 diagramów** Mermaid
 - ✅ **Gotowy do użycia** w nauczaniu
 
-**Status**: 🟢 **GOTOWY DO NAUCZANIA**
 
----
-
-*Stworzone dla uniwersytetu, nauczycieli i studentów C#*
-
-*Ostatnia aktualizacja: 2024-08-30*

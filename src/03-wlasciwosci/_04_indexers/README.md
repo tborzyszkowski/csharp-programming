@@ -170,8 +170,8 @@ Console.WriteLine(matrix[0, 0]);  // 1
 
 ```bash
 cd code/
-rtk dotnet run
-rtk dotnet test
+dotnet run
+dotnet test
 ```
 
 **Przejdź do**: [Zadania do samodzielnego wykonania](tasks/README.md)

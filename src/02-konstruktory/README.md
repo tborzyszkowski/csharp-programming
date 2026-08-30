@@ -183,8 +183,3 @@ Po ukończeniu tego modułu powinieneś wiedzieć:
 - ✅ Modern IDisposable patterns
 - ✅ Nullable reference types
 
----
-
-**Status: ✅ Moduł pełny i gotowy do nauczania**
-
-*Ostatnia aktualizacja: 2024-08-30*
