@@ -1,0 +1,45 @@
+graph TB
+    subgraph "Virtual Methods - Late Binding"
+        A["Animal animal = new Dog();"]
+        B["Runtime: Sprawdź rzeczywisty typ obiektu"]
+        C["Wygląda w Virtual Method Table"]
+        D["VMT Dog: Speak → Dog.Speak"]
+        E["Wykonaj Dog.Speak()"]
+        F["Output: Woof! Woof!"]
+        
+        A --> B
+        B --> C
+        C --> D
+        D --> E
+        E --> F
+    end
+    
+    subgraph "Non-Virtual - Early Binding"
+        G["Vehicle vehicle = new Car();"]
+        H["Compile-time: Sprawdź typ zmiennej"]
+        I["Wygląda metodę w Vehicle"]
+        J["Wykonaj Vehicle.Start()"]
+        K["Output: Vehicle starting"]
+        
+        G --> H
+        H --> I
+        I --> J
+        J --> K
+    end
+    
+    subgraph "Class Hierarchy"
+        L["Animal<br/>+ Speak virtual"]
+        M["Dog : Animal<br/>+ Speak override"]
+        N["Cat : Animal<br/>+ Speak override"]
+        O["Bird : Animal<br/>+ Speak override"]
+        
+        M -.inherited.-> L
+        N -.inherited.-> L
+        O -.inherited.-> L
+    end
+    
+    style D fill:#ccffcc
+    style E fill:#ffcccc
+    style F fill:#ccccff
+    style J fill:#ffccff
+    style K fill:#ffffcc
