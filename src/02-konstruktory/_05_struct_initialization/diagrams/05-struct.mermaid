@@ -1,0 +1,14 @@
+graph LR
+    A["Struct<br/>Value Type"] --> B["Default Constructor<br/>Auto-generated"]
+    A --> C["Stack Memory"]
+    
+    D["Custom Constructor<br/>All fields required"]
+    
+    E["Init-only Properties<br/>C# 9+"]
+    
+    A --> D
+    A --> E
+    
+    style A fill:#e3f2fd
+    style B fill:#bbdefb
+    style C fill:#90caf9

@@ -1,0 +1,28 @@
+graph LR
+    A["new Point<br/>x: double"]
+    B["Point(x)<br/>Constructor 1"]
+    C["Point(x, y)<br/>Constructor 2<br/>GŁÓWNY"]
+    
+    A -->|this-x, 0| B
+    B -->|wykonanie ciała<br/>return this| C
+    
+    D["new Employee<br/>name: String"]
+    E["Employee-name<br/>Ctor 1"]
+    F["Employee-name, dept<br/>Ctor 2"]
+    G["Employee-name, dept, salary<br/>Ctor 3"]
+    H["Employee-name, dept, salary, date<br/>Ctor 4 GŁÓWNY"]
+    
+    D --> E
+    E -->|this| F
+    F -->|this| G
+    G -->|this| H
+    
+    style A fill:#e3f2fd
+    style B fill:#bbdefb
+    style C fill:#64b5f6
+    
+    style D fill:#f3e5f5
+    style E fill:#e1bee7
+    style F fill:#ce93d8
+    style G fill:#ba68c8
+    style H fill:#ab47bc

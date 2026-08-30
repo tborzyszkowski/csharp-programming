@@ -1,0 +1,19 @@
+graph LR
+    A["C# 9+"]
+    
+    B["Record<br/>Immutable Data"]
+    C["Init Properties<br/>Read-only"]
+    
+    A --> B
+    A --> C
+    
+    D["C# 12+"]
+    D --> E["Primary Constructors<br/>W deklaracji klasy"]
+    
+    B --> B1["With-expression<br/>Value equality"]
+    B --> B2["Auto Equals/GetHashCode<br/>Auto ToString"]
+    
+    C --> C1["Ustawić przy tworzeniu<br/>Nie można zmienić"]
+    
+    style A fill:#e3f2fd
+    style D fill:#f3e5f5

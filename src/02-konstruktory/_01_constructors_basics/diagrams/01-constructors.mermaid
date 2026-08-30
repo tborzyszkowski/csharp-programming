@@ -1,0 +1,18 @@
+graph LR
+    A["new Person<br/>Konstruktor Parametrowy"]
+    B["new Car<br/>Konstruktor Domyślny<br/>+ Parametrowy"]
+    C["new Logger<br/>Konstruktor Statyczny<br/>+ Zwykły"]
+    D["Database.GetInstance<br/>Singleton<br/>Prywatny Konstruktor"]
+    E["Document.CreatePDF<br/>Factory<br/>Prywatny Konstruktor"]
+    
+    A --> A1["Inicjalizacja Name, Age<br/>Walidacja"]
+    B --> B1["Domyślnie: Unknown<br/>Lub z parametrami"]
+    C --> C1["Raz: inicjalizuje logFile<br/>Potem: tworzy instancje"]
+    D --> D1["Gwarantuje jedną instancję<br/>Kontrola dostępu"]
+    E --> E1["Ukrywa konstrukcję<br/>Semantyczne nazwy"]
+    
+    style A fill:#e3f2fd
+    style B fill:#f3e5f5
+    style C fill:#e8f5e9
+    style D fill:#fff3e0
+    style E fill:#fce4ec

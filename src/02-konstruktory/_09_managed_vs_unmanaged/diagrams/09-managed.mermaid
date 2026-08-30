@@ -1,0 +1,17 @@
+graph LR
+    A["Zasoby"]
+    
+    B["Zarządzane<br/>Managed"]
+    C["Niezarządzane<br/>Unmanaged"]
+    
+    B --> B1["GC automatycznie"]
+    C --> C1["IDisposable"]
+    
+    C1 --> C2["Dispose-true"]
+    C1 --> C3["Finalizer backup"]
+    
+    C2 --> D["Using statement"]
+    
+    style A fill:#e3f2fd
+    style B fill:#f3e5f5
+    style C fill:#fff3e0
