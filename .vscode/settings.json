@@ -1,6 +1,8 @@
 {
     "chat.tools.terminal.autoApprove": {
         "rtk": true,
-        "_*": true
+        "_*": true,
+        "dotnet run": true,
+        "&": true
     }
 }
