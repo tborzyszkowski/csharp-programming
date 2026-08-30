@@ -1,0 +1,7 @@
+bin/
+obj/
+*.csproj.user
+.vs/
+.vscode/
+*.swp
+.DS_Store
