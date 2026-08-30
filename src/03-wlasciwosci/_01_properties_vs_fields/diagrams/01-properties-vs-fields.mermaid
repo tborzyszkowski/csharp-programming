@@ -1,0 +1,24 @@
+graph LR
+    A["Dostęp do Danych"]
+    
+    B["Pole<br/>Bezpośredni"]
+    C["Właściwość<br/>Kontrolowany"]
+    
+    A --> B
+    A --> C
+    
+    B --> B1["❌ Bez walidacji"]
+    B --> B2["❌ Bez logowania"]
+    
+    C --> C1["✅ Walidacja"]
+    C --> C2["✅ Logowanie"]
+    C --> C3["✅ Enkapsulacja"]
+    
+    D["Accessory"]
+    D --> D1["get"]
+    D --> D2["set"]
+    D --> D3["private set<br/>read-only"]
+    
+    style A fill:#e3f2fd
+    style B fill:#ffebee
+    style C fill:#e8f5e9

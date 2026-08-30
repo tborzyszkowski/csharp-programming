@@ -1,0 +1,25 @@
+graph LR
+    A["Nullable Reference Types<br/>C# 8+"]
+    
+    B["Non-nullable"]
+    C["Nullable"]
+    
+    A --> B
+    A --> C
+    
+    B --> B1["string (nie null)"]
+    B --> B2["Wymagane init"]
+    B --> B3["Compile check"]
+    
+    C --> C1["string?"]
+    C --> C2["Może być null"]
+    C --> C3["Null-check needed"]
+    
+    D["Operators"]
+    D --> D1["?? (null-coalesce)"]
+    D --> D2["?. (null-safe)"]
+    D --> D3["?? ?"]
+    
+    style A fill:#e3f2fd
+    style B fill:#e8f5e9
+    style C fill:#fff3e0

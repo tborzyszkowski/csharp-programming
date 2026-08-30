@@ -1,0 +1,23 @@
+graph LR
+    A["Właściwości"]
+    
+    B["Backing Field"]
+    C["Auto Property"]
+    
+    A --> B
+    A --> C
+    
+    B --> B1["Pisz ręcznie<br/>private _field"]
+    B --> B2["Logika w get/set"]
+    B --> B3["Walidacja"]
+    
+    C --> C1["Kompilator<br/>generuje field"]
+    C --> C2["Kod zwięzły"]
+    C --> C3["Brak logiki"]
+    
+    D["Asymetryczne"]
+    D --> D1["public get<br/>private set"]
+    
+    style A fill:#e3f2fd
+    style B fill:#fff3e0
+    style C fill:#e8f5e9

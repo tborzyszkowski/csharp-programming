@@ -1,0 +1,24 @@
+graph LR
+    A["Nowoczesne<br/>Właściwości"]
+    
+    B["Init-only<br/>C# 9+"]
+    C["Required<br/>C# 11+"]
+    
+    A --> B
+    A --> C
+    
+    B --> B1["Tylko raz"]
+    B --> B2["Immutability"]
+    B --> B3["Thread-safe"]
+    
+    C --> C1["Musi być"]
+    C --> C2["Setup"]
+    C --> C3["Compile-check"]
+    
+    D["Kombinacja"]
+    D --> D1["Init + Required"]
+    D --> D2["Safe DTOs"]
+    
+    style A fill:#e3f2fd
+    style B fill:#e8f5e9
+    style C fill:#fff3e0

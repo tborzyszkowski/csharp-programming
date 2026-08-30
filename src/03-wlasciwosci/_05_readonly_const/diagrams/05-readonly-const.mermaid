@@ -1,0 +1,24 @@
+graph LR
+    A["Stałe"]
+    
+    B["Const<br/>Czas Kompilacji"]
+    C["Readonly<br/>Czas Runtime"]
+    
+    A --> B
+    A --> C
+    
+    B --> B1["Prymitywy tylko"]
+    B --> B2["Statyczne zawsze"]
+    B --> B3["Inlined w IL"]
+    
+    C --> C1["Dowolny typ"]
+    C --> C2["Ctor/init"]
+    C --> C3["Obiekty OK"]
+    
+    D["Statyczne"]
+    D --> D1["static readonly"]
+    D --> D2["Singleton"]
+    
+    style A fill:#e3f2fd
+    style B fill:#ffebee
+    style C fill:#e8f5e9

@@ -1,0 +1,24 @@
+graph LR
+    A["Indeksatory<br/>this[...]"]
+    
+    B["Int Indexer<br/>Dostęp po liczbie"]
+    C["String Indexer<br/>Dostęp po nazwie"]
+    D["Multi Indexer<br/>Wiele parametrów"]
+    
+    A --> B
+    A --> C
+    A --> D
+    
+    B --> B1["Tablica/Lista"]
+    B --> B2["list[0]"]
+    
+    C --> C1["Słownik"]
+    C --> C2["person[name]"]
+    
+    D --> D1["Matrix"]
+    D --> D2["matrix[row, col]"]
+    
+    style A fill:#e3f2fd
+    style B fill:#e8f5e9
+    style C fill:#fff3e0
+    style D fill:#f3e5f5
