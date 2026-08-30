@@ -1,0 +1,11 @@
+graph LR
+    A["Zwykła Metoda"] --> B["instance.Method()"]
+    
+    C["Metoda Rozszerzająca"] --> D["this string str"]
+    D --> E["string.Method()"]
+    
+    F["Statyczna klasa"] --> G["StringExtensions"]
+    G --> H["string.Capitalize()"]
+    
+    style C fill:#90EE90
+    style E fill:#FFD700

@@ -1,0 +1,33 @@
+graph LR
+    subgraph "Pole Statyczne vs Instancji"
+        A["Pole Statyczne<br/>static int Count"]
+        B["Pole Instancji<br/>int Value"]
+    end
+    
+    subgraph "Pamięć"
+        C["Jedna kopia<br/>dla klasy"]
+        D["Oddzielna kopia<br/>dla instancji"]
+    end
+    
+    subgraph "Dostęp"
+        E["ClassName.Field"]
+        F["instance.Field"]
+    end
+    
+    subgraph "Inicjalizacja"
+        G["Raz przy<br/>pierwszym użyciu"]
+        H["Za każdym razem<br/>w konstruktorze"]
+    end
+    
+    A --> C
+    A --> E
+    A --> G
+    
+    B --> D
+    B --> F
+    B --> H
+    
+    style A fill:#90EE90
+    style C fill:#87CEEB
+    style E fill:#FFD700
+    style G fill:#FFA07A

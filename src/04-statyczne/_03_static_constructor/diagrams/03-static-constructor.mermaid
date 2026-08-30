@@ -1,0 +1,11 @@
+graph LR
+    A["Inicjalizacja Pól<br/>public static int X = 5"] --> B["Krok 1"]
+    C["Konstruktor Statyczny<br/>static Class()"] --> D["Krok 2"]
+    E["Pierwsze Użycie Klasy"] --> F["Trigger"]
+    
+    B --> D
+    D --> F
+    
+    style A fill:#90EE90
+    style C fill:#FFD700
+    style E fill:#87CEEB

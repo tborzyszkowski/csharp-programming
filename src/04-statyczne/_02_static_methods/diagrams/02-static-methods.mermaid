@@ -1,0 +1,13 @@
+graph LR
+    A["Metoda Statyczna<br/>static void Method()"] --> B["Należy do Klasy"]
+    A --> C["Brak dostępu do this"]
+    A --> D["Dostęp do static pól"]
+    A --> E["Wywoływanie: Class.Method()"]
+    
+    F["Metoda Instancji<br/>void Method()"] --> G["Należy do Instancji"]
+    F --> H["Dostęp do this"]
+    F --> I["Dostęp do pól instancji"]
+    F --> J["Wywoływanie: obj.Method()"]
+    
+    style A fill:#90EE90
+    style F fill:#FFB6C1
