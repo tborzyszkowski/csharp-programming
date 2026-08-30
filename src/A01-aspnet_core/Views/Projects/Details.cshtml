@@ -1,0 +1,228 @@
+@model ProjectDetailsViewModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = $"Szczegóły - {Model.Project.Name}";
+}
+
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>@Model.Project.Name</h1>
+            <p class="text-muted">@Model.Project.Description</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Edit", "Projects", new { id = Model.Project.Id })" 
+               class="btn btn-warning">Edytuj</a>
+            <a href="@Url.Action("Index", "Projects")" class="btn btn-secondary">Wróć</a>
+        </div>
+    </div>
+
+    <!-- Główne informacje o projekcie -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>Data rozpoczęcia:</strong>
+                            <p>@Model.Project.StartDate.ToString("dd.MM.yyyy")</p>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Data zakończenia:</strong>
+                            <p>@(Model.Project.EndDate?.ToString("dd.MM.yyyy") ?? "Brak")</p>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Status:</strong>
+                            <p>
+                                <span class="badge 
+                                    @if (Model.Project.Status == ProjectStatus.Active) 
+                                    { 
+                                        @:"bg-success" 
+                                    }
+                                    else if (Model.Project.Status == ProjectStatus.OnHold)
+                                    {
+                                        @:"bg-warning"
+                                    }
+                                    else
+                                    {
+                                        @:"bg-secondary"
+                                    }">
+                                    @Model.Project.Status
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Postęp:</strong>
+                            <p>@Model.Project.ProgressPercentage%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analityka i statystyki -->
+    <div class="row mb-4">
+        <h3>📊 Analityka Projektu</h3>
+        
+        <div class="col-md-3">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Wszystkie Zadania</h5>
+                    <h2 class="text-primary">@Model.Analytics.TotalTasks</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Ukończone</h5>
+                    <h2 class="text-success">@Model.Analytics.CompletedTasks</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title">W Toku</h5>
+                    <h2 class="text-info">@Model.Analytics.InProgressTasks</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Przeterminowane</h5>
+                    <h2 class="text-danger">@Model.Analytics.OverdueTasksCount</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Procent ukończenia -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Procent Ukończenia</h5>
+                    <div class="progress" style="height: 30px;">
+                        <div class="progress-bar bg-success" 
+                             role="progressbar" 
+                             style="width: @Model.Analytics.CompletionPercentage%"
+                             aria-valuenow="@Model.Analytics.CompletionPercentage" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                            @Model.Analytics.CompletionPercentage%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Zadania przeterminowane -->
+    @if (Model.OverdueTasks.Count > 0)
+    {
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="alert alert-danger">
+                    <h5>⚠️ Zadania Przeterminowane (@Model.OverdueTasks.Count)</h5>
+                    <ul class="mb-0">
+                        @foreach (var task in Model.OverdueTasks)
+                        {
+                            <li>
+                                <strong>@task.Title</strong> - Deadline: @task.DueDate.ToString("dd.MM.yyyy")
+                                <span class="badge bg-danger">P@task.Priority</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Najbliższe terminy -->
+    @if (Model.UpcomingTasks.Count > 0)
+    {
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="alert alert-info">
+                    <h5>📅 Nadchodzące Terminy (@Model.UpcomingTasks.Count)</h5>
+                    <ul class="mb-0">
+                        @foreach (var task in Model.UpcomingTasks.Take(5))
+                        {
+                            <li>
+                                <strong>@task.Title</strong> - Deadline: @task.DueDate.ToString("dd.MM.yyyy")
+                                <span class="badge bg-info">P@task.Priority</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Tabela wszystkich zadań -->
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Wszystkie Zadania</h3>
+            @if (Model.Project.Tasks.Count == 0)
+            {
+                <div class="alert alert-info">
+                    Brak zadań w tym projekcie.
+                </div>
+            }
+            else
+            {
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tytuł</th>
+                            <th>Priorytet</th>
+                            <th>Status</th>
+                            <th>Termin</th>
+                            <th>Akcja</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var task in Model.Project.Tasks)
+                        {
+                            <tr class="@(task.IsOverdue ? "table-danger" : "")">
+                                <td>@task.Title</td>
+                                <td>
+                                    <span class="badge 
+                                        @(task.Priority >= 8 ? "bg-danger" : task.Priority >= 5 ? "bg-warning" : "bg-secondary")">
+                                        P@task.Priority
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge 
+                                        @(task.Status == TaskStatus.Done ? "bg-success" : 
+                                          task.Status == TaskStatus.InProgress ? "bg-info" : "bg-secondary")">
+                                        @task.Status
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (task.IsOverdue)
+                                    {
+                                        <span class="text-danger fw-bold">
+                                            ⏰ @task.DueDate.ToString("dd.MM.yyyy")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>@task.DueDate.ToString("dd.MM.yyyy")</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-outline-secondary">Edytuj</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>

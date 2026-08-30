@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ProjectManager</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        nav {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .badge {
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .btn {
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .progress {
+            border-radius: 10px;
+            background-color: #e9ecef;
+        }
+
+        .progress-bar {
+            border-radius: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        footer {
+            margin-top: 5rem;
+            border-top: 1px solid #e9ecef;
+            padding: 2rem 0;
+            background-color: #f8f9fa;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                📊 ProjectManager
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Projects")">Projekty</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Analytics", "Projects")">Analityka</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-primary text-white ms-2" href="@Url.Action("Create", "Projects")">
+                            ➕ Nowy Projekt
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-5">
+        <div class="container text-center">
+            <p class="text-muted mb-0">
+                &copy; 2024 ProjectManager - System Zarządzania Projektami | 
+                Wykonane z użyciem ASP.NET Core, EF Core i LINQ
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

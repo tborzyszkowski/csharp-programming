@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Błąd";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">⚠️ Błąd!</h4>
+                <p>Przepraszamy, произошла nieoczekiwana błąd.</p>
+                <hr>
+                <p class="mb-0">
+                    <a href="@Url.Action("Index", "Projects")" class="btn btn-primary">
+                        Wróć do Projektów
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

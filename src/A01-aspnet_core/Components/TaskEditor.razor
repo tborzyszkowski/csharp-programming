@@ -1,0 +1,120 @@
+@* TaskEditor.razor - Interaktywny edytor zadań w Blazor Server
+    Pozwala na szybkie tworzenie i edycję zadań
+*@
+
+@using ProjectManager.Models
+@inject ProjectManager.Services.IProjectService ProjectService
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Edytor Zadań</h5>
+    </div>
+    <div class="card-body">
+        @if (projects == null)
+        {
+            <p>Ładowanie projektów...</p>
+        }
+        else
+        {
+            <div class="mb-3">
+                <label class="form-label">Projekt</label>
+                <select @bind="selectedProjectId" class="form-select" @onchange="OnProjectSelected">
+                    <option value="">Wybierz projekt...</option>
+                    @foreach (var project in projects)
+                    {
+                        <option value="@project.Id">@project.Name</option>
+                    }
+                </select>
+            </div>
+
+            @if (selectedProjectId > 0 && selectedProject != null)
+            {
+                <div class="mb-3">
+                    <label class="form-label">Tytuł Zadania</label>
+                    <input @bind="newTask.Title" type="text" class="form-control" placeholder="Nazwa zadania...">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Priorytet (1-10)</label>
+                    <input @bind="newTask.Priority" type="range" min="1" max="10" class="form-range">
+                    <small class="text-muted">Wybrany priorytet: @newTask.Priority</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select @bind="newTask.Status" class="form-select">
+                        <option value="@TaskStatus.ToDo">Do Zrobienia</option>
+                        <option value="@TaskStatus.InProgress">W Toku</option>
+                        <option value="@TaskStatus.Done">Ukończone</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Termin</label>
+                    <input @bind="newTask.DueDate" type="date" class="form-control">
+                </div>
+
+                <button @onclick="CreateTask" class="btn btn-success">
+                    ➕ Dodaj Zadanie
+                </button>
+
+                @if (!string.IsNullOrEmpty(message))
+                {
+                    <div class="alert alert-info mt-3">
+                        @message
+                    </div>
+                }
+            }
+        }
+    </div>
+</div>
+
+@code {
+    private List<Project>? projects;
+    private Project? selectedProject;
+    private int selectedProjectId;
+    private Task newTask = new();
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        projects = await ProjectService.GetAllProjectsAsync();
+    }
+
+    private async Task OnProjectSelected(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int projectId))
+        {
+            selectedProjectId = projectId;
+            selectedProject = projects?.FirstOrDefault(p => p.Id == projectId);
+            newTask = new() { ProjectId = projectId };
+            message = null;
+        }
+    }
+
+    private async Task CreateTask()
+    {
+        if (string.IsNullOrWhiteSpace(newTask.Title))
+        {
+            message = "❌ Tytuł zadania jest wymagany!";
+            return;
+        }
+
+        if (selectedProject != null)
+        {
+            newTask.ProjectId = selectedProject.Id;
+            selectedProject.Tasks.Add(newTask);
+            
+            try
+            {
+                await ProjectService.UpdateProjectAsync(selectedProject);
+                message = $"✅ Zadanie '{newTask.Title}' zostało dodane!";
+                newTask = new() { ProjectId = selectedProjectId };
+            }
+            catch
+            {
+                message = "❌ Błąd podczas zapisywania zadania!";
+            }
+        }
+    }
+}

@@ -1,0 +1,82 @@
+@* ProjectDashboard.razor - Komponент Blazor Server
+    Wyświetla dashboard z kartami projektów i statystykami
+*@
+
+@using ProjectManager.Models
+@inject ProjectManager.Services.IProjectService ProjectService
+@page "/dashboard"
+
+<div class="container mt-5">
+    <h2>📊 Dashboard Projektów</h2>
+    
+    @if (projects == null)
+    {
+        <div class="alert alert-info">Ładowanie danych...</div>
+    }
+    else if (projects.Count == 0)
+    {
+        <div class="alert alert-warning">Brak projektów do wyświetlenia.</div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var project in projects)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">@project.Name</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@project.Description</p>
+                            
+                            <div class="mb-3">
+                                <span class="badge 
+                                    @(project.Status == ProjectStatus.Active ? "bg-success" :
+                                      project.Status == ProjectStatus.OnHold ? "bg-warning" : "bg-secondary")">
+                                    @project.Status
+                                </span>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="text-muted d-block">Postęp: @project.ProgressPercentage%</small>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar" 
+                                         role="progressbar" 
+                                         style="width: @project.ProgressPercentage%"
+                                         aria-valuenow="@project.ProgressPercentage" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6">
+                                    <small class="text-muted">Zadań: @project.TotalTasks</small>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <small class="text-muted">Ukończonych: @project.CompletedTasks</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a href="/projects/@project.Id" class="btn btn-sm btn-primary">
+                                Szczegóły
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<Project>? projects;
+
+    protected override async Task OnInitializedAsync()
+    {
+        projects = await ProjectService.GetAllProjectsAsync();
+    }
+}

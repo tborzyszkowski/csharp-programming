@@ -1,0 +1,81 @@
+@model Project
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = $"Edytuj - {Model.Name}";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1>Edytuj Projekt</h1>
+
+            <form asp-action="Edit" asp-controller="Projects" asp-route-id="@Model.Id" method="post" novalidate>
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <input asp-for="Id" type="hidden">
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">Nazwa Projektu *</label>
+                    <input asp-for="Name" class="form-control">
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label">Opis</label>
+                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StartDate" class="form-label">Data Rozpoczęcia *</label>
+                        <input asp-for="StartDate" type="date" class="form-control">
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="EndDate" class="form-label">Data Zakończenia</label>
+                        <input asp-for="EndDate" type="date" class="form-control">
+                        <span asp-validation-for="EndDate" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ProgressPercentage" class="form-label">Postęp (%)</label>
+                    <input asp-for="ProgressPercentage" type="range" min="0" max="100" class="form-range">
+                    <small class="text-muted" id="progressDisplay">@Model.ProgressPercentage%</small>
+                    <span asp-validation-for="ProgressPercentage" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Status" class="form-label">Status *</label>
+                    <select asp-for="Status" class="form-select">
+                        <option value="@ProjectStatus.Active">Aktywny</option>
+                        <option value="@ProjectStatus.OnHold">Wstrzymany</option>
+                        <option value="@ProjectStatus.Completed">Ukończony</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Zapisz Zmiany</button>
+                    <a href="@Url.Action("Details", "Projects", new { id = Model.Id })" class="btn btn-secondary">Anuluj</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        const progressInput = document.querySelector('input[name="ProgressPercentage"]');
+        const progressDisplay = document.getElementById('progressDisplay');
+        
+        progressInput.addEventListener('input', function() {
+            progressDisplay.textContent = this.value + '%';
+        });
+    </script>
+}

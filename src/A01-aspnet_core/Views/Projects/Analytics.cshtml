@@ -1,0 +1,203 @@
+@model List<ProjectAnalytics>
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Analityka Projektów";
+}
+
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>📊 Analityka Wszystkich Projektów</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Index", "Projects")" class="btn btn-secondary">Wróć do Projektów</a>
+        </div>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info">
+            Brak projektów do analizy.
+        </div>
+    }
+    else
+    {
+        <!-- Podsumowanie globalne -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5>Wszystkich Projektów</h5>
+                        <h2 class="text-primary">@Model.Count</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5>Wszystkich Zadań</h5>
+                        <h2 class="text-info">@Model.Sum(a => a.TotalTasks)</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5>Ukończonych</h5>
+                        <h2 class="text-success">@Model.Sum(a => a.CompletedTasks)</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5>Przeterminowanych</h5>
+                        <h2 class="text-danger">@Model.Sum(a => a.OverdueTasksCount)</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela analityk -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Projekt</th>
+                                <th>Wszystkie Zadania</th>
+                                <th>Ukończone</th>
+                                <th>W Toku</th>
+                                <th>Do Zrobienia</th>
+                                <th>Przeterminowane</th>
+                                <th>% Ukończenia</th>
+                                <th>Średni Priorytet</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var analytics in Model.OrderByDescending(a => a.CompletionPercentage))
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@analytics.ProjectName</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">@analytics.TotalTasks</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">@analytics.CompletedTasks</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@analytics.InProgressTasks</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">@analytics.ToDoTasks</span>
+                                    </td>
+                                    <td>
+                                        @if (analytics.OverdueTasksCount > 0)
+                                        {
+                                            <span class="badge bg-danger">@analytics.OverdueTasksCount</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">0</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 25px;">
+                                            <div class="progress-bar 
+                                                @if (analytics.CompletionPercentage >= 75)
+                                                {
+                                                    @:"bg-success"
+                                                }
+                                                else if (analytics.CompletionPercentage >= 50)
+                                                {
+                                                    @:"bg-info"
+                                                }
+                                                else if (analytics.CompletionPercentage > 0)
+                                                {
+                                                    @:"bg-warning"
+                                                }
+                                                else
+                                                {
+                                                    @:"bg-secondary"
+                                                }" 
+                                                 role="progressbar" 
+                                                 style="width: @analytics.CompletionPercentage%"
+                                                 aria-valuenow="@analytics.CompletionPercentage" 
+                                                 aria-valuemin="0" 
+                                                 aria-valuemax="100">
+                                                @analytics.CompletionPercentage%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@analytics.AveragePriority.ToString("F2")</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Szczegółowe karty analityk -->
+        <div class="row mt-5">
+            <h3 class="mb-4">Szczegółowa Analiza Projektów</h3>
+            @foreach (var analytics in Model.OrderByDescending(a => a.CompletionPercentage))
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">@analytics.ProjectName</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted">Wszystkie zadania</small>
+                                    <p><strong>@analytics.TotalTasks</strong></p>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <small class="text-muted">Ukończone</small>
+                                    <p><strong class="text-success">@analytics.CompletedTasks</strong></p>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted">Przeterminowane</small>
+                                    <p><strong class="text-danger">@analytics.OverdueTasksCount</strong></p>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <small class="text-muted">Średni priorytet</small>
+                                    <p><strong>@analytics.AveragePriority.ToString("F2")</strong></p>
+                                </div>
+                            </div>
+
+                            @if (analytics.TasksByStatus.Any())
+                            {
+                                <strong>Po statusie:</strong>
+                                <ul class="list-unstyled mb-3">
+                                    @foreach (var status in analytics.TasksByStatus)
+                                    {
+                                        <li>
+                                            <span class="badge 
+                                                @(status.Key == TaskStatus.Done ? "bg-success" : 
+                                                  status.Key == TaskStatus.InProgress ? "bg-info" : "bg-secondary")">
+                                                @status.Key
+                                            </span>
+                                            @status.Value zadań
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,154 @@
+@{
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Projekty</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Create", "Projects")" class="btn btn-primary">
+                ➕ Nowy Projekt
+            </a>
+            <a href="@Url.Action("Analytics", "Projects")" class="btn btn-info">
+                📊 Analityka
+            </a>
+        </div>
+    </div>
+
+    <!-- Pasek wyszukiwania i sortowania -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" action="@Url.Action("Index", "Projects")" class="row g-3">
+                <div class="col-md-6">
+                    <input type="text" name="searchTerm" class="form-control" 
+                           placeholder="Szukaj projektu..." 
+                           value="@ViewData["SearchTerm"]">
+                </div>
+                <div class="col-md-4">
+                    <select name="sortBy" class="form-select">
+                        <option value="">Domyślnie</option>
+                        <option value="name" @(ViewData["CurrentSort"]?.ToString() == "name" ? "selected" : "")>Po nazwie</option>
+                        <option value="date" @(ViewData["CurrentSort"]?.ToString() == "date" ? "selected" : "")>Po dacie</option>
+                        <option value="progress" @(ViewData["CurrentSort"]?.ToString() == "progress" ? "selected" : "")>Po postępie</option>
+                        <option value="tasks" @(ViewData["CurrentSort"]?.ToString() == "tasks" ? "selected" : "")>Po liczbie zadań</option>
+                        <option value="status-active" @(ViewData["CurrentSort"]?.ToString() == "status-active" ? "selected" : "")>Aktywne</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-secondary w-100">Szukaj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista projektów -->
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info">
+            Brak projektów. <a href="@Url.Action("Create", "Projects")">Utwórz nowy projekt</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var project in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 @(project.IsOverdue ? "border-danger" : "")">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">@project.Name</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@project.Description</p>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted">
+                                    📅 @project.StartDate.ToString("dd.MM.yyyy") 
+                                    @if (project.EndDate.HasValue)
+                                    {
+                                        <span>- @project.EndDate.Value.ToString("dd.MM.yyyy")</span>
+                                    }
+                                </small>
+                            </div>
+
+                            <!-- Progress bar -->
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <small>Postęp:</small>
+                                    <small class="fw-bold">@project.ProgressPercentage%</small>
+                                </div>
+                                <div class="progress" style="height: 25px;">
+                                    <div class="progress-bar 
+                                        @if (project.ProgressPercentage >= 75) 
+                                        { 
+                                            @:"bg-success" 
+                                        }
+                                        else if (project.ProgressPercentage >= 50)
+                                        {
+                                            @:"bg-info"
+                                        }
+                                        else
+                                        {
+                                            @:"bg-warning"
+                                        }" 
+                                         role="progressbar" 
+                                         style="width: @project.ProgressPercentage%"
+                                         aria-valuenow="@project.ProgressPercentage" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Statystyki -->
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Zadania: @project.TotalTasks</small>
+                                    <small class="text-muted d-block">Ukończone: @project.CompletedTasks</small>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <span class="badge 
+                                        @if (project.Status == ProjectStatus.Active) 
+                                        { 
+                                            @:"bg-success" 
+                                        }
+                                        else if (project.Status == ProjectStatus.OnHold)
+                                        {
+                                            @:"bg-warning"
+                                        }
+                                        else
+                                        {
+                                            @:"bg-secondary"
+                                        }">
+                                        @project.Status
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a href="@Url.Action("Details", "Projects", new { id = project.Id })" 
+                               class="btn btn-sm btn-outline-primary">
+                                Szczegóły
+                            </a>
+                            <a href="@Url.Action("Edit", "Projects", new { id = project.Id })" 
+                               class="btn btn-sm btn-outline-warning">
+                                Edytuj
+                            </a>
+                            <form method="post" 
+                                  action="@Url.Action("Delete", "Projects", new { id = project.Id })" 
+                                  style="display:inline;" 
+                                  onsubmit="return confirm('Czy na pewno usunąć projekt i wszystkie jego zadania?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    Usuń
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
