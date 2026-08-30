@@ -1,0 +1,21 @@
+graph TD
+    A["BankAccount"] --> B["Pola prywatne"]
+    B --> B1["_accountNumber"]
+    B --> B2["_balance"]
+    B --> B3["_pin"]
+    
+    A --> C["Konstruktor"]
+    C --> C1["Inicjalizuje pola"]
+    
+    A --> D["Właściwości<br/>read-only"]
+    D --> D1["AccountNumber"]
+    D --> D2["AccountHolder"]
+    D --> D3["Balance"]
+    
+    A --> E["Metody<br/>publiczne"]
+    E --> E1["Deposit()"]
+    E --> E2["Withdraw()"]
+    E --> E3["ChangePin()"]
+    
+    E2 -.->|"wymaga PIN"| B3
+    E1 -.->|"zmienia"| B2

@@ -1,0 +1,28 @@
+classDiagram
+    class Biblioteka {
+        -string nazwa
+        -Ksiazka[] ksiazki
+        +DodajKsiazke(Ksiazka)
+        +ZnajdzKsiazke(string) Ksiazka
+    }
+    
+    class Ksiazka {
+        -string tytul
+        -string autor
+        -string ISBN
+        -bool dostepna
+        +PrzypiszCzytelnikowi(Czytelnik)
+        +ZwrocOdCzytelmika()
+    }
+    
+    class Czytelnik {
+        -string imie
+        -string nazwisko
+        -int idCzytelmika
+        -Ksiazka[] wypozyczone
+        +WypozyczKsiazke(Ksiazka)
+        +ZwrocKsiazke(Ksiazka)
+    }
+    
+    Biblioteka "1" --> "wiele" Ksiazka
+    Czytelnik "wiele" --> "wiele" Ksiazka

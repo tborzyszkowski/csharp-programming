@@ -1,0 +1,10 @@
+graph TB
+    A["Pracownik (interfejs)"]
+    A --> B["ObliczPensje()"]
+    
+    A -.->|"implementacja 1"| C["Pracownik<br/>ObliczPensje() → 2000"]
+    A -.->|"implementacja 2"| D["Kierownik<br/>ObliczPensje() → 4000"]
+    A -.->|"implementacja 3"| E["Praktykant<br/>ObliczPensje() → 1500"]
+    
+    F["Kod klienta<br/>Pracownik p = GetPracownik();"] -.->|"wywołuje"| B
+    F -.->|"dynamiczne wybranie"| G["Prawidłowa<br/>implementacja"]

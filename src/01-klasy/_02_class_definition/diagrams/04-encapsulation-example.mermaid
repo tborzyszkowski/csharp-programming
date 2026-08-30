@@ -1,0 +1,9 @@
+graph TB
+    A["Klasa Pracownik"]
+    A --> B["Pola prywatne:<br/>_firstName<br/>_lastName<br/>_salary"]
+    A --> C["Konstruktor"]
+    A --> D["Właściwości<br/>FirstName<br/>LastName<br/>FullName<br/>Salary"]
+    A --> E["Metody<br/>GiveRaise()<br/>PrintInfo()"]
+    
+    B -.->|"dostęp"| D
+    D -.->|"modyfikacja"| B

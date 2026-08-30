@@ -1,0 +1,9 @@
+graph TB
+    A["Partial Method"]
+    A --> B["Deklaracja<br/>(Część 1)"]
+    A --> C["Implementacja<br/>(Część 2)"]
+    
+    B --> D["partial void OnUserCreated()"]
+    C --> E["partial void OnUserCreated()<br/>{...}"]
+    
+    D --> F["Jeśli brak implementacji,<br/>kompilator opuszcza"]

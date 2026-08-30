@@ -1,0 +1,9 @@
+graph TB
+    A["Klasa: Typ Referencyjny"] --> B["Zmienna = Adres"]
+    C["Struktura: Typ Wartościowy"] --> D["Zmienna = Wartość"]
+    
+    B --> E["Przypisanie = Kopia Adresu"]
+    D --> F["Przypisanie = Kopia Wartości"]
+    
+    E --> G["Obie zmienne<br/>wskazują na TENSAMOBJEKT"]
+    F --> H["Osobne obiekty<br/>w pamięci"]

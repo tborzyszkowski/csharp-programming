@@ -1,0 +1,5 @@
+graph TD
+    A["new Person()"] -->|"1. Utworzenie"| B["Obiekt w pamięci"]
+    B -->|"2. Użycie"| C["Zmienne wskazują"]
+    C -->|"3. Koniec zakresu"| D["Brak referencji"]
+    D -->|"4. Garbage Collector"| E["Zwolnienie pamięci"]

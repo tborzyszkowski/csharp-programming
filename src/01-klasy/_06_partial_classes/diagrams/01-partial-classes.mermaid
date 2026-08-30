@@ -1,0 +1,12 @@
+graph TB
+    A["Klasa Employee<br/>(logicznie jedna)"]
+    
+    A --> B["Część 1<br/>Właściwości"]
+    A --> C["Część 2<br/>Logika biznesowa"]
+    A --> D["Część 3<br/>Walidacja"]
+    
+    B --> E["Program.cs"]
+    C --> E
+    D --> E
+    
+    E --> F["W kompilacji<br/>traktowana jako<br/>JEDNA klasa"]

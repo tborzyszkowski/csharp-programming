@@ -1,0 +1,14 @@
+classDiagram
+    class Person {
+        -string name
+        -int age
+        +getName() string
+        +getAge() int
+    }
+    
+    class Employee {
+        -decimal salary
+        +getSalary() decimal
+    }
+    
+    Employee --|> Person

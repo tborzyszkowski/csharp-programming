@@ -1,0 +1,12 @@
+graph TD
+    A["Zwierzę"]
+    A --> B["Pies"]
+    A --> C["Kot"]
+    A --> D["Ptak"]
+    
+    B -.->|"dziedziczy"| E["Nazwa, Odglos()"]
+    C -.->|"dziedziczy"| E
+    D -.->|"dziedziczy"| E
+    
+    B -->|"przesławia"| F["Odglos() → szczeka"]
+    C -->|"przesławia"| G["Odglos() → miauczy"]

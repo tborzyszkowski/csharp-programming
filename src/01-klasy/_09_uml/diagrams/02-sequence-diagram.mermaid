@@ -1,0 +1,8 @@
+sequenceDiagram
+    actor User
+    participant System
+    
+    User->>System: CreateEmployee(name, age, salary)
+    System->>System: ValidateData()
+    System->>System: CreateInstance()
+    System-->>User: Employee created

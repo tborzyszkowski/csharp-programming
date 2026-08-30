@@ -1,0 +1,14 @@
+sequenceDiagram
+    actor Czytelnik
+    participant Biblioteka
+    participant Ksiazka
+    
+    Czytelnik->>Biblioteka: ZnajdzKsiazke("Harry Potter")
+    Biblioteka->>Ksiazka: sprawdzDostepnosc()
+    Ksiazka-->>Biblioteka: true
+    Biblioteka-->>Czytelnik: Ksiazka
+    
+    Czytelnik->>Biblioteka: WypozyczKsiazke(Ksiazka)
+    Biblioteka->>Ksiazka: PrzypiszCzytelnikowi()
+    Ksiazka->>Ksiazka: dostepna = false
+    Biblioteka-->>Czytelnik: Potwierdzenie

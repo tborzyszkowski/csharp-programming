@@ -1,0 +1,12 @@
+graph TB
+    A["this - Referencja do<br/>Bieżącego Obiektu"]
+    
+    A --> B["1. Rozróżnienie<br/>pól od parametrów"]
+    A --> C["2. Łańcuch<br/>konstruktorów"]
+    A --> D["3. Zwracanie<br/>bieżącego obiektu"]
+    A --> E["4. Przekazywanie<br/>do metod"]
+    
+    B --> B1["this.field = parameter"]
+    C --> C1["Constructor() : this()"]
+    D --> D1["return this"]
+    E --> E1["method(this)"]

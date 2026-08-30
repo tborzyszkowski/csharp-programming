@@ -1,0 +1,9 @@
+graph TD
+    A["new Osoba()"] --> B["Konstruktor<br/>domyślny"]
+    C["new Osoba('Jan')"] --> D["Konstruktor<br/>z parametrem"]
+    E["new Osoba('Jan', 30)"] --> F["Konstruktor<br/>z 2 parametrami"]
+    
+    B --> G["Inicjalizacja<br/>pól"]
+    D --> G
+    F --> G
+    G --> H["Nowy obiekt<br/>w pamięci"]

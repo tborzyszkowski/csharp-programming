@@ -1,0 +1,9 @@
+graph LR
+    A["Pole prywatne<br/>_wiek: int"] --> B["Właściwość<br/>Wiek"]
+    B --> C["getter"]
+    B --> D["setter<br/>z walidacją"]
+    C --> E["Kod publiczny"]
+    D --> E
+    
+    D -.->|"jeśli wiek >= 0"| A
+    D -.->|"jeśli wiek < 0:<br/>odrzuć"| F["Błąd"]

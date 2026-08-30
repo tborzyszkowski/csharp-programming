@@ -1,0 +1,10 @@
+graph LR
+    A["Klasa Osoba<br/>(szablon)"] -->|"new Osoba()"| B["Obiekt: Jan"]
+    A -->|"new Osoba()"| C["Obiekt: Maria"]
+    A -->|"new Osoba()"| D["Obiekt: Piotr"]
+    
+    E["Pola: Imie, Nazwisko<br/>Metody: PrzedstawSie()"] -.-> A
+    
+    B --> B1["Imie=Jan<br/>Nazwisko=Nowak"]
+    C --> C1["Imie=Maria<br/>Nazwisko=Kowalska"]
+    D --> D1["Imie=Piotr<br/>Nazwisko=Lewandowski"]

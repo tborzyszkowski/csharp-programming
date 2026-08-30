@@ -1,0 +1,8 @@
+graph LR
+    A["Kod zewnętrzny"] -->|"Dostęp publiczny"| B["Konto"]
+    B -->|"public"| C["Saldo - property"]
+    B -->|"public"| D["Wplata()"]
+    B -->|"public"| E["Wyplata()"]
+    C --> F["private saldo"]
+    D --> F
+    E --> F

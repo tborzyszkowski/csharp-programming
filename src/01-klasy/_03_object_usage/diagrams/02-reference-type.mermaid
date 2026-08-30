@@ -1,0 +1,10 @@
+graph TB
+    A["person1 = new Person"] --> B["Obiekt Person<br/>Name=Jan"]
+    C["person2 = person1"] --> B
+    
+    D["person2.Name = Maria"] --> B
+    
+    E["person1"] -.-> B
+    F["person2"] -.-> B
+    
+    G["Obie zmienne<br/>wskazują na TENSAMOBIEKT"]
