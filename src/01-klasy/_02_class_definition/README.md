@@ -1,5 +1,3 @@
----
-
 ## Enkapsulacja w praktyce
 
 ### Pełny przykład klasy
