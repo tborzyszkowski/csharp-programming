@@ -66,7 +66,56 @@ dotnet run
 
 ---
 
-## 📚 Moduły Nauczania
+## �️ Mapa Zależności Modułów
+
+Poniższy diagram pokazuje zalecaną kolejność nauki oraz zależności między modułami. Strzałka `A --> B` oznacza „A jest wymagane przed B”.
+
+```mermaid
+graph TD
+    M1["Moduł 1: Klasy i Obiekty"]
+    M2["Moduł 2: Konstruktory"]
+    M3["Moduł 3: Właściwości"]
+    M4["Moduł 4: Statyczne"]
+    M5["Moduł 5: Dziedziczenie"]
+    M6["Moduł 6: Polimorfizm"]
+    M7["Moduł 7: Interfejsy i Abstrakcja"]
+    M8["Moduł 8: Generyki i Kolekcje"]
+    M9["Moduł 9: Delegacje i Zdarzenia"]
+    M10["Moduł 10: Przeciążanie Operatorów"]
+    M11["Moduł 11: Async"]
+    M12["Moduł 12: Serializacja"]
+    M13["Moduł 13: Refleksja i Atrybuty"]
+    A01["Moduł A01: ASP.NET Core"]
+
+    M1 --> M2
+    M1 --> M3
+    M1 --> M4
+    M1 --> M8
+    M2 --> M5
+    M3 --> M5
+    M3 --> M10
+    M5 --> M6
+    M5 --> M7
+    M6 --> M7
+    M6 --> M9
+    M7 --> M13
+    M7 --> A01
+    M8 --> M11
+    M9 --> M11
+    M8 --> M12
+    M1 --> A01
+```
+
+**Ścieżka fundamentalna (obowiązkowa):** Moduł 1 → 2 → 3 → 5 → 6 → 7  
+**Ścieżka zaawansowana (po fundamentach):** Moduły 8, 9, 11, 12, 13 – można je studiować równolegle, o ile spełnione są ich zależności  
+**Ścieżka opcjonalna:** Moduł 4 (statyczne) i Moduł 10 (operatory) można studiować w dowolnym momencie po Module 1/3  
+**Ścieżka praktyczna (podsumowanie):** Moduł A01 – wymaga zrozumienia Modułów 1-7
+
+Każda sekcja modułu poniżej zawiera pola **Wymaga** i **Prowadzi do** z bezpośrednimi linkami do powiązanych modułów.
+
+---
+
+## �📚 Moduły Nauczania
 
 ### **Moduł 1: Klasy i Obiekty** – Fundament OOP
 
@@ -83,7 +132,10 @@ Moduł obejmuje 9 tematów:
 8. Struktury vs klasy (value types)
 9. Diagramy UML – notacja i czytanie
 
-**Dla kogo:** Wszyscy начинающих w OOP. Stanowi fundament dla wszystkich pozostałych modułów.
+**Dla kogo:** Wszyscy początkujący w OOP. Stanowi fundament dla wszystkich pozostałych modułów.
+
+**Wymaga:** – (punkt startowy, brak wymagań wstępnych)  
+**Prowadzi do:** Wszystkie kolejne moduły opierają się na tym module.
 
 **Co jest tu wartościowe:** Solidne zrozumienie podstaw OOP – bez tego trudno będzie pracować z pozostałymi koncepcjami. Moduł zawiera rzeczywiste diagramy UML pokazujące relacje między klasami.
 
@@ -109,6 +161,9 @@ Moduł obejmuje 10 tematów:
 
 **Dla kogo:** Po Modułu 1. Niezbędne dla każdego, kto pracuje z tworzeniem obiektów.
 
+**Wymaga:** [Moduł 1: Klasy i Obiekty](src/01-klasy/README.md)  
+**Prowadzi do:** [Moduł 5: Dziedziczenie](src/05-dziedziczenie/README.md)
+
 **Co jest tu wartościowe:** Poznasz różne sposoby inicjalizacji i nauczysz się zaawansowanych patternów. Szczególnie cenny jest temat destruktorów i IDisposable – częsta przyczyna wycieków zasobów.
 
 [Przejdź do modułu](src/02-konstruktory/README.md)
@@ -130,7 +185,10 @@ Moduł obejmuje 7 tematów:
 
 **Dla kogo:** Narzędzie codzienne dla każdego C# developera. Niezbędne przed Modułem 5 (dziedziczenie).
 
-**Co jest tu wartościowe:** Pokażemy jak prawidłowo enkapsulować dane i chronić invarianty klasy. Moderni praktycy C# powinni znać init properties i nullable reference types.
+**Wymaga:** [Moduł 1: Klasy i Obiekty](src/01-klasy/README.md)  
+**Prowadzi do:** [Moduł 5: Dziedziczenie](src/05-dziedziczenie/README.md), [Moduł 10: Przeciążanie Operatorów](src/10-przeciazenie_operatorow/README.md)
+
+**Co jest tu wartościowe:** Pokażemy jak prawidłowo enkapsulować dane i chronić invarianty klasy. Nowocześni praktycy C# powinni znać init properties i nullable reference types.
 
 [Przejdź do modułu](src/03-wlasciwosci/README.md)
 
@@ -151,6 +209,9 @@ Moduł obejmuje 7 tematów:
 
 **Dla kogo:** Średniozaawansowani. Niezbędny do zrozumienia wspólnych zasobów i patternów.
 
+**Wymaga:** [Moduł 1: Klasy i Obiekty](src/01-klasy/README.md)  
+**Prowadzi do:** [Moduł 6: Polimorfizm](src/06-polimorfizm/README.md) (wzorce Singleton wracają w kontekście Factory)
+
 **Co jest tu wartościowe:** Extension methods to cenna umiejętność w C#. Singleton pattern należy do klasyki – poznaj go na praktycznych przykładach.
 
 [Przejdź do modułu](src/04-statyczne/README.md)
@@ -170,7 +231,10 @@ Moduł obejmuje 7 tematów:
 6. Klasy abstrakcyjne – umowy dla podklas
 7. Sealed classes – zapobieganie dalszemu dziedziczeniu
 
-**Dla kogo:** Kryticzny moduł po Modułu 1-3. Bez niego nie zrozumiesz polimorfizmu.
+**Dla kogo:** Krytyczny moduł po Modułu 1-3. Bez niego nie zrozumiesz polimorfizmu.
+
+**Wymaga:** [Moduł 1: Klasy i Obiekty](src/01-klasy/README.md), [Moduł 2: Konstruktory](src/02-konstruktory/README.md), [Moduł 3: Właściwości](src/03-wlasciwosci/README.md)  
+**Prowadzi do:** [Moduł 6: Polimorfizm](src/06-polimorfizm/README.md), [Moduł 7: Interfejsy i Abstrakcja](src/07-interfejsy_abstrakcje/README.md)
 
 **Co jest tu wartościowe:** Zrozumienie relacji is-a i prawidłowego używania override vs new. Abstract classes to narzędzie do projektowania elastycznych architektur.
 
@@ -191,6 +255,9 @@ Moduł obejmuje 6 tematów:
 6. Default interface members (C# 8.0+) – nowoczesne interfejsy
 
 **Dla kogo:** Po Modułu 5. Fundamentalny dla zrozumienia nowoczesnych architektur.
+
+**Wymaga:** [Moduł 5: Dziedziczenie](src/05-dziedziczenie/README.md)  
+**Prowadzi do:** [Moduł 7: Interfejsy i Abstrakcja](src/07-interfejsy_abstrakcje/README.md), [Moduł 9: Delegacje i Zdarzenia](src/09-delegacje_zdarzenia/README.md)
 
 **Co jest tu wartościowe:** Payment gateway case study pokazuje jak rzeczywiście stosować polimorfizm w prawdziwych projektach. Nauczysz się implementować Adapter i Factory patterns.
 
@@ -213,6 +280,9 @@ Moduł obejmuje 7 tematów:
 
 **Dla kogo:** Po Modułu 5-6. Niezbędny do pisania testowalnego kodu i architektur SOLID.
 
+**Wymaga:** [Moduł 5: Dziedziczenie](src/05-dziedziczenie/README.md), [Moduł 6: Polimorfizm](src/06-polimorfizm/README.md)  
+**Prowadzi do:** [Moduł 13: Refleksja i Atrybuty](src/13-refleksja_atrybuty/README.md), [Moduł A01: ASP.NET Core](src/A01-aspnet_core/README.md)
+
 **Co jest tu wartościowe:** Interfejsy to podstawa dependency injection i testowania. Nauczysz się projektować elastyczne systemy, gdzie komponenty nie zależą od konkretnych implementacji.
 
 [Przejdź do modułu](src/07-interfejsy_abstrakcje/README.md)
@@ -232,6 +302,9 @@ Moduł obejmuje 6 tematów:
 6. LINQ – Language Integrated Query – zapytania na danych
 
 **Dla kogo:** Średniozaawansowani. Narzędzie codzienne przy pracy z danymi.
+
+**Wymaga:** [Moduł 1: Klasy i Obiekty](src/01-klasy/README.md)  
+**Prowadzi do:** [Moduł 11: Programowanie Asynchroniczne](src/11-async/README.md), [Moduł 12: Serializacja](src/12-serializacja/README.md)
 
 **Co jest tu wartościowe:** Generyki zapewniają type safety i wydajność. LINQ to język zapytań w C# – nauczysz się pisać ekspresyjny, deklaratywny kod. Collection expressions (C# 12) pokazują nowoczesne podejście.
 
@@ -253,6 +326,9 @@ Moduł obejmuje 7+ tematów:
 7. Event-driven architecture – praktyczne implementacje
 
 **Dla kogo:** Po Modułu 6. Narzędzie do loose coupling i reactive programming.
+
+**Wymaga:** [Moduł 6: Polimorfizm](src/06-polimorfizm/README.md)  
+**Prowadzi do:** [Moduł 11: Programowanie Asynchroniczne](src/11-async/README.md)
 
 **Co jest tu wartościowe:** Delegacje to callbacks w C#. Event-driven architecture jest wszędzie – od GUI po backend. Nauczysz się RxJS-style reactive programming w C#.
 
@@ -278,7 +354,10 @@ Moduł obejmuje 10 tematów:
 
 **Dla kogo:** Zaawansowani. Opcjonalny, ale cenny przy projektowaniu DSL'ów i klas domenowych.
 
-**Co jest tu wartościowe:** Przeciążanie operatorów pozwala na intuicyjne API – np. Vector3D + Vector3D zamiast Vector3D.Add(). Naucz się implementować to bezpiecznie i elegant.
+**Wymaga:** [Moduł 3: Właściwości i Indeksatory](src/03-wlasciwosci/README.md)  
+**Prowadzi do:** – (moduł samodzielny, opcjonalny)
+
+**Co jest tu wartościowe:** Przeciążanie operatorów pozwala na intuicyjne API – np. Vector3D + Vector3D zamiast Vector3D.Add(). Naucz się implementować to bezpiecznie i elegancko.
 
 [Przejdź do modułu](src/10-przeciazenie_operatorow/README.md)
 
@@ -304,6 +383,9 @@ Moduł obejmuje 12 tematów:
 
 **Dla kogo:** Średniozaawansowani+. Niezbędny do nowoczesnych aplikacji webowych.
 
+**Wymaga:** [Moduł 8: Generyki i Kolekcje](src/08-kolecje_generyczne/README.md), [Moduł 9: Delegacje i Zdarzenia](src/09-delegacje_zdarzenia/README.md)  
+**Prowadzi do:** – (moduł zaawansowany, samodzielny)
+
 **Co jest tu wartościowe:** Async/await to core feature nowoczesnego .NET. Nauczysz się pisać responsywne aplikacje i unikać deadlock'ów. Breakfast example pokazuje kiedy naprawdę potrzebna jest współbieżność.
 
 [Przejdź do modułu](src/11-async/README.md)
@@ -327,6 +409,9 @@ Moduł obejmuje 10 tematów:
 10. Performance i bezpieczeństwo (Security concerns)
 
 **Dla kogo:** Średniozaawansowani. Narzędzie do komunikacji między systemami.
+
+**Wymaga:** [Moduł 8: Generyki i Kolekcje](src/08-kolecje_generyczne/README.md)  
+**Prowadzi do:** – (moduł samodzielny)
 
 **Co jest tu wartościowe:** JSON to standard. Nauczysz się serialize/deserialize obiekty bezpiecznie i wydajnie. Protocol Buffers pokazuje jak pracować z nowoczesnym toolingiem (gRPC).
 
@@ -352,6 +437,9 @@ Moduł obejmuje 10 tematów:
 
 **Dla kogo:** Zaawansowani. Opcjonalny, ale potężny dla framework'ów.
 
+**Wymaga:** [Moduł 7: Interfejsy i Abstrakcja](src/07-interfejsy_abstrakcje/README.md)  
+**Prowadzi do:** – (moduł zaawansowany, samodzielny)
+
 **Co jest tu wartościowe:** Refleksja to moc – pozwala na dynamiczne odkrywanie i uruchamianie kodu. Atrybuty to deklaratywne metadata. Plugin systems to praktyczne zastosowanie – nauczysz się budować extensible aplikacje.
 
 [Przejdź do modułu](src/13-refleksja_atrybuty/README.md)
@@ -376,7 +464,12 @@ Moduł obejmuje:
 
 **Dla kogo:** Po zrozumieniu modułów 1-7. Praktyczne połączenie teorii z rzeczywistością.
 
+**Wymaga:** [Moduł 1: Klasy i Obiekty](src/01-klasy/README.md) – [Moduł 7: Interfejsy i Abstrakcja](src/07-interfejsy_abstrakcje/README.md)  
+**Prowadzi do:** – (moduł końcowy, praktyczne podsumowanie kursu)
+
 **Co jest tu wartościowe:** Rzeczywisty projekt, który można uruchomić, modyfikować i rozbudowywać. Pokażemy jak architektura i wzorce stosują się w wielowarstwowej aplikacji. Entity Framework Core to ORM – narzędzie do pracy z bazami danych.
+
+[Przejdź do modułu](src/A01-aspnet_core/README.md)
 
 ---
 
@@ -536,12 +629,12 @@ Szacunkowo: 3-4 miesiące przy 10 godzinach tygodniowo.
 **O:** Tak. Powinieneś znać podstawy C# (zmienne, pętle, instrukcje warunkowe, metody). 
 Jeśli nie znasz – zacznij od [Microsoft Learn C# Path](https://learn.microsoft.com/en-us/training/paths/csharp-first-steps/).
 
-### P: Czy mogę pracować ze swoim próbnym IDE?
+### P: Czy mogę pracować ze swoim własnym IDE?
 **O:** Tak! Kod jest standardowy .NET. Możesz używać:
 - Visual Studio Code (polecane)
 - Visual Studio Community
 - JetBrains Rider
-- Cualquier IDE z .NET support
+- Dowolne IDE z obsługą .NET
 
 ### P: Czy kod jest testowany?
 **O:** Tak! Każdy temat ma testy xUnit. Możesz uruchomić `dotnet test` w każdym folderze tematu.
