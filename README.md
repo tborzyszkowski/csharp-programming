@@ -536,7 +536,7 @@ Szacunkowo: 3-4 miesiące przy 10 godzinach tygodniowo.
 **O:** Tak. Powinieneś znać podstawy C# (zmienne, pętle, instrukcje warunkowe, metody). 
 Jeśli nie znasz – zacznij od [Microsoft Learn C# Path](https://learn.microsoft.com/en-us/training/paths/csharp-first-steps/).
 
-### P: Czy mogę pracować ze swoim própnym IDE?
+### P: Czy mogę pracować ze swoim próbnym IDE?
 **O:** Tak! Kod jest standardowy .NET. Możesz używać:
 - Visual Studio Code (polecane)
 - Visual Studio Community
