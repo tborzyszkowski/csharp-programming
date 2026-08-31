@@ -2,37 +2,43 @@
 
 ## 🎓 O tym repozytorium
 
-Kompletne materiały dydaktyczne do nauki **Programowania Obiektowego w C#** na poziomie uniwersytetu/szkoły.
+Kompletne materiały dydaktyczne do nauki **Programowania Obiektowego w C#** na poziomie uniwersytetu/szkoły, od podstaw po zaawansowane koncepty, aż do praktycznego zastosowania w ASP.NET Core.
 
-Projekt zawiera teorię, praktyczne przykłady kodu, diagramy UML, testy jednostkowe i zadania dla studentów.
+Projekt zawiera szczegółową teorię, praktyczne przykłady kodu, diagramy UML, testy jednostkowe, zadania ćwiczeniowe i rzeczywiste studia przypadków.
 
 ---
 
 ## 📂 Struktura projektu
+
+Materiały podzielone są na 14 modułów tematycznych, każdy obejmujący 6-12 zagadnień szczegółowych:
 
 ```
 csharp-programming/
 ├── README.md (ten plik)
 ├── LICENSE.md
 └── src/
-    └── 01-klasy/               ← Moduł 1: Klasy i Obiekty ✅ KOMPLETNY
-        ├── README.md
-        ├── _01_oop_fundamentals/
-        ├── _02_class_definition/
-        ├── _03_object_usage/
-        ├── _04_this_keyword/
-        ├── _05_access_modifiers/
-        ├── _06_partial_classes/
-        ├── _07_partial_methods/
-        ├── _08_structs/
-        └── _09_uml/
+    ├── 01-klasy/                    # Klasy i Obiekty – Fundament OOP
+    ├── 02-konstruktory/             # Konstruktory i Inicjalizacja
+    ├── 03-wlasciwosci/              # Właściwości i Indeksatory
+    ├── 04-statyczne/                # Składowe Statyczne
+    ├── 05-dziedziczenie/            # Dziedziczenie
+    ├── 06-polimorfizm/              # Polimorfizm
+    ├── 07-interfejsy_abstrakcje/    # Interfejsy i Abstrakcja
+    ├── 08-kolecje_generyczne/       # Generyki i Kolekcje
+    ├── 09-delegacje_zdarzenia/      # Delegacje i Zdarzenia
+    ├── 10-przeciazenie_operatorow/  # Przeciążanie Operatorów
+    ├── 11-async/                    # Programowanie Asynchroniczne
+    ├── 12-serializacja/             # Serializacja
+    ├── 13-refleksja_atrybuty/       # Refleksja i Atrybuty
+    └── A01-aspnet_core/             # ASP.NET Core – Praktyczne Zastosowanie
 ```
 
 Każdy temat zawiera:
-- 📄 **README.md** – Szczegółowa dokumentacja (1500-3000 słów)
+- 📄 **README.md** – Szczegółowa dokumentacja (2000-3500 słów)
 - 💻 **code/** – Projekt .NET 9.0 z kodem + testami xUnit
 - 📊 **diagrams/** – Diagramy Mermaid UML
-- 📝 **tasks/** – Zadania z rozwiązaniami
+- 📝 **tasks/** – Zadania z pełnymi rozwiązaniami
+
 
 ---
 
@@ -51,7 +57,7 @@ cd csharp-programming
 code .
 ```
 
-### 3. Przejdź do tematu 1
+### 3. Przejdź do tematu
 
 ```bash
 cd src/01-klasy/_01_oop_fundamentals/code/
@@ -60,197 +66,537 @@ dotnet run
 
 ---
 
-## 📚 Moduły dostępne
+## 📚 Moduły Nauczania
 
-### **Moduł 1: Klasy i Obiekty** ✅ KOMPLETNY
+### **Moduł 1: Klasy i Obiekty** – Fundament OOP
 
-9 tematów + 50+ diagramów + 40+ zadań
+**Cel:** Zrozumienie fundamentalnych koncepcji programowania obiektowego.
 
-| # | Temat | Status |
-|---|-------|--------|
-| 1 | Programowanie Obiektowe – Podstawowe Pojęcia | ✅ |
-| 2 | Definicja Klasy w Języku C# | ✅ |
-| 3 | Tworzenie i Korzystanie z Obiektów | ✅ |
-| 4 | Słowo Kluczowe `this` | ✅ |
-| 5 | Ukrywanie Informacji – Modyfikatory Dostępu | ✅ |
-| 6 | Klasy Częściowe | ✅ |
-| 7 | Metody Częściowe | ✅ |
-| 8 | Struktury – Słowo Kluczowe `struct` | ✅ |
-| 9 | Język UML – Diagramy | ✅ |
+Moduł obejmuje 9 tematów:
+1. Podstawowe pojęcia OOP (abstrakcja, enkapsulacja, dziedziczenie, polimorfizm)
+2. Definicja i struktura klasy
+3. Tworzenie i używanie obiektów
+4. Słowo kluczowe `this`
+5. Modyfikatory dostępu i enkapsulacja
+6. Klasy częściowe (partial classes)
+7. Metody częściowe (partial methods)
+8. Struktury vs klasy (value types)
+9. Diagramy UML – notacja i czytanie
 
-**Przejdź do**: [src/01-klasy/README.md](src/01-klasy/README.md)
+**Dla kogo:** Wszyscy начинающих w OOP. Stanowi fundament dla wszystkich pozostałych modułów.
 
-### **Planowane moduły**
+**Co jest tu wartościowe:** Solidne zrozumienie podstaw OOP – bez tego trudno będzie pracować z pozostałymi koncepcjami. Moduł zawiera rzeczywiste diagramy UML pokazujące relacje między klasami.
 
-- Moduł 2: Dziedziczenie i Polimorfizm (coming soon)
-- Moduł 3: Interfejsy i Abstrakcje (coming soon)
-- Moduł 4: Generyki (coming soon)
-- Moduł 5: Wyjątki i obsługa błędów (coming soon)
-- Moduł 6: LINQ i kolekcje (coming soon)
-- Moduł 7: Design Patterns (coming soon)
+[Przejdź do modułu](src/01-klasy/README.md)
+
+---
+
+### **Moduł 2: Konstruktory i Inicjalizacja** – Tworzenie Obiektów
+
+**Cel:** Opanowanie mechanizmów tworzenia i inicjalizacji obiektów.
+
+Moduł obejmuje 10 tematów:
+1. Konstruktory – podstawy, parametry
+2. Łańcuchowe wywołanie konstruktorów (`this()`)
+3. Inicjalizatory obiektów
+4. Kolejność inicjalizacji (pola, konstruktor, właściwości)
+5. Konstruktory struktur
+6. Destruktory i garbage collection
+7. Wprowadzenie do Design Patterns
+8. Wzorzec Prototypu (Prototype Pattern)
+9. Kod zarządzany vs niezarządzany (IDisposable, using)
+10. Nowoczesne C# (records, init properties, primary constructors)
+
+**Dla kogo:** Po Modułu 1. Niezbędne dla każdego, kto pracuje z tworzeniem obiektów.
+
+**Co jest tu wartościowe:** Poznasz różne sposoby inicjalizacji i nauczysz się zaawansowanych patternów. Szczególnie cenny jest temat destruktorów i IDisposable – częsta przyczyna wycieków zasobów.
+
+[Przejdź do modułu](src/02-konstruktory/README.md)
+
+---
+
+### **Moduł 3: Właściwości i Indeksatory** – Enkapsulacja Danych
+
+**Cel:** Opanowanie właściwości (properties) i indeksatorów – klucza do dobrze zaprojektowanego kodu.
+
+Moduł obejmuje 7 tematów:
+1. Właściwości vs pola
+2. Auto properties (`{ get; set; }`)
+3. Walidacja właściwości
+4. Indeksatory – dostęp do danych jak tablica
+5. `readonly` vs `const`
+6. Init properties (C# 9+) – niezmienność
+7. Nullable reference types – bezpieczeństwo typów
+
+**Dla kogo:** Narzędzie codzienne dla każdego C# developera. Niezbędne przed Modułem 5 (dziedziczenie).
+
+**Co jest tu wartościowe:** Pokażemy jak prawidłowo enkapsulować dane i chronić invarianty klasy. Moderni praktycy C# powinni znać init properties i nullable reference types.
+
+[Przejdź do modułu](src/03-wlasciwosci/README.md)
+
+---
+
+### **Moduł 4: Składowe Statyczne** – Współdzielone Zasoby
+
+**Cel:** Zrozumienie statycznych pól, metod i wzorca Singleton.
+
+Moduł obejmuje 7 tematów:
+1. Pola statyczne – zmienne dzielane między instancje
+2. Metody statyczne – narzędzia utility
+3. Konstruktory statyczne – inicjalizacja
+4. Klasy statyczne – organizacja kodu
+5. Metody rozszerzające (extension methods) – dodawanie funkcjonalności
+6. Wzorzec Singleton – gwarantowanie jednej instancji
+7. Static properties z Lazy<T> – nowoczesna inicjalizacja
+
+**Dla kogo:** Średniozaawansowani. Niezbędny do zrozumienia wspólnych zasobów i patternów.
+
+**Co jest tu wartościowe:** Extension methods to cenna umiejętność w C#. Singleton pattern należy do klasyki – poznaj go na praktycznych przykładach.
+
+[Przejdź do modułu](src/04-statyczne/README.md)
+
+---
+
+### **Moduł 5: Dziedziczenie** – Hierarchie Klas
+
+**Cel:** Opanowanie dziedziczenia – jednego z czterech filarów OOP.
+
+Moduł obejmuje 7 tematów:
+1. Podstawowe pojęcia dziedziczenia (klasa bazowa, pochodna)
+2. Modyfikatory dostępu w kontekście dziedziczenia
+3. Konstruktory klas pochodnych (`base` keyword)
+4. `override` vs `new` – przesłonięcie vs ukrycie
+5. Metody wirtualne (`virtual`) – polimorfizm
+6. Klasy abstrakcyjne – umowy dla podklas
+7. Sealed classes – zapobieganie dalszemu dziedziczeniu
+
+**Dla kogo:** Kryticzny moduł po Modułu 1-3. Bez niego nie zrozumiesz polimorfizmu.
+
+**Co jest tu wartościowe:** Zrozumienie relacji is-a i prawidłowego używania override vs new. Abstract classes to narzędzie do projektowania elastycznych architektur.
+
+[Przejdź do modułu](src/05-dziedziczenie/README.md)
+
+---
+
+### **Moduł 6: Polimorfizm** – Dynamiczne Wiązanie
+
+**Cel:** Opanowanie polimorfizmu i wzorców projektowych opartych na metodach wirtualnych.
+
+Moduł obejmuje 6 tematów:
+1. Funkcje wirtualne – wstęp do polimorfizmu
+2. Praktyczne przykłady – payment gateway (real-world case study)
+3. `virtual` vs `new` – pułapki i best practices
+4. Metody klasy Object (ToString, Equals, GetHashCode)
+5. Adapter Pattern + Factory Pattern – praktyczne wzorce
+6. Default interface members (C# 8.0+) – nowoczesne interfejsy
+
+**Dla kogo:** Po Modułu 5. Fundamentalny dla zrozumienia nowoczesnych architektur.
+
+**Co jest tu wartościowe:** Payment gateway case study pokazuje jak rzeczywiście stosować polimorfizm w prawdziwych projektach. Nauczysz się implementować Adapter i Factory patterns.
+
+[Przejdź do modułu](src/06-polimorfizm/README.md)
+
+---
+
+### **Moduł 7: Interfejsy i Abstrakcja** – Umowy i Kontrakty
+
+**Cel:** Opanowanie interfejsów i abstrakcji – kluczy do słabo sprzężonego kodu.
+
+Moduł obejmuje 7 tematów:
+1. Klasy abstrakcyjne – wstęp
+2. Metody abstrakcyjne – umowy
+3. Sealed keyword – finalizacja hierarchii
+4. Interfejsy – wprowadzenie i dependency injection
+5. Jawna implementacja interfejsu – zaawansowane techniki
+6. Konwersje i operatory castingu (`is`, `as`, pattern matching)
+7. Zaawansowane interfejsy (C# 8.0+, 11.0+ static abstract)
+
+**Dla kogo:** Po Modułu 5-6. Niezbędny do pisania testowalnego kodu i architektur SOLID.
+
+**Co jest tu wartościowe:** Interfejsy to podstawa dependency injection i testowania. Nauczysz się projektować elastyczne systemy, gdzie komponenty nie zależą od konkretnych implementacji.
+
+[Przejdź do modułu](src/07-interfejsy_abstrakcje/README.md)
+
+---
+
+### **Moduł 8: Generyki i Kolekcje** – Bezpieczeństwo Typów
+
+**Cel:** Opanowanie typów generycznych i nowoczesnych kolekcji.
+
+Moduł obejmuje 6 tematów:
+1. Metody i klasy generyczne – wariancja typów
+2. Ograniczenia typów generycznych (`where`)
+3. IEnumerable i IEnumerator – iteracja
+4. Interfejsy porównania (IComparable, IComparer, IEquatable)
+5. Przegląd kolekcji – List, Dictionary, Queue, Stack, HashSet
+6. LINQ – Language Integrated Query – zapytania na danych
+
+**Dla kogo:** Średniozaawansowani. Narzędzie codzienne przy pracy z danymi.
+
+**Co jest tu wartościowe:** Generyki zapewniają type safety i wydajność. LINQ to język zapytań w C# – nauczysz się pisać ekspresyjny, deklaratywny kod. Collection expressions (C# 12) pokazują nowoczesne podejście.
+
+[Przejdź do modułu](src/08-kolecje_generyczne/README.md)
+
+---
+
+### **Moduł 9: Delegacje i Zdarzenia** – Powiązania Słabe
+
+**Cel:** Zrozumienie mechanizmów callback'ów i event-driven architecture.
+
+Moduł obejmuje 7+ tematów:
+1. Ideacja i motywacja delegacji
+2. Definicja i składnia delegacji
+3. Predefiniowane generyczne delegacje (Action, Func, Predicate)
+4. Wyrażenia lambda i metody anonimowe
+5. Wzorzec zdarzeń .NET
+6. Wybór między delegacjami a zdarzeniami
+7. Event-driven architecture – praktyczne implementacje
+
+**Dla kogo:** Po Modułu 6. Narzędzie do loose coupling i reactive programming.
+
+**Co jest tu wartościowe:** Delegacje to callbacks w C#. Event-driven architecture jest wszędzie – od GUI po backend. Nauczysz się RxJS-style reactive programming w C#.
+
+[Przejdź do modułu](src/09-delegacje_zdarzenia/README.md)
+
+---
+
+### **Moduł 10: Przeciążanie Operatorów** – Semantyka Domeny
+
+**Cel:** Opanowanie przeciążania operatorów dla intuicyjnego API.
+
+Moduł obejmuje 10 tematów:
+1. Operatory które można przeciążać
+2. Operatory przeciążane pośrednio – relacje
+3. Metoda definiująca operator – zasady
+4. Operatory jednoargumentowe (+, -, !, ~)
+5. Operatory ++, --
+6. Operatory `true`, `false`
+7. Operatory relacyjne (==, !=, <, >, <=, >=)
+8. Operatory binarne arytmetyczne
+9. Operatory konwersji – implicit/explicit
+10. Kompletny przykład – system Vector3D
+
+**Dla kogo:** Zaawansowani. Opcjonalny, ale cenny przy projektowaniu DSL'ów i klas domenowych.
+
+**Co jest tu wartościowe:** Przeciążanie operatorów pozwala na intuicyjne API – np. Vector3D + Vector3D zamiast Vector3D.Add(). Naucz się implementować to bezpiecznie i elegant.
+
+[Przejdź do modułu](src/10-przeciazenie_operatorow/README.md)
+
+---
+
+### **Moduł 11: Programowanie Asynchroniczne** – I/O i Współbieżność
+
+**Cel:** Opanowanie async/await i Task-based asynchronous pattern (TAP).
+
+Moduł obejmuje 12 tematów:
+1. Fundamenty async/await i Task
+2. Breakfast example – sequential vs concurrent
+3. Operacje I/O (HttpClient, File I/O)
+4. CPU-bound operations (Task.Run)
+5. Zaawansowane patterny (CancellationToken, ConfigureAwait)
+6. Testowanie async kodu
+7. Async LINQ i Channels
+8. Dependency injection i async init
+9. Real-world integration – kompleksowy system
+10. Nowoczesne C# (ValueTask, async iterators)
+11. Benchmarking performance
+12. Reactive Extensions (Rx)
+
+**Dla kogo:** Średniozaawansowani+. Niezbędny do nowoczesnych aplikacji webowych.
+
+**Co jest tu wartościowe:** Async/await to core feature nowoczesnego .NET. Nauczysz się pisać responsywne aplikacje i unikać deadlock'ów. Breakfast example pokazuje kiedy naprawdę potrzebna jest współbieżność.
+
+[Przejdź do modułu](src/11-async/README.md)
+
+---
+
+### **Moduł 12: Serializacja** – Trwałość Danych
+
+**Cel:** Opanowanie serializacji dla różnych formatów danych.
+
+Moduł obejmuje 10 tematów:
+1. Koncepty serializacji – object graphs
+2. Historia i ewolucja (.NET 1.0 → 9.0)
+3. XML serialization
+4. Binary serialization (legacy)
+5. JSON serialization (System.Text.Json) – nowoczesne podejście
+6. Niestandardowa serializacja (ISerializable)
+7. Circular references – grafy obiektów
+8. Zaawansowane patterny – versioning, compatibility
+9. Protocol Buffers i gRPC – nowoczesne formaty
+10. Performance i bezpieczeństwo (Security concerns)
+
+**Dla kogo:** Średniozaawansowani. Narzędzie do komunikacji między systemami.
+
+**Co jest tu wartościowe:** JSON to standard. Nauczysz się serialize/deserialize obiekty bezpiecznie i wydajnie. Protocol Buffers pokazuje jak pracować z nowoczesnym toolingiem (gRPC).
+
+[Przejdź do modułu](src/12-serializacja/README.md)
+
+---
+
+### **Moduł 13: Refleksja i Atrybuty** – Introspekcja i Metaprogramowanie
+
+**Cel:** Opanowanie refleksji do introspekcji typów i atrybutów do metaprogramowania.
+
+Moduł obejmuje 10 tematów:
+1. Refleksja – wprowadzenie
+2. Inspekcja typów – co można odkryć
+3. System.Activator – dynamiczne tworzenie instancji
+4. Niestandardowe atrybuty
+5. Zaawansowane atrybuty
+6. Czytanie atrybutów – reflection API
+7. Wbudowane atrybuty – [Obsolete], [Serializable], etc.
+8. Plugin systems – dynamiczne ładowanie
+9. Expression trees i dynamic – zaawansowane techniki
+10. Performance i best practices
+
+**Dla kogo:** Zaawansowani. Opcjonalny, ale potężny dla framework'ów.
+
+**Co jest tu wartościowe:** Refleksja to moc – pozwala na dynamiczne odkrywanie i uruchamianie kodu. Atrybuty to deklaratywne metadata. Plugin systems to praktyczne zastosowanie – nauczysz się budować extensible aplikacje.
+
+[Przejdź do modułu](src/13-refleksja_atrybuty/README.md)
+
+---
+
+### **Moduł A01: ASP.NET Core** – Praktyczne Zastosowanie
+
+**Cel:** Praktyczne zastosowanie wszystkich koncepcji OOP w rzeczywistej aplikacji webowej.
+
+Moduł obejmuje:
+1. Fundamenty ASP.NET Core
+2. Architektura MVC
+3. Entity Framework Core i bazy danych
+4. LINQ w praktyce
+5. Razor vs Blazor – frontend
+6. Dependency injection – praktycznie
+7. Real-world CRUD aplikacja
+8. REST API
+9. Authentication i Authorization
+10. Best practices
+
+**Dla kogo:** Po zrozumieniu modułów 1-7. Praktyczne połączenie teorii z rzeczywistością.
+
+**Co jest tu wartościowe:** Rzeczywisty projekt, który można uruchomić, modyfikować i rozbudowywać. Pokażemy jak architektura i wzorce stosują się w wielowarstwowej aplikacji. Entity Framework Core to ORM – narzędzie do pracy z bazami danych.
 
 ---
 
 ## 🎯 Cele Nauczania
 
-Po ukończeniu tego kursu, nauczysz się:
+Po ukończeniu całego kursu, zdobędziesz solidne fundamenty i zaawansowaną wiedzę z OOP w C#:
 
-### Wiedzy (Knowledge)
-- ✅ Czterech filarów OOP (abstrakcja, enkapsulacja, dziedziczenie, polimorfizm)
-- ✅ Definiowania klas i tworzenia obiektów
-- ✅ Pracy z polami, metodami i właściwościami
-- ✅ Modyfikatorów dostępu i enkapsulacji
-- ✅ Czytania i tworzenia diagramów UML
+### Wiedza (Knowledge)
+- **Cztery filary OOP** – Abstrakcja, Enkapsulacja, Dziedziczenie, Polimorfizm (Moduł 1)
+- **Projektowanie klas** – Konstruktory, właściwości, indeksatory (Moduły 2-3)
+- **Hierarchie klas** – Dziedziczenie, abstract, sealed, interfejsy (Moduły 5-7)
+- **Polimorfizm i dispatch** – Virtual methods, late binding, wzorce projektowe (Moduł 6)
+- **Zaawansowane koncepty** – Generyki, delegacje, zdarzenia, refleksja (Moduły 8-9, 13)
+- **Asynchronizm** – Async/await, Task, współbieżność (Moduł 11)
+- **Serializacja i persistence** – JSON, XML, custom serialization (Moduł 12)
+- **Aplikacje webowe** – ASP.NET Core, MVC, Entity Framework, LINQ (Moduł A01)
 
 ### Umiejętności (Skills)
-- ✅ Projektowania klas z respektowaniem OOP
-- ✅ Refaktoryzacji kodu do formy obiektowej
-- ✅ Testowania kodu za pomocą xUnit
-- ✅ Dokumentowania kodu za pomocą XML comments
-- ✅ Czytania i pisania diagramów UML
+- **Projektowanie** – Tworzenie elastycznych architektur SOLID principles
+- **Kodowanie** – Pisanie czystego, testowalnego kodu C#
+- **Testowanie** – Testy jednostkowe z xUnit, TDD
+- **Debugowanie** – Zrozumienie memory, GC, performance profiling
+- **Komunikacja** – Dokumentacja XML comments, diagramy UML
+- **Real-world** – Integracja i wdrażanie w rzeczywistych projektach
+
+### Nowoczesne C# (C# 8.0+)
+- Nullable reference types – bezpieczeństwo null safety
+- Init properties – niezmienność
+- Records – immutable data types
+- Pattern matching – zaawansowane matching
+- Default interface members – interfejsy z implementacją
+- Top-level statements – uproszczona składnia
+- Collection expressions – nowoczesne inicjalizatory
 
 ---
 
-## 💻 Technologia
+## 💻 Wymagania i Technologia
 
-| Technologia | Wersja | Cel |
+| Komponenta | Wersja | Uwagi |
 |---|---|---|
-| **C#** | 12+ | Język programowania |
-| **.NET** | 9.0 | Framework |
-| **xUnit** | 2.6.6 | Testy jednostkowe |
-| **Mermaid** | Latest | Diagramy |
-| **VS Code** | Latest | Editor |
+| **C#** | 12.0+ | Nowoczesne features |
+| **.NET** | 9.0+ | Cross-platform framework |
+| **xUnit** | 2.6+ | Testy jednostkowe |
+| **VS Code** | Latest | Rekomendowany editor |
+| **Git** | Latest | Kontrola wersji |
+
+**Wymagania przedwstępne:**
+- Podstawowa znajomość C# (zmienne, pętle, instrukcje warunkowe)
+- Zainstalowane .NET 9.0 SDK
+- Dowolny edytor (VS Code, Visual Studio, Rider)
 
 ---
 
-## 🔧 Uruchamianie testów
+## 🌐 Referencje i Zasoby
 
-```bash
-# Wejdź do katalogu tematu
-cd src/01-klasy/_01_oop_fundamentals/code/
+### Oficjalna Dokumentacja .NET
+- [Microsoft C# Documentation](https://learn.microsoft.com/en-us/dotnet/csharp/) – Kompletny reference
+- [.NET Official Documentation](https://learn.microsoft.com/en-us/dotnet/) – Framework
+- [C# Language Specification](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/introduction) – Formalna specyfikacja
+- [xUnit.net Documentation](https://xunit.net/) – Testing framework
 
-# Uruchom wszystkie testy
-dotnet test
+### Polecane Książki
 
-# Uruchom program
-dotnet run
+**Fundamenty OOP:**
+- **"C# Player's Guide"** – RB Whitaker (najlepsza dla początkujących)
+- **"C# in Depth"** – Jon Skeet (zaawansowany, wszystkie wersje C#)
+- **"Object-Oriented Programming in C#"** – Szynkarczyk (polskie źródło)
 
-# Oczyszczaj i buduj
-dotnet clean
-dotnet build
-```
+**Design Patterns i Architektura:**
+- **"Head First Design Patterns"** – Freeman & Robson (wizualne i zrozumiałe)
+- **"Design Patterns: Elements of Reusable Object-Oriented Software"** – Gang of Four (klasyka)
+- **"Refactoring: Improving the Design of Existing Code"** – Martin Fowler (praktyczne)
+- **"SOLID Principles in C#"** – Szymon Kulec (praktyczne SOLID)
 
----
+**Czysty Kod i Best Practices:**
+- **"Clean Code"** – Robert C. Martin (wszyscy powinni przeczytać)
+- **"The Pragmatic Programmer"** – Hunt & Thomas (mindset inżyniera)
+- **"Code Complete"** – Steve McConnell (kompletna encyklopedia)
 
-## 📊 Statystyki projektu
+**Nowoczesny .NET:**
+- **"ASP.NET Core in Action"** – Andrew Lock (web development)
+- **"Entity Framework Core in Action"** – Jon P Smith (bazy danych)
+- **"Concurrency in C# Cookbook"** – Stephen Cleary (async i threading)
 
-| Metrika | Liczba |
-|---------|--------|
-| **Tematy** | 9 |
-| **Stron dokumentacji** | ~22 500 słów |
-| **Linii kodu** | 1500+ |
-| **Diagramów UML** | 30+ |
-| **Zadań** | 25+ |
-| **Testów jednostkowych** | 60+ |
-| **Plików** | 100+ |
-
----
-
-## 🌐 Referencje i linki
-
-### Oficjalna dokumentacja
-- [Microsoft C# Documentation](https://learn.microsoft.com/en-us/dotnet/csharp/)
-- [.NET Official Site](https://dotnet.microsoft.com/)
-- [xUnit.net Testing Framework](https://xunit.net/)
-
-### Powiązane projekty
-- [CS_OOP Repository](https://github.com/tborzyszkowski/CS_OOP) – Stare materiały
-- [OOP Concepts Java](https://github.com/tborzyszkowski/oop-concepts-java) – Wersja Java
-
-### Książki polecane
-- "C# Player's Guide" – RB Whitaker
-- "Clean Code" – Robert C. Martin
-- "Head First Design Patterns" – Freeman & Robson
+### Zasoby Online
+- [Refactoring.Guru](https://refactoring.guru/design-patterns/csharp) – Design patterns z C#
+- [C# Yellow Book](https://www.robmiles.com/c-yellow-book/) – Darmowy e-book
+- [Microsoft Learn C# Path](https://learn.microsoft.com/en-us/training/paths/csharp-first-steps/) – Interaktywne kursy
+- [LeetCode](https://leetcode.com/) – Ćwiczenia algorytmiczne
 
 ---
 
-## 🤝 Wkład w projekt
+## 🤝 Wkład w Projekt
 
-### Jak wspierać?
+Twój wkład pomaga uczynić ten projekt lepszym dla wszystkich studentów!
 
-1. **Zgłosić błędy** – Otwórz GitHub Issue
-2. **Sugestie** – Dyskusje i pull requests
-3. **Tłumaczenia** – Pomóż w tłumaczeniu
-4. **Udział** – Dodaj własne przykłady
+### Jak Wnieść Swój Wkład?
 
-### Wytyczne
+#### 🐛 Zgłaszanie Błędów
+Jeśli znaleźć literówkę, błąd w kodzie, lub mylące wyjaśnienie:
+1. Otwórz [GitHub Issue](https://github.com/tborzyszkowski/csharp-programming/issues/new)
+2. Opisz problem jasno
+3. Podaj link do konkretnego pliku/sekcji
+4. Preferownie daj sugestię jak to naprawić
 
-- Kod zgodny z [C# Coding Conventions](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions)
-- Dokumentacja w formacie Markdown
-- Diagramy w Mermaid
-- Testy dla każdego kodu
+#### 💡 Prosimy o Opinie Studentów
+Jeśli jakiś temat jest niejasny lub wymaga lepszego wyjaśnienia:
+- **Które koncepty były najtrudniejsze?** – Pomóż nam ulepszyć objaśnienia
+- **Czy brakuje przykładów?** – Zaproponuj konkretne case study
+- **Czy jakiś kod nie działa?** – Zgłoś jako issue
+- **Czy są typy?** – Małe edycje mogą oszczędzić czas innym
+
+#### 🔧 Propozycje Ulepszeń
+- Nowe przykłady praktyczne
+- Dodatkowe diagramy
+- Wyjaśnienia dla bardziej wizualnych uczniów
+- Tłumaczenia
+- Lepsze formatowanie
+
+#### ✍️ Twój Kod/Artykuł
+- Dodaj zadania ćwiczeniowe
+- Rozszerz przykłady
+- Podziel się swoim doświadczeniem jako komentarz do issue
+
+### Wytyczne dla Współpracowników
+
+- Kod: zgodny z [C# Coding Conventions](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions)
+- Dokumentacja: Markdown, jasne wyjaśnienia
+- Diagramy: Format Mermaid
+- Testy: Każdy kod powinien mieć testy xUnit
+- Commit messages: Jasne i opisowe (po angielsku lub polsku)
 
 ---
 
 ## 📝 Licencja
 
-**CC BY-NC-SA 4.0** – Wolno dzielić i modyfikować na potrzeby edukacyjne  
-Wymagane przypisanie autorstwa  
-Nie do celów komercyjnych  
-Licencja musi być zachowana w pochodnych pracach
+**CC BY-NC-SA 4.0** – Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+
+- ✅ Wolno dzielić, modyfikować i uczyć się na potrzeby edukacyjne
+- ✅ Wolno używać w kursach i materiałach szkoleniowych
+- ⚠️ Wymagane przypisanie autorstwa
+- ❌ Nie do celów komercyjnych
+- ❌ Pochodne prace muszą mieć tę samą licencję
+
+Pełny tekst: [LICENSE.md](LICENSE.md)
 
 ---
 
 ## 💬 FAQ
 
 ### P: Ile czasu zajmie ten kurs?
-**O:** Około 40-50 godzin (5-10 tygodni, 4-5 godzin tygodniowo)
+**O:** Aby przejść wszystkie moduły 1-7 (fundamenty): 40-50 godzin.
+Moduły 8-13 (zaawansowany): kolejne 30-40 godzin.
+Szacunkowo: 3-4 miesiące przy 10 godzinach tygodniowo.
 
 ### P: Czy potrzebuję wcześniejszej wiedzy?
-**O:** TAK. Powinieneś znać podstawy C# (zmienne, pętle, instrukcje warunkowe)
+**O:** Tak. Powinieneś znać podstawy C# (zmienne, pętle, instrukcje warunkowe, metody). 
+Jeśli nie znasz – zacznij od [Microsoft Learn C# Path](https://learn.microsoft.com/en-us/training/paths/csharp-first-steps/).
+
+### P: Czy mogę pracować ze swoim própnym IDE?
+**O:** Tak! Kod jest standardowy .NET. Możesz używać:
+- Visual Studio Code (polecane)
+- Visual Studio Community
+- JetBrains Rider
+- Cualquier IDE z .NET support
 
 ### P: Czy kod jest testowany?
-**O:** TAK. Każdy temat ma testy xUnit. Możesz uruchomić `dotnet test`
+**O:** Tak! Każdy temat ma testy xUnit. Możesz uruchomić `dotnet test` w każdym folderze tematu.
 
 ### P: Czy mogę używać tych materiałów komercyjnie?
-**O:** NIE. Licencja CC BY-NC-SA zabrania użytku komercyjnego
+**O:** Nie. Licencja CC BY-NC-SA zabrania użytku komercyjnego. 
+Jeśli chcesz użyć w kursie płatnym – skontaktuj się bezpośrednio.
 
-### P: Jak zgłosić błędy?
-**O:** Otwórz GitHub Issue z opisem problemu
+### P: Jak zgłosić błędy lub sugestie?
+**O:** [Otwórz GitHub Issue](https://github.com/tborzyszkowski/csharp-programming/issues) 
+z opisem problemu i linkiem do konkretnego pliku.
+
+### P: Czy są materiały wideo?
+**O:** Dokumentacja ma linki do YouTube i Refactoring.Guru.
+Możesz znaleźć i dodać swoje filmy – zgłoś issue z sugestią.
 
 ---
 
 ## 👨‍💼 O autorze
 
 **Tomasz Borzyszkowski**  
-Nauczyciel OOP w UG, Gdańsk  
-GitHub: [@tborzyszkowski](https://github.com/tborzyszkowski)
+- 🎓 Nauczyciel Programowania Obiektowego na Uniwersytecie Gdańskim
+- 💻 Senior Software Engineer, C# / .NET specialist  
+- 📚 Autor materiałów edukacyjnych open-source
+- 🌐 GitHub: [@tborzyszkowski](https://github.com/tborzyszkowski)
 
 ---
 
-## 📞 Kontakt i wsparcie
+## 📞 Kontakt i Wsparcie
 
-- **GitHub Issues**: [Otwórz issue](https://github.com/tborzyszkowski/csharp-programming/issues)
-- **Dyskusje**: [GitHub Discussions](https://github.com/tborzyszkowski/csharp-programming/discussions)
-- **Email**: Dostępny w moim profilu GitHub
+- 🐛 **Błędy i Sugestie**: [GitHub Issues](https://github.com/tborzyszkowski/csharp-programming/issues)
+- 💬 **Dyskusje**: [GitHub Discussions](https://github.com/tborzyszkowski/csharp-programming/discussions)
+- 📧 **Email**: Dostępny w moim profilu GitHub
+- ⭐ **Polubić**: Daj [Star](https://github.com/tborzyszkowski/csharp-programming) jeśli projekt Ci się podoba!
 
 ---
 
 ## 🙏 Podziękowania
 
-Dziękuję inspiracji od:
-- Microsoft Learn
-- Refactoring.Guru
-- C# Player's Guide – RB Whitaker
-- GitHub Education Community
+Dziękuję za inspirację:
+- **Microsoft Learn Team** – za doskonałą dokumentację
+- **Refactoring.Guru** – za design patterns
+- **RB Whitaker** – autor "C# Player's Guide"
+- **Jon Skeet** – za "C# in Depth"
+- **GitHub Education Community** – za wsparcie open-source
+- **Wszystkim studentom** – za feedback i sugestie
 
 ---
 
 **Powodzenia w nauce! 🚀**
 
-Jeśli ten projekt Ci się podoba, daj ⭐ Star!
+Jeśli ten projekt Ci się podoba, daj ⭐ Star i podziel się z innymi!
 
 ---
 
-_Last updated: 2024-08-30_  
-_Version: 1.0 – Moduł 1 Complete_
+_Last updated: 2026-08-31_  
+_Version: 2.0 – Wszystkie 14 Modułów_  
+_Licencja: CC BY-NC-SA 4.0_
