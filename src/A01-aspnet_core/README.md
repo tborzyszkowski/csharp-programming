@@ -244,7 +244,7 @@ Request 1 (GET /projects)
   ↓
   Response wysyłany
   ↓
-  Instancja #1 usunieta (GC)
+  Instancja #1 usunięta (GC)
 
 Request 2 (GET /projects/123)
   ↓
@@ -254,7 +254,7 @@ Request 2 (GET /projects/123)
   ↓
   Response wysyłany
   ↓
-  Instancja #2 usunieta (GC)
+  Instancja #2 usunięta (GC)
 
 // Use case: DbContext (każde żądanie → nowy context)
 ```
@@ -277,7 +277,7 @@ Aplikacja uruchamia się
   ↓
   Aplikacja się zamyka
   ↓
-  Instancja #1 usunieta
+  Instancja #1 usunięta
 
 // Use case: Configuration, caching, logger (stateless)
 // ⚠️ UWAGA: Musi być thread-safe!
@@ -299,9 +299,9 @@ Request 1
   ↓
   Dwie RÓŻNE instancje w obrębie jednego requestu
   ↓
-  Instancja #1 usunieta
+  Instancja #1 usunięta
   ↓
-  Instancja #2 usunieta
+  Instancja #2 usunięta
 
 // Use case: Lightweight stateless utilities
 ```
@@ -318,7 +318,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 🟢 Business Layer - Scoped (załeży od DbContext)
+// 🟢 Business Layer - Scoped (zależy od DbContext)
 builder.Services.AddScoped<IProjectService, ProjectService>();
 
 // 🟡 Utilities - Singleton (konfiguracja nie zmienia się)
@@ -336,7 +336,7 @@ public class ProjectsController : Controller
 {
     private readonly IProjectService _service;
     
-    // Framework patrzę do DI container:
+    // Framework szuka w DI container:
     // - Znaleziono IProjectService? TAK
     // - Jak go stworzyć? Scoped ProjectService
     // - A on potrzebuje? ApplicationDbContext (Scoped)
@@ -367,7 +367,7 @@ public class ProjectsController : Controller
 │  Container:                                         │
 │  1. Sprawdza czy jest w container'ze ✓              │
 │  2. Sprawdza czy potrzebuje inne rzeczy             │
-│  3. Konstruuje całą grafikę zależności              │
+│  3. Konstruuje cały graf zależności                  │
 │  4. Zwraca gotową instancję                         │
 │                                                     │
 └─────────────────────────────────────────────────────┘

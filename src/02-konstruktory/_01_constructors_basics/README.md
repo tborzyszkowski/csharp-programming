@@ -434,13 +434,13 @@ sequenceDiagram
 cd code/
 
 # Uruchom demonstrację
-rtk dotnet run
+dotnet run
 
 # Uruchom testy
-rtk dotnet test
+dotnet test
 
 # Zbuduj projekt
-rtk dotnet build
+dotnet build
 ```
 
 ---

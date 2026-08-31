@@ -56,7 +56,7 @@ Temat 7: Nullable Reference Types (C# 8+ safety)
 
 **Gdzie**: [`_01_properties_vs_fields/`](_01_properties_vs_fields/)
 
-**Ví dụ Kodu**:
+**Przykład Kodu**:
 ```csharp
 public class Person
 {

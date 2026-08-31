@@ -293,13 +293,14 @@ Moduł obejmuje 7 tematów:
 
 **Cel:** Opanowanie typów generycznych i nowoczesnych kolekcji.
 
-Moduł obejmuje 6 tematów:
+Moduł obejmuje 7 tematów:
 1. Metody i klasy generyczne – wariancja typów
 2. Ograniczenia typów generycznych (`where`)
 3. IEnumerable i IEnumerator – iteracja
 4. Interfejsy porównania (IComparable, IComparer, IEquatable)
 5. Przegląd kolekcji – List, Dictionary, Queue, Stack, HashSet
-6. LINQ – Language Integrated Query – zapytania na danych
+6. LINQ – wprowadzenie – Query Syntax, Method Syntax, lazy evaluation
+7. LINQ – zaawansowane techniki – Aggregate, SelectMany, Join, Expression Trees
 
 **Dla kogo:** Średniozaawansowani. Narzędzie codzienne przy pracy z danymi.
 
@@ -316,14 +317,15 @@ Moduł obejmuje 6 tematów:
 
 **Cel:** Zrozumienie mechanizmów callback'ów i event-driven architecture.
 
-Moduł obejmuje 7+ tematów:
-1. Ideacja i motywacja delegacji
+Moduł obejmuje 8 tematów:
+1. Idea i motywacja delegacji
 2. Definicja i składnia delegacji
 3. Predefiniowane generyczne delegacje (Action, Func, Predicate)
 4. Wyrażenia lambda i metody anonimowe
-5. Wzorzec zdarzeń .NET
-6. Wybór między delegacjami a zdarzeniami
-7. Event-driven architecture – praktyczne implementacje
+5. Zdarzenia – fundamenty (standardowy wzorzec zdarzeń .NET)
+6. Wzorce pracy ze zdarzeniami
+7. Delegacje vs zdarzenia – kiedy co wybrać
+8. Event-driven architecture – praktyczne implementacje
 
 **Dla kogo:** Po Modułu 6. Narzędzie do loose coupling i reactive programming.
 

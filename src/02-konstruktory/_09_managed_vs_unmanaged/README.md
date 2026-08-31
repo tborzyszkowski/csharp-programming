@@ -137,7 +137,7 @@ using var res = new ManagedResource();
 
 ```bash
 cd code/
-rtk dotnet run
+dotnet run
 ```
 
 **Przejdź do**: [Zadania do samodzielnego wykonania](tasks/README.md)

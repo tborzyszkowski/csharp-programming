@@ -180,13 +180,13 @@ dotnet test
 cd src/01-klasy/_01_oop_fundamentals/code/
 
 # Uruchom program (studenci zobaczą demo)
-rtk dotnet run
+dotnet run
 
 # Pokaż kod w VS Code
 code Program.cs
 
 # Uruchom testy
-rtk dotnet test
+dotnet test
 ```
 
 **Gotowe do nauczania dla wszystkich 9 tematów!** 🎓
