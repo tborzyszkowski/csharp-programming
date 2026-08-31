@@ -30,6 +30,7 @@ csharp-programming/
     ├── 11-async/                    # Programowanie Asynchroniczne
     ├── 12-serializacja/             # Serializacja
     ├── 13-refleksja_atrybuty/       # Refleksja i Atrybuty
+    ├── 14-testy_jednostkowe/        # Testy Jednostkowe i TDD
     └── A01-aspnet_core/             # ASP.NET Core – Praktyczne Zastosowanie
 ```
 
@@ -85,6 +86,7 @@ graph TD
     M11["Moduł 11: Async"]
     M12["Moduł 12: Serializacja"]
     M13["Moduł 13: Refleksja i Atrybuty"]
+    M14["Moduł 14: Testy Jednostkowe i TDD"]
     A01["Moduł A01: ASP.NET Core"]
 
     M1 --> M2
@@ -100,15 +102,18 @@ graph TD
     M6 --> M9
     M7 --> M13
     M7 --> A01
+    M7 --> M14
     M8 --> M11
     M9 --> M11
     M8 --> M12
     M1 --> A01
+    M14 --> A01
 ```
 
 **Ścieżka fundamentalna (obowiązkowa):** Moduł 1 → 2 → 3 → 5 → 6 → 7  
 **Ścieżka zaawansowana (po fundamentach):** Moduły 8, 9, 11, 12, 13 – można je studiować równolegle, o ile spełnione są ich zależności  
 **Ścieżka opcjonalna:** Moduł 4 (statyczne) i Moduł 10 (operatory) można studiować w dowolnym momencie po Module 1/3  
+**Ścieżka jakościowa:** Moduł 14 (testy i TDD) – wymaga Modułu 7, warto stosować równolegle z każdym kolejnym modułem  
 **Ścieżka praktyczna (podsumowanie):** Moduł A01 – wymaga zrozumienia Modułów 1-7
 
 Każda sekcja modułu poniżej zawiera pola **Wymaga** i **Prowadzi do** z bezpośrednimi linkami do powiązanych modułów.
@@ -281,7 +286,7 @@ Moduł obejmuje 7 tematów:
 **Dla kogo:** Po Modułu 5-6. Niezbędny do pisania testowalnego kodu i architektur SOLID.
 
 **Wymaga:** [Moduł 5: Dziedziczenie](src/05-dziedziczenie/README.md), [Moduł 6: Polimorfizm](src/06-polimorfizm/README.md)  
-**Prowadzi do:** [Moduł 13: Refleksja i Atrybuty](src/13-refleksja_atrybuty/README.md), [Moduł A01: ASP.NET Core](src/A01-aspnet_core/README.md)
+**Prowadzi do:** [Moduł 13: Refleksja i Atrybuty](src/13-refleksja_atrybuty/README.md), [Moduł 14: Testy Jednostkowe i TDD](src/14-testy_jednostkowe/README.md), [Moduł A01: ASP.NET Core](src/A01-aspnet_core/README.md)
 
 **Co jest tu wartościowe:** Interfejsy to podstawa dependency injection i testowania. Nauczysz się projektować elastyczne systemy, gdzie komponenty nie zależą od konkretnych implementacji.
 
@@ -448,6 +453,30 @@ Moduł obejmuje 10 tematów:
 
 ---
 
+### **Moduł 14: Testy Jednostkowe i TDD** – Jakość i Pewność Kodu
+
+**Cel:** Opanowanie testów jednostkowych w xUnit, podejścia Test-Driven Development oraz mokowania zależności.
+
+Moduł obejmuje 7 tematów:
+1. Testy jednostkowe – wprowadzenie i filozofia, piramida testów
+2. Test-Driven Development – cykl Red-Green-Refactor
+3. Asercje, organizacja i parametryzacja testów (`[Theory]`, `InlineData`, `MemberData`)
+4. Mokowanie zależności z Moq – `Setup`, `Verify`, `It.Is`, `Callback`
+5. Nietypowe testy – wyjątki, kod asynchroniczny, czas, losowość, `IClassFixture`
+6. Zarys testów integracyjnych – `WebApplicationFactory`, EF Core InMemory, Testcontainers
+7. Dobre praktyki i sugestywne przykłady – zasady F.I.R.S.T., anti-patterns, code coverage
+
+**Dla kogo:** Po Module 7. Kluczowy dla każdego, kto chce pisać profesjonalny, utrzymywalny kod – warto stosować równolegle z każdym kolejnym modułem.
+
+**Wymaga:** [Moduł 7: Interfejsy i Abstrakcja](src/07-interfejsy_abstrakcje/README.md)  
+**Prowadzi do:** [Moduł A01: ASP.NET Core](src/A01-aspnet_core/README.md)
+
+**Co jest tu wartościowe:** Testy jednostkowe i TDD to codzienność profesjonalnego developera C#. Mokowanie zależności z Moq pozwala testować kod w izolacji, a zarys testów integracyjnych pokazuje, kiedy warto sięgnąć po cięższą artylerię (prawdziwa baza, `WebApplicationFactory`). Zasady F.I.R.S.T. i anti-patterns pomogą Ci odróżnić dobry test od takiego, który tylko daje złudne poczucie bezpieczeństwa.
+
+[Przejdź do modułu](src/14-testy_jednostkowe/README.md)
+
+---
+
 ### **Moduł A01: ASP.NET Core** – Praktyczne Zastosowanie
 
 **Cel:** Praktyczne zastosowanie wszystkich koncepcji OOP w rzeczywistej aplikacji webowej.
@@ -487,12 +516,13 @@ Po ukończeniu całego kursu, zdobędziesz solidne fundamenty i zaawansowaną wi
 - **Zaawansowane koncepty** – Generyki, delegacje, zdarzenia, refleksja (Moduły 8-9, 13)
 - **Asynchronizm** – Async/await, Task, współbieżność (Moduł 11)
 - **Serializacja i persistence** – JSON, XML, custom serialization (Moduł 12)
+- **Testowanie i TDD** – xUnit, mokowanie z Moq, testy integracyjne (Moduł 14)
 - **Aplikacje webowe** – ASP.NET Core, MVC, Entity Framework, LINQ (Moduł A01)
 
 ### Umiejętności (Skills)
 - **Projektowanie** – Tworzenie elastycznych architektur SOLID principles
 - **Kodowanie** – Pisanie czystego, testowalnego kodu C#
-- **Testowanie** – Testy jednostkowe z xUnit, TDD
+- **Testowanie** – Testy jednostkowe z xUnit, TDD (Red-Green-Refactor), mokowanie zależności z Moq (Moduł 14)
 - **Debugowanie** – Zrozumienie memory, GC, performance profiling
 - **Komunikacja** – Dokumentacja XML comments, diagramy UML
 - **Real-world** – Integracja i wdrażanie w rzeczywistych projektach
@@ -515,6 +545,7 @@ Po ukończeniu całego kursu, zdobędziesz solidne fundamenty i zaawansowaną wi
 | **C#** | 12.0+ | Nowoczesne features |
 | **.NET** | 9.0+ | Cross-platform framework |
 | **xUnit** | 2.6+ | Testy jednostkowe |
+| **Moq** | 4.20+ | Mokowanie zależności (Moduł 14) |
 | **VS Code** | Latest | Rekomendowany editor |
 | **Git** | Latest | Kontrola wersji |
 
@@ -556,10 +587,17 @@ Po ukończeniu całego kursu, zdobędziesz solidne fundamenty i zaawansowaną wi
 - **"Entity Framework Core in Action"** – Jon P Smith (bazy danych)
 - **"Concurrency in C# Cookbook"** – Stephen Cleary (async i threading)
 
+**Testowanie i TDD:**
+- **"The Art of Unit Testing"** – Roy Osherove (klasyka, przykłady w C#)
+- **"Unit Testing Principles, Practices, and Patterns"** – Vladimir Khorikov (dobre i złe praktyki)
+- **"Test-Driven Development: By Example"** – Kent Beck (źródło podejścia TDD)
+
 ### Zasoby Online
 - [Refactoring.Guru](https://refactoring.guru/design-patterns/csharp) – Design patterns z C#
 - [C# Yellow Book](https://www.robmiles.com/c-yellow-book/) – Darmowy e-book
 - [Microsoft Learn C# Path](https://learn.microsoft.com/en-us/training/paths/csharp-first-steps/) – Interaktywne kursy
+- [xUnit.net Documentation](https://xunit.net/docs/getting-started/netcore/cmdline) – Oficjalny przewodnik po xUnit
+- [Moq Quickstart](https://github.com/devlooped/moq/wiki/Quickstart) – Oficjalna dokumentacja Moq
 - [LeetCode](https://leetcode.com/) – Ćwiczenia algorytmiczne
 
 ---
