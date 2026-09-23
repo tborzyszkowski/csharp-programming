@@ -1,3 +1,10 @@
+<p align="left">
+  <a href="#wykorzystanie-ai-w-materiałach">
+    <kbd style="background-color: #0056b3; color: white; padding: 5px 10px; border-radius: 4px; font-weight: bold; border: none; font-family: sans-serif; font-size: 13px;">🤖 AI-Assisted</kbd>
+    <kbd style="background-color: #6c757d; color: white; padding: 5px 10px; border-radius: 4px; font-weight: bold; border: none; font-family: sans-serif; font-size: 13px;">Edukacja</kbd>
+  </a>
+</p>
+
 # C# Programowanie Obiektowe – Materiały Dydaktyczne
 
 ## 🎓 O tym repozytorium
@@ -29,6 +36,7 @@ csharp-programming/
 ```
 
 Każdy temat zawiera:
+
 - 📄 **README.md** – Szczegółowa dokumentacja (1500-3000 słów)
 - 💻 **code/** – Projekt .NET 9.0 z kodem + testami xUnit
 - 📊 **diagrams/** – Diagramy Mermaid UML
@@ -67,7 +75,7 @@ dotnet run
 9 tematów + 50+ diagramów + 40+ zadań
 
 | # | Temat | Status |
-|---|-------|--------|
+| --- | ------- | -------- |
 | 1 | Programowanie Obiektowe – Podstawowe Pojęcia | ✅ |
 | 2 | Definicja Klasy w Języku C# | ✅ |
 | 3 | Tworzenie i Korzystanie z Obiektów | ✅ |
@@ -96,6 +104,7 @@ dotnet run
 Po ukończeniu tego kursu, nauczysz się:
 
 ### Wiedzy (Knowledge)
+
 - ✅ Czterech filarów OOP (abstrakcja, enkapsulacja, dziedziczenie, polimorfizm)
 - ✅ Definiowania klas i tworzenia obiektów
 - ✅ Pracy z polami, metodami i właściwościami
@@ -103,6 +112,7 @@ Po ukończeniu tego kursu, nauczysz się:
 - ✅ Czytania i tworzenia diagramów UML
 
 ### Umiejętności (Skills)
+
 - ✅ Projektowania klas z respektowaniem OOP
 - ✅ Refaktoryzacji kodu do formy obiektowej
 - ✅ Testowania kodu za pomocą xUnit
@@ -114,7 +124,7 @@ Po ukończeniu tego kursu, nauczysz się:
 ## 💻 Technologia
 
 | Technologia | Wersja | Cel |
-|---|---|---|
+| --- | --- | --- |
 | **C#** | 12+ | Język programowania |
 | **.NET** | 9.0 | Framework |
 | **xUnit** | 2.6.6 | Testy jednostkowe |
@@ -145,7 +155,7 @@ dotnet build
 ## 📊 Statystyki projektu
 
 | Metrika | Liczba |
-|---------|--------|
+| --------- | -------- |
 | **Tematy** | 9 |
 | **Stron dokumentacji** | ~22 500 słów |
 | **Linii kodu** | 1500+ |
@@ -159,15 +169,18 @@ dotnet build
 ## 🌐 Referencje i linki
 
 ### Oficjalna dokumentacja
+
 - [Microsoft C# Documentation](https://learn.microsoft.com/en-us/dotnet/csharp/)
 - [.NET Official Site](https://dotnet.microsoft.com/)
 - [xUnit.net Testing Framework](https://xunit.net/)
 
 ### Powiązane projekty
+
 - [CS_OOP Repository](https://github.com/tborzyszkowski/CS_OOP) – Stare materiały
 - [OOP Concepts Java](https://github.com/tborzyszkowski/oop-concepts-java) – Wersja Java
 
 ### Książki polecane
+
 - "C# Player's Guide" – RB Whitaker
 - "Clean Code" – Robert C. Martin
 - "Head First Design Patterns" – Freeman & Robson
@@ -204,18 +217,23 @@ Licencja musi być zachowana w pochodnych pracach
 ## 💬 FAQ
 
 ### P: Ile czasu zajmie ten kurs?
+
 **O:** Około 40-50 godzin (5-10 tygodni, 4-5 godzin tygodniowo)
 
 ### P: Czy potrzebuję wcześniejszej wiedzy?
+
 **O:** TAK. Powinieneś znać podstawy C# (zmienne, pętle, instrukcje warunkowe)
 
 ### P: Czy kod jest testowany?
+
 **O:** TAK. Każdy temat ma testy xUnit. Możesz uruchomić `dotnet test`
 
 ### P: Czy mogę używać tych materiałów komercyjnie?
+
 **O:** NIE. Licencja CC BY-NC-SA zabrania użytku komercyjnego
 
 ### P: Jak zgłosić błędy?
+
 **O:** Otwórz GitHub Issue z opisem problemu
 
 ---
@@ -239,6 +257,7 @@ GitHub: [@tborzyszkowski](https://github.com/tborzyszkowski)
 ## 🙏 Podziękowania
 
 Dziękuję inspiracji od:
+
 - Microsoft Learn
 - Refactoring.Guru
 - C# Player's Guide – RB Whitaker
@@ -250,7 +269,20 @@ Dziękuję inspiracji od:
 
 Jeśli ten projekt Ci się podoba, daj ⭐ Star!
 
+## Wykorzystanie AI w materiałach
+
+Materiały dydaktyczne zawarte w tym repozytorium są przygotowywane przy wsparciu narzędzi sztucznej inteligencji (Generative AI), które pełnią rolę asystenta twórcy.
+
+Sztuczna inteligencja jest wykorzystywana w celach pomocniczych, w szczególności do:
+
+- Współtworzenia i optymalizacji bazowych przykładów kodu oraz konfiguracji.
+- Formatowania, strukturyzacji oraz automatyzacji generowania dokumentacji.
+- Wsparcia procesu redakcyjnego, korekty językowej oraz generowania alternatywnych wyjaśnień pojęć technicznych.
+
+Wszystkie materiały, schematy oraz kody źródłowe podlegają **weryfikacji merytorycznej i edycji przez człowieka**.
+Ostateczna treść oraz układ dydaktyczny są wynikiem autorskiego nadzoru, co zapewnia ich poprawność oraz zgodność ze standardami akademickimi.
+
 ---
 
-_Last updated: 2024-08-30_  
-_Version: 1.0 – Moduł 1 Complete_
+_Last updated: 2024-09-24_  
+_Version: 1.0 – Pierwsza wersja modułów ukończona_
