@@ -10,7 +10,7 @@ var person1 = new Person { Name = "Alice" };
 
 // Nie znasz typu na compile-time → Activator
 Type type = GetTypeAtRuntime();
-var person2 = Activator.CreateInstance(type);  // Czarная magia!
+var person2 = Activator.CreateInstance(type);  // Czarna magia!
 
 // Oba dają ten sam rezultat, ale drugi jest dynamiczny
 ```

@@ -4,7 +4,7 @@
 
 Moduł kompleksowo omawia **polimorfizm (polymorphism)** - fundamentalny koncept programowania obiektowego pozwalający na dynamiczne wiązanie metod i elastyczną architekturę.
 
-Od podstaw wirtualnych metod, przez praktyczne e-commerce example'i, aż po nowoczesne C# 8+ features.
+Od podstaw wirtualnych metod, przez praktyczne przykłady e-commerce, aż po nowoczesne C# 8+ features.
 
 ---
 
@@ -137,7 +137,7 @@ animal.Speak();  // Animal version, nie Cat!
 
 ### Temat 4: Metody Klasy Object
 
-**Kategoria**: Equlity i Hashing
+**Kategoria**: Equality i Hashing
 
 **Kluczowe Koncepty**:
 - `ToString()` - reprezentacja tekstowa

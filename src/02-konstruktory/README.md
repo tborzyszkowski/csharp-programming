@@ -28,13 +28,13 @@ Głębokie zrozumienie mechanizmów tworzenia i inicjalizacji obiektów w C#, od
 cd _01_constructors_basics/code/
 
 # Uruchom demonstrację
-rtk dotnet run
+dotnet run
 
 # Uruchom testy
-rtk dotnet test
+dotnet test
 
 # Zbuduj projekt
-rtk dotnet build
+dotnet build
 ```
 
 ### Struktura każdego tematu

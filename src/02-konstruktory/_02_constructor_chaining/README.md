@@ -397,9 +397,9 @@ graph TB
 ```bash
 cd code/
 
-rtk dotnet run
-rtk dotnet test
-rtk dotnet build
+dotnet run
+dotnet test
+dotnet build
 ```
 
 ---

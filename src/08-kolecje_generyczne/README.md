@@ -2,7 +2,7 @@
 
 ## 📚 Przegląd Rozdziału
 
-Ten rozdział obejmuje fundamentalne koncepcje programowania generycznego w C#, w tym tworzenie oraz używanie kolekcji generycznych i zapytań LINQ. Materiały przygotowane są na podstawie nowoczesnych standardów C# (9.0 i nowszych) z praktycznymi przykładami kod, które można uruchamiać bezpośrednio w Visual Studio Code.
+Ten rozdział obejmuje fundamentalne koncepcje programowania generycznego w C#, w tym tworzenie oraz używanie kolekcji generycznych i zapytań LINQ. Materiały przygotowane są na podstawie nowoczesnych standardów C# (9.0 i nowszych) z praktycznymi przykładami kodu, które można uruchamiać bezpośrednio w Visual Studio Code.
 
 ### Dlaczego generyki i LINQ?
 

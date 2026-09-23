@@ -183,8 +183,8 @@ using (var res = new Resource())
 
 ```bash
 cd code/
-rtk dotnet run
-rtk dotnet test
+dotnet run
+dotnet test
 ```
 
 **Przejdź do**: [Zadania do samodzielnego wykonania](tasks/README.md)
