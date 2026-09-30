@@ -1,8 +1,8 @@
 graph TB
     A["Value Type<br/>Struktura"] --> B["Zmienna<br/>zawiera wartość"]
-    A --> C["Przechowywanie<br/>na Stack"]
-    A --> D["Przypisanie<br/>kopią"]
+    A --> C["Pamięć tam, gdzie zmienna:<br/>stos lub wnętrze obiektu"]
+    A --> D["Przypisanie<br/>kopiuje wartość"]
     
-    E["Reference Type<br/>Klasa"] --> F["Zmienna<br/>zawiera adres"]
-    E --> G["Przechowywanie<br/>na Heap"]
-    E --> H["Przypisanie<br/>referencją"]
+    E["Reference Type<br/>Klasa"] --> F["Zmienna<br/>zawiera referencję"]
+    E --> G["Obiekt na stercie<br/>(heap), sprząta go GC"]
+    E --> H["Przypisanie<br/>kopiuje referencję"]

@@ -1,14 +1,35 @@
 classDiagram
     class Person {
-        -string name
-        -int age
-        +getName() string
-        +getAge() int
+        -name : string
+        -age : int
+        +Name : string
+        +Age : int
+    }
+    
+    class IPayable {
+        <<interface>>
+        +GetMonthlyPay() decimal
     }
     
     class Employee {
-        -decimal salary
-        +getSalary() decimal
+        -salary : decimal
+        +Salary : decimal
+        +GetMonthlyPay() decimal
     }
     
-    Employee --|> Person
+    class Department {
+        +Name : string
+        +Add(Employee e) void
+        +TotalPayroll() decimal
+    }
+    
+    class Car
+    class Engine {
+        +Horsepower : int
+    }
+    
+    Person <|-- Employee : dziedziczy
+    IPayable <|.. Employee : realizuje
+    Department "1" o-- "0..*" Employee : agregacja
+    Department ..> IPayable : zależność
+    Car "1" *-- "1" Engine : kompozycja

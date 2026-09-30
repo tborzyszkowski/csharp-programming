@@ -32,7 +32,37 @@ public class Circle
         Radius = radius;
     }
     
-    public override string ToString() => $"Kołocentrum: {Center}, Promień: {Radius}";
+    public override string ToString() => $"Koło: środek {Center}, promień {Radius}";
+}
+
+// STRUKTURA NIEZMIENNA (zalecany styl): readonly gwarantuje brak mutacji, więc kopie są bezpieczne
+public readonly struct ImmutablePoint
+{
+    public int X { get; }
+    public int Y { get; }
+    
+    public ImmutablePoint(int x, int y)
+    {
+        X = x;
+        Y = y;
+    }
+    
+    // Zamiast zmieniać obiekt, zwracamy nową wartość
+    public ImmutablePoint WithX(int x) => new(x, Y);
+    
+    public override string ToString() => $"({X}, {Y})";
+}
+
+// record struct: kompilator generuje równość wartościową, GetHashCode, ToString i wyrażenie with
+public readonly record struct Vector2D(double X, double Y);
+
+public static class StructDemo
+{
+    // Do metody trafia KOPIA struktury - zmiana nie jest widoczna u wołującego
+    public static void MoveByValue(Point p) => p.X += 100;
+    
+    // Z ref metoda pracuje na oryginale
+    public static void MoveByRef(ref Point p) => p.X += 100;
 }
 
 /// ============================================
@@ -43,6 +73,8 @@ public class Program
 {
     public static void Main()
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+
         Console.WriteLine("╔════════════════════════════════════════════════════════╗");
         Console.WriteLine("║  STRUKTURY (VALUE TYPE)                               ║");
         Console.WriteLine("║  Klasy (REFERENCE TYPE)                               ║");
@@ -52,6 +84,37 @@ public class Program
         Console.WriteLine("\n" + new string('─', 60) + "\n");
         
         DemonstrateReferenceType();
+        Console.WriteLine("\n" + new string('─', 60) + "\n");
+        
+        DemonstrateCopySemanticsAndImmutability();
+    }
+    
+    private static void DemonstrateCopySemanticsAndImmutability()
+    {
+        Console.WriteLine("📋 Kopiowanie struktur i niezmienność");
+        Console.WriteLine("──────────────────────────────────────\n");
+        
+        var p = new Point(1, 1);
+        StructDemo.MoveByValue(p);
+        Console.WriteLine($"Po MoveByValue(p):     {p}  (bez zmian - metoda dostała kopię)");
+        StructDemo.MoveByRef(ref p);
+        Console.WriteLine($"Po MoveByRef(ref p):   {p}  (zmienione - ref to oryginalna zmienna)");
+        
+        var circle = new Circle(new Point(0, 0), 5);
+        // circle.Center.X = 10;  // BŁĄD KOMPILACJI CS1612: Center zwraca KOPIĘ, zmiana byłaby zgubiona
+        Console.WriteLine($"\nPunkt Center w klasie Circle jest właściwością - zwraca kopię: {circle.Center}");
+        
+        var a = new ImmutablePoint(1, 2);
+        var b = a.WithX(10);
+        Console.WriteLine($"\nImmutablePoint: a = {a}, b = a.WithX(10) = {b}");
+        
+        var v1 = new Vector2D(1, 2);
+        var v2 = v1 with { X = 5 };
+        Console.WriteLine($"record struct: v1 = {v1}, v2 = {v2}, v1 == new Vector2D(1, 2)? {v1 == new Vector2D(1, 2)}");
+        
+        Console.WriteLine($"\ndefault(Point) = {default(Point)}  (struktura zawsze ma wartość - nie może być null)");
+        int? maybe = null;   // Nullable<int> - struktura też może "nie mieć wartości"
+        Console.WriteLine($"int? maybe = null -> HasValue: {maybe.HasValue}");
     }
     
     private static void DemonstrateValueType()
@@ -111,7 +174,66 @@ public class StructTests
     public void Struct_Distance_CalculatesCorrectly()
     {
         var point = new Point(3, 4);
-        Assert.Equal(5, point.Distance());
+        Assert.Equal(5.0, point.Distance(), precision: 10);
+    }
+
+    [Fact]
+    public void Struct_PassedToMethod_IsCopied()
+    {
+        var p = new Point(1, 1);
+
+        StructDemo.MoveByValue(p);
+
+        Assert.Equal(1, p.X);
+    }
+
+    [Fact]
+    public void Struct_PassedByRef_IsModifiedInPlace()
+    {
+        var p = new Point(1, 1);
+
+        StructDemo.MoveByRef(ref p);
+
+        Assert.Equal(101, p.X);
+    }
+
+    [Fact]
+    public void Struct_DefaultEquals_ComparesFieldValues()
+    {
+        // Domyślne ValueType.Equals porównuje pola - w przeciwieństwie do klas (referencje)
+        Assert.Equal(new Point(1, 2), new Point(1, 2));
+    }
+
+    [Fact]
+    public void Struct_Default_HasZeroedFields()
+    {
+        var p = default(Point);
+
+        Assert.Equal(0, p.X);
+        Assert.Equal(0, p.Y);
+    }
+
+    [Fact]
+    public void ImmutableStruct_WithX_ReturnsNewValueAndKeepsOriginal()
+    {
+        var a = new ImmutablePoint(1, 2);
+
+        var b = a.WithX(10);
+
+        Assert.Equal(1, a.X);
+        Assert.Equal(10, b.X);
+        Assert.Equal(2, b.Y);
+    }
+
+    [Fact]
+    public void RecordStruct_HasValueEquality()
+    {
+        var v1 = new Vector2D(1, 2);
+        var v2 = v1 with { X = 5 };
+
+        Assert.Equal(new Vector2D(1, 2), v1);
+        Assert.NotEqual(v1, v2);
+        Assert.Equal(1, v1.X);
     }
 }
 

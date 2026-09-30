@@ -3,32 +3,36 @@
 ## 📝 Zadanie 1: Diagram biblioteki
 
 Stwórz diagram UML dla systemu biblioteki zawierającego:
-- Book (title, author, ISBN)
-- Library (books[])
-- Czytelnik (name, id, books[])
+- `Book` (title, author, ISBN)
+- `Library` (books[])
+- `Reader` (name, id, books[])
 
-Pokaż relacje i dziedziczenie.
+Pokaż relacje z krotnościami i zdecyduj, czy relacja `Library`–`Book` to asocjacja, agregacja czy kompozycja
+(uzasadnij: czy książka istnieje po likwidacji biblioteki?). Dodaj też diagram sekwencji dla scenariusza
+„Czytelnik wypożycza książkę”.
+
+> Nazwy klas piszemy po angielsku (`Reader`, nie `Czytelnik`) – nie mieszamy języków w identyfikatorach.
 
 ---
 
 ## 📝 Zadanie 2: Diagram szkoły
 
 Zaprojektuj system szkoły z:
-- Person (base class)
-- Student extends Person
-- Teacher extends Person
-- Course (klasa)
-- Relacje: Teacher prowadzi Course, Student bierze Course
+- `Person` (klasa bazowa)
+- `Student` dziedziczy po `Person`
+- `Teacher` dziedziczy po `Person`
+- `Course` (klasa)
+- Relacje: `Teacher` prowadzi `Course`, `Student` bierze `Course`
 
 ---
 
 ## 📝 Zadanie 3: Diagram e-commerce
 
 Modeluj system sklepu online:
-- Product, Cart, Order
-- Customer (base)
-- PremiumCustomer extends Customer
-- Payment (interface)
+- `Product`, `Cart`, `Order`
+- `Customer` (baza)
+- `PremiumCustomer` dziedziczy po `Customer`
+- `IPayment` (interfejs) z co najmniej dwiema implementacjami
 
 ---
 
@@ -39,36 +43,48 @@ Modeluj system sklepu online:
 ```mermaid
 classDiagram
     class Book {
-        -string title
-        -string author
-        -string ISBN
-        -int yearPublished
-        +Book(title, author, ISBN)
-        +string ToString()
+        +Title : string
+        +Author : string
+        +ISBN : string
+        +YearPublished : int
+        +ToString() string
     }
-    
+
     class Library {
-        -List books
-        -string name
-        +Library(name)
-        +void AddBook(Book)
-        +Book? FindByISBN(ISBN)
-        +List GetBooksByAuthor(author)
-        +int GetBookCount()
+        -name : string
+        -books : List~Book~
+        +Name : string
+        +BookCount : int
+        +AddBook(Book book) void
+        +FindByISBN(string isbn) Book
+        +GetBooksByAuthor(string author) List~Book~
     }
-    
-    class Czytelnik {
-        -string name
-        -int id
-        -List borrowedBooks
-        +Czytelnik(name, id)
-        +void BorrowBook(Book)
-        +void ReturnBook(Book)
-        +List GetBorrowedBooks()
+
+    class Reader {
+        -name : string
+        -id : int
+        -borrowedBooks : List~Book~
+        +BorrowBook(Book book) void
+        +ReturnBook(Book book) void
+        +GetBorrowedBooks() List~Book~
     }
-    
-    Library "1" --> "*" Book : contains
-    Czytelnik "many" --> "*" Book : borrows
+
+    Library "1" o-- "0..*" Book : zawiera
+    Reader "0..*" --> "0..*" Book : wypożycza
+```
+
+### Diagram sekwencji - wypożyczenie książki
+
+```mermaid
+sequenceDiagram
+    actor Reader
+    participant Library
+    participant Book
+
+    Reader->>Library: FindByISBN(isbn)
+    Library-->>Reader: Book
+    Reader->>Reader: BorrowBook(book)
+    Note right of Reader: książka trafia na listę wypożyczonych
 ```
 
 ### Kod - Book Class
@@ -76,10 +92,10 @@ classDiagram
 ```csharp
 public class Book
 {
-    public string Title { get; private set; }
-    public string Author { get; private set; }
-    public string ISBN { get; private set; }
-    public int YearPublished { get; private set; }
+    public string Title { get; }
+    public string Author { get; }
+    public string ISBN { get; }
+    public int YearPublished { get; }
     
     public Book(string title, string author, string isbn, int year)
     {
@@ -98,8 +114,8 @@ public class Book
 ```csharp
 public class Library
 {
-    private string name;
-    private List<Book> books = new();
+    private readonly string name;
+    private readonly List<Book> books = new();
     
     public string Name => name;
     public int BookCount => books.Count;
@@ -111,7 +127,8 @@ public class Library
     
     public void AddBook(Book book)
     {
-        if (book != null && !books.Contains(book))
+        ArgumentNullException.ThrowIfNull(book);
+        if (!books.Contains(book))
             books.Add(book);
     }
     
@@ -129,20 +146,20 @@ public class Library
 }
 ```
 
-### Kod - Czytelnik Class
+### Kod - Reader Class
 
 ```csharp
-public class Czytelnik
+public class Reader
 {
-    private string name;
-    private int id;
-    private List<Book> borrowedBooks = new();
+    private readonly string name;
+    private readonly int id;
+    private readonly List<Book> borrowedBooks = new();
     
     public string Name => name;
     public int Id => id;
     public int BorrowedCount => borrowedBooks.Count;
     
-    public Czytelnik(string name, int id)
+    public Reader(string name, int id)
     {
         this.name = name;
         this.id = id;
@@ -150,7 +167,8 @@ public class Czytelnik
     
     public void BorrowBook(Book book)
     {
-        if (book != null && !borrowedBooks.Contains(book))
+        ArgumentNullException.ThrowIfNull(book);
+        if (!borrowedBooks.Contains(book))
             borrowedBooks.Add(book);
     }
     
@@ -159,6 +177,7 @@ public class Czytelnik
         borrowedBooks.Remove(book);
     }
     
+    // Kopia - nie wystawiamy wewnętrznej listy na zewnątrz (enkapsulacja)
     public List<Book> GetBorrowedBooks() => borrowedBooks.ToList();
     
     public override string ToString() => $"{name} ({borrowedBooks.Count} books)";
@@ -172,20 +191,21 @@ var book2 = new Book("Pan Tadeusz", "Adam Mickiewicz", "978-0-2234567", 1834);
 library.AddBook(book1);
 library.AddBook(book2);
 
-var czytelnik = new Czytelnik("Jan Kowalski", 123);
-czytelnik.BorrowBook(book1);
+var reader = new Reader("Jan Kowalski", 123);
+reader.BorrowBook(book1);
 
 Console.WriteLine($"Biblioteka: {library}");
-Console.WriteLine($"Czytelnik: {czytelnik}");
-Console.WriteLine($"Wypożyczone: {string.Join(", ", czytelnik.GetBorrowedBooks())}");
+Console.WriteLine($"Czytelnik: {reader}");
+Console.WriteLine($"Wypożyczone: {string.Join(", ", reader.GetBorrowedBooks())}");
 ```
 
 ### Wyjaśnienie
 
-- **1 Library** zawiera **wiele Books** (1:*)
-- **Wiele Czytelników** może wypożyczać **wiele Books** (*:*)
-- **Agregacja**: Library ma Books
-- **Asocjacja**: Czytelnik używa Books (ale je nie posiaduje)
+- **1 Library** zawiera **wiele Books** (1 : 0..*)
+- **Wielu Readerów** może wypożyczać **wiele Books** (* : *)
+- **Agregacja** (`o--`): `Library` „ma” `Book`i, ale książki istnieją niezależnie od biblioteki (mogą trafić do innej)
+- **Asocjacja** (`-->`): `Reader` jedynie odnosi się do `Book` (nie jest jej właścicielem)
+- Diagram pokazuje tylko istotne składowe – kod ma też konstruktory, których nie rysujemy
 
 ---
 
@@ -196,39 +216,38 @@ Console.WriteLine($"Wypożyczone: {string.Join(", ", czytelnik.GetBorrowedBooks(
 ```mermaid
 classDiagram
     class Person {
-        -string name
-        -int age
-        +Person(name, age)
-        +string GetInfo()
+        <<abstract>>
+        +Name : string
+        +Age : int
+        +GetInfo() string
     }
-    
+
     class Student {
-        -int studentId
-        -double gpa
-        +Student(name, age, studentId)
-        +void UpdateGPA(gpa)
-        +bool IsExcellent()
+        +StudentId : int
+        +GPA : double
+        +UpdateGPA(double gpa) void
+        +IsExcellent() bool
+        +GetInfo() string
     }
-    
+
     class Teacher {
-        -string subject
-        -int yearsExperience
-        +Teacher(name, age, subject)
-        +void TeachCourse(course)
+        +Subject : string
+        +YearsExperience : int
+        +GetInfo() string
     }
-    
+
     class Course {
-        -string name
-        -string code
-        -Teacher instructor
-        +Course(name, code)
-        +void SetInstructor(teacher)
+        +Name : string
+        +Code : string
+        +Instructor : Teacher
+        +SetInstructor(Teacher teacher) void
+        +AddStudent(Student student) void
     }
-    
-    Person <|-- Student : inherits
-    Person <|-- Teacher : inherits
-    Teacher "1" --> "*" Course : teaches
-    Student "*" --> "*" Course : takes
+
+    Person <|-- Student : dziedziczy
+    Person <|-- Teacher : dziedziczy
+    Course "0..*" --> "0..1" Teacher : prowadzi
+    Course "0..*" --> "0..*" Student : uczestnicy
 ```
 
 ### Kod
@@ -266,6 +285,8 @@ public class Student : Person
     
     public bool IsExcellent() => GPA >= 3.5;
     
+    public override string GetInfo() => $"{base.GetInfo()}, ID: {StudentId}, GPA: {GPA:F2}";
+    
     public override string ToString() => $"Student: {Name} (ID:{StudentId}, GPA:{GPA:F2})";
 }
 
@@ -279,6 +300,8 @@ public class Teacher : Person
         Subject = subject;
         YearsExperience = years;
     }
+    
+    public override string GetInfo() => $"{base.GetInfo()}, {Subject}";
     
     public override string ToString() => $"Teacher: {Name} ({Subject}, {YearsExperience} years)";
 }
@@ -326,11 +349,11 @@ Console.WriteLine($"Student: {student1} - Excellent: {student1.IsExcellent()}");
 
 ### Wyjaśnienie
 
-- **Dziedziczenie**: Student i Teacher dziedziczą po Person (`<|--`)
-- **Asocjacja**: Teacher prowadzi Course (`-->`)
-- **Wielokrotność**: Teacher prowadzi *wiele* Courses (1:*)
-- **Abstract Base**: Person jest klasą abstrakcyjną
-- **Polimorfizm**: GetInfo() overridewany przez klasy pochodne
+- **Dziedziczenie**: `Student` i `Teacher` dziedziczą po `Person` (`<|--`)
+- **Asocjacja**: `Course` zna swojego `Teacher`a i listę `Student`ów (`-->` – strzałka pokazuje kierunek nawigacji: kurs ma referencje)
+- **Krotność**: jeden nauczyciel może prowadzić *wiele* kursów (0..*), kurs ma co najwyżej jednego prowadzącego (0..1)
+- **Klasa abstrakcyjna**: `Person` (`<<abstract>>`) – nie tworzymy „samej osoby”
+- **Polimorfizm**: `GetInfo()` jest przesłaniane (`override`) w `Student` i `Teacher`
 
 ---
 
@@ -341,62 +364,55 @@ Console.WriteLine($"Student: {student1} - Excellent: {student1.IsExcellent()}");
 ```mermaid
 classDiagram
     class Product {
-        -string name
-        -decimal price
-        -int stock
-        +Product(name, price)
-        +bool IsAvailable()
+        +Name : string
+        +Price : decimal
+        +Stock : int
+        +IsAvailable() bool
     }
-    
+
     class Cart {
-        -List items
-        +void AddItem(product, quantity)
-        +void RemoveItem(product)
-        +decimal GetTotal()
+        +ItemCount : int
+        +AddItem(Product product, int quantity) void
+        +GetTotal() decimal
     }
-    
+
     class Customer {
-        -string name
-        -string email
-        +Customer(name, email)
-        +void PlaceOrder(cart)
+        +Name : string
+        +Email : string
+        +GetDiscount(decimal amount) decimal
     }
-    
+
     class PremiumCustomer {
-        -double discountRate
-        +PremiumCustomer(name, email, discount)
-        +decimal ApplyDiscount(amount)
+        -discountRate : decimal
+        +GetDiscount(decimal amount) decimal
     }
-    
+
     class Order {
-        -int orderId
-        -DateTime orderDate
-        -List items
-        -Payment payment
-        +Order(items, payment)
-        +void ProcessPayment()
+        +OrderId : int
+        +OrderDate : DateTime
+        +Total : decimal
+        +Pay() bool
     }
-    
-    class Payment {
+
+    class IPayment {
         <<interface>>
-        +Process(amount)
+        +Process(decimal amount) bool
     }
-    
+
     class CreditCardPayment {
-        +Process(amount)
+        +Process(decimal amount) bool
     }
-    
+
     class PayPalPayment {
-        +Process(amount)
+        +Process(decimal amount) bool
     }
-    
-    Cart "1" --> "*" Product : contains
-    Customer "1" --> "0..1" Cart : uses
-    Customer <|-- PremiumCustomer : extends
-    Order "1" --> "1" Payment : uses
-    Order "1" --> "*" Product : contains
-    Payment <|.. CreditCardPayment : implements
-    Payment <|.. PayPalPayment : implements
+
+    Cart "1" o-- "0..*" Product : zawiera
+    Customer "1" --> "0..*" Order : składa
+    Customer <|-- PremiumCustomer : dziedziczy
+    Order "1" --> "1" IPayment : płaci przez
+    IPayment <|.. CreditCardPayment : realizuje
+    IPayment <|.. PayPalPayment : realizuje
 ```
 
 ### Kod
@@ -404,12 +420,16 @@ classDiagram
 ```csharp
 public class Product
 {
-    public string Name { get; private set; }
-    public decimal Price { get; private set; }
-    public int Stock { get; private set; }
+    public string Name { get; }
+    public decimal Price { get; }
+    public int Stock { get; }
     
-    public Product(string name, decimal price, int stock = 0)
+    public Product(string name, decimal price, int stock = 1)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentOutOfRangeException.ThrowIfNegative(price);
+        ArgumentOutOfRangeException.ThrowIfNegative(stock);
+        
         Name = name;
         Price = price;
         Stock = stock;
@@ -420,54 +440,48 @@ public class Product
 
 public class Cart
 {
-    private Dictionary<Product, int> items = new();
+    private readonly Dictionary<Product, int> items = new();
     
     public void AddItem(Product product, int quantity = 1)
     {
-        if (product.IsAvailable())
-        {
-            if (items.ContainsKey(product))
-                items[product] += quantity;
-            else
-                items[product] = quantity;
-        }
+        ArgumentNullException.ThrowIfNull(product);
+        if (quantity < 1)
+            throw new ArgumentOutOfRangeException(nameof(quantity));
+        if (!product.IsAvailable())
+            throw new InvalidOperationException($"Produkt '{product.Name}' jest niedostępny");
+        
+        items[product] = items.GetValueOrDefault(product) + quantity;
     }
     
     public decimal GetTotal() => items.Sum(item => item.Key.Price * item.Value);
     public int ItemCount => items.Count;
 }
 
-public abstract class Customer
+// Customer jest klasą konkretną z metodą wirtualną - zwykły klient nie ma rabatu
+public class Customer
 {
-    public string Name { get; protected set; }
-    public string Email { get; protected set; }
+    public string Name { get; }
+    public string Email { get; }
     
-    protected Customer(string name, string email)
+    public Customer(string name, string email)
     {
         Name = name;
         Email = email;
     }
     
-    public abstract decimal GetDiscount(decimal amount);
-}
-
-public class RegularCustomer : Customer
-{
-    public RegularCustomer(string name, string email) : base(name, email) { }
-    
-    public override decimal GetDiscount(decimal amount) => 0;  // No discount
+    public virtual decimal GetDiscount(decimal amount) => 0m;
 }
 
 public class PremiumCustomer : Customer
 {
-    private double discountRate;
+    private readonly decimal discountRate;   // decimal, bo to kwoty pieniężne (nie double!)
     
-    public PremiumCustomer(string name, string email, double discount) : base(name, email)
+    public PremiumCustomer(string name, string email, decimal discountRate) : base(name, email)
     {
-        discountRate = discount;
+        this.discountRate = discountRate;
     }
     
-    public override decimal GetDiscount(decimal amount) => amount * (decimal)discountRate;
+    public override decimal GetDiscount(decimal amount) => amount * discountRate;
 }
 
 public interface IPayment
@@ -495,54 +509,57 @@ public class PayPalPayment : IPayment
 
 public class Order
 {
-    public int OrderId { get; private set; }
-    public DateTime OrderDate { get; private set; }
-    public List<Product> Items { get; private set; }
-    public IPayment Payment { get; private set; }
+    private static int _lastId = 1000;
     
-    public Order(List<Product> items, IPayment payment)
+    public int OrderId { get; }
+    public DateTime OrderDate { get; }
+    public decimal Total { get; }
+    public IPayment Payment { get; }
+    
+    public Order(decimal total, IPayment payment)
     {
-        OrderId = new Random().Next(1000, 9999);
+        OrderId = Interlocked.Increment(ref _lastId);   // unikalny numer zamówienia
         OrderDate = DateTime.Now;
-        Items = items;
+        Total = total;
         Payment = payment;
     }
     
-    public void ProcessPayment(decimal total)
-    {
-        Payment.Process(total);
-    }
+    // Zamówienie zna swoją kwotę - nie trzeba jej przekazywać z zewnątrz
+    public bool Pay() => Payment.Process(Total);
 }
 
 // Test
-var laptop = new Product("Laptop", 1200);
-var mouse = new Product("Mouse", 25);
+var laptop = new Product("Laptop", 1200m, stock: 5);
+var mouse = new Product("Mouse", 25m, stock: 50);
 
-var customer = new PremiumCustomer("Jan Nowak", "jan@example.com", 0.1);  // 10% discount
+var customer = new PremiumCustomer("Jan Nowak", "jan@example.com", 0.1m);  // 10% rabatu
 var cart = new Cart();
 cart.AddItem(laptop);
 cart.AddItem(mouse, 2);
 
-decimal total = cart.GetTotal();
-decimal discount = customer.GetDiscount(total);
-decimal finalAmount = total - discount;
+decimal total = cart.GetTotal();                    // 1250
+decimal discount = customer.GetDiscount(total);     // 125
+decimal finalAmount = total - discount;             // 1125
 
 Console.WriteLine($"Cart total: {total:C}");
 Console.WriteLine($"Discount: {discount:C}");
 Console.WriteLine($"Final: {finalAmount:C}");
 
-var payment = new CreditCardPayment();
-var order = new Order(new() { laptop, mouse }, payment);
-order.ProcessPayment(finalAmount);
+var order = new Order(finalAmount, new CreditCardPayment());
+order.Pay();
 ```
 
 ### Wyjaśnienie
 
-- **Interfejs**: Payment (`<<interface>>`) - wiele implementacji
-- **Polimorfizm**: CreditCard, PayPal implementują Payment różnie
-- **Dziedziczenie**: PremiumCustomer extends Customer
-- **Asocjacja**: Order zawiera Products i Payment
-- **Strategia**: Strategy pattern z Payment interface
+- **Interfejs**: `IPayment` (`<<interface>>`) – wiele implementacji; `Order` zależy od interfejsu, nie od konkretnej klasy
+- **Polimorfizm**: `CreditCardPayment` i `PayPalPayment` realizują `IPayment` różnie; `PremiumCustomer` przesłania `GetDiscount`
+- **Dziedziczenie**: `PremiumCustomer` dziedziczy po `Customer` (`<|--`)
+- **Agregacja**: `Cart` zawiera `Product`y, ale produkty istnieją w katalogu niezależnie od koszyka
+- **Asocjacja**: `Customer` składa wiele `Order`ów (`1` → `0..*`)
+- **Strategia**: to wzorzec Strategy – sposób płatności wymienia się bez zmian w `Order`
+- **Kwoty pieniężne zawsze jako `decimal`** – `double` daje błędy zaokrągleń binarnych (np. `0.1 + 0.2 != 0.3`)
+- Uwaga projektowa: prawdziwy koszyk musi też obsłużyć zmniejszanie stanu magazynowego i usuwanie pozycji – tu
+  pominięte, by skupić się na notacji UML
 
 ---
 
@@ -557,6 +574,7 @@ public void UML_Library_System()
     lib.AddBook(book);
     
     Assert.Equal(1, lib.BookCount);
+    Assert.Same(book, lib.FindByISBN("978-0451524935"));
 }
 
 [Fact]
@@ -569,17 +587,36 @@ public void UML_School_System()
     course.SetInstructor(teacher);
     course.AddStudent(student);
     
-    Assert.Equal(teacher, course.Instructor);
+    Assert.Same(teacher, course.Instructor);
+    Assert.Contains("Math", teacher.GetInfo());   // przesłonięte GetInfo
 }
 
 [Fact]
 public void UML_Ecommerce_System()
 {
-    var laptop = new Product("Laptop", 1000);
+    var laptop = new Product("Laptop", 1000m);   // domyślnie 1 szt. na stanie
     var cart = new Cart();
     cart.AddItem(laptop);
     
-    Assert.Equal(1000, cart.GetTotal());
+    Assert.Equal(1000m, cart.GetTotal());
+}
+
+[Fact]
+public void UML_Ecommerce_OutOfStockProduct_CannotBeAdded()
+{
+    var cart = new Cart();
+    
+    Assert.Throws<InvalidOperationException>(() => cart.AddItem(new Product("Ghost", 10m, stock: 0)));
+}
+
+[Fact]
+public void UML_Ecommerce_PremiumCustomer_GetsDiscount()
+{
+    Customer regular = new Customer("A", "a@example.com");
+    Customer premium = new PremiumCustomer("B", "b@example.com", 0.1m);
+    
+    Assert.Equal(0m, regular.GetDiscount(200m));
+    Assert.Equal(20m, premium.GetDiscount(200m));   // polimorfizm przez zmienną typu bazowego
 }
 ```
 
@@ -587,31 +624,31 @@ public void UML_Ecommerce_System()
 
 ## 📊 UML Quick Reference
 
-| Symbol | Znaczenie | Przykład |
+| Symbol (Mermaid) | Znaczenie | Przykład |
 |--------|-----------|----------|
-| `-` | private | `-string name` |
-| `+` | public | `+void Update()` |
-| `#` | protected | `#bool Validate()` |
-| `<\|--` | Dziedziczenie | `Student <\|-- Person` |
-| `-->` | Asocjacja | `Library --> Book` |
-| `<\|..` | Implementacja | `PayPal <\|.. IPayment` |
-| `*` | Wiele | `Library --> * Book` |
+| `-` | private | `-name : string` |
+| `+` | public | `+Update() void` |
+| `#` | protected | `#Validate() bool` |
+| `<\|--` | Dziedziczenie | `Person <\|-- Student` |
+| `<\|..` | Realizacja interfejsu | `IPayment <\|.. PayPalPayment` |
+| `-->` | Asocjacja (kierunkowa) | `Course --> Teacher` |
+| `o--` | Agregacja | `Library o-- Book` |
+| `*--` | Kompozycja | `Car *-- Engine` |
+| `..>` | Zależność | `Order ..> IPayment` |
+| `"1"`, `"0..*"` | Krotność | `Library "1" o-- "0..*" Book` |
 
 ---
 
 ## 📚 Zasoby Edukacyjne
 
 **Pojęcia kluczowe**:
-- UML to standard do modelowania systemów software
-- Diagramy pokazują strukturę i relacje między klasami
-- Narzędzia: Lucidchart, Draw.io, Mermaid, StarUML
+- UML to standard do modelowania systemów oprogramowania
+- Diagramy pokazują strukturę i relacje między klasami (oraz interakcje w czasie – diagram sekwencji)
+- Narzędzia: Mermaid (tekst w Markdown), PlantUML, draw.io, StarUML
 
-**YouTube - UML Tutorials**:
-- https://www.youtube.com/results?search_query=UML+class+diagram+tutorial
-- https://www.youtube.com/results?search_query=C%23+design+patterns+UML
+**Interaktywny edytor Mermaid**:
+- https://mermaid.live – rysuj diagramy UML online
 
-**Interactive Tool - Mermaid**:
-- https://mermaid.live - Rysuj UML diagramy online
-
-**Microsoft Docs - Design Patterns**:
+**Dokumentacja**:
 - https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/
+- https://mermaid.js.org/syntax/classDiagram.html

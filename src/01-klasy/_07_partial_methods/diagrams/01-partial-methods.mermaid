@@ -6,4 +6,5 @@ graph TB
     B --> D["partial void OnUserCreated()"]
     C --> E["partial void OnUserCreated()<br/>{...}"]
     
-    D --> F["Jeśli brak implementacji,<br/>kompilator opuszcza"]
+    D --> F["Brak implementacji:<br/>kompilator usuwa deklarację<br/>i wszystkie wywołania"]
+    E --> G["Implementacja istnieje:<br/>wywołanie wykonuje ciało metody"]

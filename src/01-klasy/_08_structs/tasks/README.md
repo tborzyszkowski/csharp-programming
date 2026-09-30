@@ -2,8 +2,11 @@
 
 ## 📝 Zadanie 1: Color struct
 
+Zaimplementuj **niezmienną** strukturę `Color` (`readonly struct`) z konstruktorem `Color(byte red, byte green, byte blue)`,
+metodą `FromHex(string)`, `ToHex()` i równością wartościową:
+
 ```csharp
-public struct Color
+public readonly struct Color
 {
     public byte Red { get; }
     public byte Green { get; }
@@ -11,26 +14,32 @@ public struct Color
 }
 
 var red = new Color(255, 0, 0);
-var red2 = red;
+var red2 = red;                 // kopia
+var darker = red.WithRed(200);  // zmiana = nowa wartość, oryginalna bez zmian
 ```
+
+Odpowiedz: dlaczego przy niezmiennej strukturze programista nie może zaobserwować różnicy między „kopią”
+a „wspólną referencją”? Jaki problem rozwiązuje ta właściwość?
 
 ---
 
 ## 📝 Zadanie 2: Money struct
 
 Stwórz strukturę `Money`:
-- Pola: `decimal Amount`, `string Currency`
+- Właściwości: `decimal Amount`, `string Currency` (3-literowy kod)
 - Metody: `Add()`, `Subtract()`, `IsValid()`
-- Operator: `+`, `-`
+- Operatory: `+`, `-`, `==`, `!=` (z `Equals` i `GetHashCode`)
+- Zastanów się, co oznacza `default(Money)` i jak `IsValid()` pomaga w tej sytuacji
 
 ---
 
-## 📝 Zadanie 3: DateTime wrapper
+## 📝 Zadanie 3: Date wrapper
 
 Utwórz `Date` struct (value type) z:
-- Konstruktorem (year, month, day)
+- Konstruktorem (year, month, day) z pełną walidacją (np. 30 lutego jest niepoprawne)
 - Metodą GetDayOfWeek()
-- Operatorem porównania (==, !=)
+- Operatorami porównania (`==`, `!=`, `<`, `>`, `<=`, `>=`)
+- Porównaj swoje rozwiązanie z wbudowanym `DateOnly` – kiedy nie ma sensu pisać własnej struktury?
 
 ---
 
@@ -39,12 +48,12 @@ Utwórz `Date` struct (value type) z:
 ### Kod
 
 ```csharp
-// STRUKTURA - Value Type
-public struct Color
+// STRUKTURA NIEZMIENNA - Value Type
+public readonly struct Color : IEquatable<Color>
 {
-    public byte Red { get; private set; }
-    public byte Green { get; private set; }
-    public byte Blue { get; private set; }
+    public byte Red { get; }
+    public byte Green { get; }
+    public byte Blue { get; }
     
     public Color(byte red, byte green, byte blue)
     {
@@ -53,11 +62,16 @@ public struct Color
         Blue = blue;
     }
     
-    // Operator na RGB
+    // "Zmiana" = zwrócenie nowej wartości
+    public Color WithRed(byte red) => new(red, Green, Blue);
+    
+    // Fabryka: tworzy kolor z zapisu "#RRGGBB"
     public static Color FromHex(string hex)
     {
-        if (hex.StartsWith("#"))
+        if (hex.StartsWith('#'))
             hex = hex.Substring(1);
+        if (hex.Length != 6)
+            throw new ArgumentException("Oczekiwano 6 cyfr szesnastkowych (RRGGBB)", nameof(hex));
         
         byte r = Convert.ToByte(hex.Substring(0, 2), 16);
         byte g = Convert.ToByte(hex.Substring(2, 2), 16);
@@ -68,27 +82,28 @@ public struct Color
     
     public string ToHex() => $"#{Red:X2}{Green:X2}{Blue:X2}";
     
+    // Przybliżona jasność (0..1) – średnia składowych
     public double GetBrightness() => (Red + Green + Blue) / 3.0 / 255.0;
     
     public override string ToString() => $"RGB({Red}, {Green}, {Blue}) - {ToHex()}";
     
-    public override bool Equals(object? obj)
-    {
-        if (obj is not Color other) return false;
-        return Red == other.Red && Green == other.Green && Blue == other.Blue;
-    }
-    
+    public bool Equals(Color other) => Red == other.Red && Green == other.Green && Blue == other.Blue;
+    public override bool Equals(object? obj) => obj is Color other && Equals(other);
     public override int GetHashCode() => HashCode.Combine(Red, Green, Blue);
+    
+    public static bool operator ==(Color left, Color right) => left.Equals(right);
+    public static bool operator !=(Color left, Color right) => !left.Equals(right);
 }
 
 // Test
 var red = new Color(255, 0, 0);
-var red2 = red;  // KOPIA wartości (bo to struct)
+var red2 = red;              // KOPIA wartości (bo to struct)
+var darker = red.WithRed(200);   // nowa wartość - oryginalna bez zmian
 
-red2 = new Color(200, 0, 0);  // Zmiana red2 nie wpływa na red
-
-Console.WriteLine($"red: {red}");
-Console.WriteLine($"red2: {red2}");
+Console.WriteLine($"red:    {red}");
+Console.WriteLine($"red2:   {red2}");
+Console.WriteLine($"darker: {darker}");
+Console.WriteLine($"red == red2: {red == red2}");          // true - równość wartościowa
 
 var blue = Color.FromHex("#0000FF");
 Console.WriteLine($"blue: {blue}");
@@ -97,11 +112,12 @@ Console.WriteLine($"brightness: {blue.GetBrightness():F2}");
 
 ### Wyjaśnienie
 
-- **struct = Value Type**: Zmienne przechowują wartość bezpośrednio
-- Przypisanie `red2 = red` tworzy **KOPIĘ** wartości
-- Zmiana `red2` **nie wpływa** na `red`
-- Przydatne dla: punkty, kolory, daty, małe obiekty
-- **Szybsze** niż klasy (brak alokacji na heap)
+- **struct = Value Type**: zmienne przechowują wartość bezpośrednio, a przypisanie `red2 = red` tworzy **kopię**
+- `readonly struct` gwarantuje, że nic nie zmieni wartości po utworzeniu – wtedy kopiowanie jest całkowicie
+  bezpieczne, a przypadkowe zmiany „na kopii” (klasyczny błąd ze zmiennymi strukturami) są niemożliwe
+- Kolor jest dobrym kandydatem na strukturę: ma 3 bajty, reprezentuje pojedynczą wartość, jest niezmienny
+- Gdy definiujesz `==`, **zawsze** przesłaniaj też `Equals(object)` i `GetHashCode()` (kompilator ostrzega o braku)
+- W praktyce podobną strukturę napiszesz jednym wierszem: `public readonly record struct Color(byte Red, byte Green, byte Blue);`
 
 ---
 
@@ -110,10 +126,10 @@ Console.WriteLine($"brightness: {blue.GetBrightness():F2}");
 ### Kod
 
 ```csharp
-public struct Money : IEquatable<Money>
+public readonly struct Money : IEquatable<Money>
 {
-    public decimal Amount { get; private set; }
-    public string Currency { get; private set; }
+    public decimal Amount { get; }
+    public string Currency { get; }
     
     public Money(decimal amount, string currency)
     {
@@ -153,6 +169,11 @@ public struct Money : IEquatable<Money>
     public static Money operator -(Money a, Money b) => a.Subtract(b);
     
     public bool Equals(Money other) => Amount == other.Amount && Currency == other.Currency;
+    public override bool Equals(object? obj) => obj is Money other && Equals(other);
+    public override int GetHashCode() => HashCode.Combine(Amount, Currency);
+    
+    public static bool operator ==(Money a, Money b) => a.Equals(b);
+    public static bool operator !=(Money a, Money b) => !a.Equals(b);
     
     public override string ToString() => $"{Amount:F2} {Currency}";
 }
@@ -172,10 +193,13 @@ Console.WriteLine($"Po wydatkach: {remaining}");
 
 ### Wyjaśnienie
 
-- **Encapsulacja danych**: `Amount` i `Currency` razem to **logiczna jednostka**
-- **Operatory +/-**: Naturalny zapis (`salary + bonus`)
-- **IEquatable<Money>**: Porównanie między wartościami
+- **Enkapsulacja danych**: `Amount` i `Currency` razem to **logiczna jednostka**
+- **Operatory +/-**: naturalny zapis (`salary + bonus`)
+- **IEquatable<Money>** + `Equals(object)` + `GetHashCode()` + `==`/`!=`: spójna równość wartościowa
 - Jeśli `Currency` się nie zgadza, wyrzucamy **wyjątek** (fail-fast)
+- **Pułapka:** `default(Money)` (oraz `new Money[5]`) omija konstruktor – ma `Currency == null`. Struktura
+  nie może więc zagwarantować swoich niezmienników, dlatego przyda się metoda `IsValid()`.
+  Wskazówka: dla typów z ważnymi niezmiennikami często lepsza jest klasa albo `record`.
 
 ---
 
@@ -184,15 +208,17 @@ Console.WriteLine($"Po wydatkach: {remaining}");
 ### Kod
 
 ```csharp
-public struct Date : IEquatable<Date>, IComparable<Date>
+public readonly struct Date : IEquatable<Date>, IComparable<Date>
 {
-    public int Year { get; private set; }
-    public int Month { get; private set; }
-    public int Day { get; private set; }
+    public int Year { get; }
+    public int Month { get; }
+    public int Day { get; }
     
     public Date(int year, int month, int day)
     {
-        if (year < 1 || month < 1 || month > 12 || day < 1 || day > 31)
+        // Walidacja pełna: dzień musi istnieć w danym miesiącu (uwzględnia lata przestępne)
+        if (year < 1 || year > 9999 || month < 1 || month > 12
+            || day < 1 || day > DateTime.DaysInMonth(year, month))
             throw new ArgumentException("Nieprawidłowa data");
         
         Year = year;
@@ -201,20 +227,24 @@ public struct Date : IEquatable<Date>, IComparable<Date>
     }
     
     // Konwersja
-    public static Date Today() => new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+    public static Date Today()
+    {
+        var today = DateTime.Today;   // jedno wywołanie - bez ryzyka różnych dni przy północy
+        return new(today.Year, today.Month, today.Day);
+    }
     
     public DateTime ToDateTime() => new(Year, Month, Day);
     
     public DayOfWeek GetDayOfWeek() => ToDateTime().DayOfWeek;
     
-    public int GetDaysSinceEpoch() => (int)(ToDateTime() - new DateTime(1970, 1, 1)).TotalDays;
-    
     public string GetDayOfWeekName() => GetDayOfWeek().ToString();
     
-    public bool IsLeapYear() => (Year % 4 == 0 && Year % 100 != 0) || (Year % 400 == 0);
+    public bool IsLeapYear() => DateTime.IsLeapYear(Year);
     
     // Porównania
     public bool Equals(Date other) => Year == other.Year && Month == other.Month && Day == other.Day;
+    public override bool Equals(object? obj) => obj is Date other && Equals(other);
+    public override int GetHashCode() => HashCode.Combine(Year, Month, Day);
     
     public int CompareTo(Date other)
     {
@@ -223,11 +253,13 @@ public struct Date : IEquatable<Date>, IComparable<Date>
         return Day.CompareTo(other.Day);
     }
     
-    // Operatory
+    // Operatory (<, > wymagają pary; dodajemy też <=, >=)
     public static bool operator ==(Date a, Date b) => a.Equals(b);
     public static bool operator !=(Date a, Date b) => !a.Equals(b);
     public static bool operator <(Date a, Date b) => a.CompareTo(b) < 0;
     public static bool operator >(Date a, Date b) => a.CompareTo(b) > 0;
+    public static bool operator <=(Date a, Date b) => a.CompareTo(b) <= 0;
+    public static bool operator >=(Date a, Date b) => a.CompareTo(b) >= 0;
     
     public override string ToString() => $"{Year:D4}-{Month:D2}-{Day:D2}";
 }
@@ -242,16 +274,18 @@ Console.WriteLine($"Dzisiaj: {today}");
 
 Console.WriteLine($"birthday == birthday: {birthday == birthday}");
 Console.WriteLine($"birthday < today: {birthday < today}");
-Console.WriteLine($"Rok 1990 to rok przestępny: {birthday.IsLeapYear()}");
+Console.WriteLine($"Rok 1990 to rok przestępny: {birthday.IsLeapYear()}");   // False
 ```
 
 ### Wyjaśnienie
 
-- **Value Type**: Wartości nie referencje
-- **IComparable**: Możliwość porównywania dat
-- **Operatory**: `==`, `<`, `>` dla naturalnych porównań
+- **Value Type**: wartości, nie referencje; struktura niezmienna (`readonly struct`)
+- **IComparable**: możliwość sortowania i porównywania dat
+- **Operatory**: `==`, `!=`, `<`, `>`, `<=`, `>=` – oraz `Equals`/`GetHashCode` zgodne z `==`
 - **Konwersje**: `ToDateTime()` - interop z System.DateTime
-- **Logika biznesowa**: Year leap checks, day of week calculations
+- Walidacja dnia przez `DateTime.DaysInMonth` odrzuca np. 30 lutego (prosty warunek `day <= 31` by je przepuścił)
+- **W praktyce** nie piszemy własnych typów daty: użyj wbudowanego **`DateOnly`** (.NET 6+), który robi to wszystko i więcej.
+  To zadanie służy do ćwiczenia składni struktur i operatorów.
 
 ---
 
@@ -259,13 +293,22 @@ Console.WriteLine($"Rok 1990 to rok przestępny: {birthday.IsLeapYear()}");
 
 ```csharp
 [Fact]
-public void Struct_Color_IsValueType()
+public void Struct_Color_CopyIsIndependentOfOriginal()
 {
     var color1 = new Color(255, 0, 0);
-    var color2 = color1;
-    color2 = new Color(0, 255, 0);
-    
-    Assert.NotEqual(color1, color2);
+    var color2 = color1;              // kopia
+    var changed = color2.WithRed(0);  // "zmiana" daje nową wartość
+
+    Assert.Equal(color1, color2);     // kopia jest równa oryginałowi (równość wartościowa)
+    Assert.Equal(255, color1.Red);    // oryginalna wartość nie została zmieniona
+    Assert.NotEqual(color1, changed);
+}
+
+[Fact]
+public void Struct_Color_FromHex_RoundTrips()
+{
+    Assert.Equal("#0000FF", Color.FromHex("#0000FF").ToHex());
+    Assert.Throws<ArgumentException>(() => Color.FromHex("#FFF"));
 }
 
 [Fact]
@@ -276,6 +319,19 @@ public void Struct_Money_OperatorWorks()
     var result = money1 + money2;
     
     Assert.Equal(150, result.Amount);
+    Assert.True(result == new Money(150, "USD"));
+}
+
+[Fact]
+public void Struct_Money_DifferentCurrencies_Throw()
+{
+    Assert.Throws<InvalidOperationException>(() => new Money(1, "USD") + new Money(1, "EUR"));
+}
+
+[Fact]
+public void Struct_Money_Default_IsNotValid()
+{
+    Assert.False(default(Money).IsValid());   // Currency == null, konstruktor nie został wywołany
 }
 
 [Fact]
@@ -285,7 +341,25 @@ public void Struct_Date_Comparison()
     var date2 = new Date(2024, 1, 2);
     
     Assert.True(date1 < date2);
+    Assert.True(date1 <= new Date(2024, 1, 1));
     Assert.False(date1 == date2);
+    Assert.True(date1 != date2);
+}
+
+[Fact]
+public void Struct_Date_InvalidDay_Throws()
+{
+    Assert.Throws<ArgumentException>(() => new Date(2023, 2, 29));   // 2023 nie jest przestępny
+    Assert.Throws<ArgumentException>(() => new Date(2024, 4, 31));   // kwiecień ma 30 dni
+    Assert.Equal("2024-02-29", new Date(2024, 2, 29).ToString());    // 2024 jest przestępny
+}
+
+[Fact]
+public void Struct_Date_UsableAsDictionaryKey()
+{
+    var dict = new Dictionary<Date, string> { [new Date(2024, 1, 1)] = "Nowy Rok" };
+
+    Assert.Equal("Nowy Rok", dict[new Date(2024, 1, 1)]);   // działa dzięki GetHashCode/Equals
 }
 ```
 
@@ -294,14 +368,11 @@ public void Struct_Date_Comparison()
 ## 📚 Zasoby Edukacyjne
 
 **Pojęcia kluczowe**:
-- **Struktury = Value Types**: Przechowują dane bezpośrednio
-- **Klasy = Reference Types**: Przechowują referencje
-- Struktury pasują do: small data objects (Point, Color, Money, Date)
-- Performance: Struktury szybsze (stack vs heap)
-- Ostrożnie z mutacją: Nie zmienia oryginału
-
-**YouTube - Structs vs Classes in C#**:
-- https://www.youtube.com/results?search_query=C%23+structs+vs+classes+tutorial
+- **Struktury = Value Types**: przypisanie kopiuje wartość
+- **Klasy = Reference Types**: przypisanie kopiuje referencję
+- Struktury pasują do małych, niezmiennych obiektów reprezentujących pojedynczą wartość (Point, Color, Money, Date)
+- Struktury **nie są automatycznie szybsze** – duże struktury są kosztowne w kopiowaniu, a boxing alokuje pamięć
+- Preferuj `readonly struct` / `readonly record struct`; ostrożnie ze zmiennymi strukturami (zmiana kopii nie zmienia oryginału)
 
 **Microsoft Docs**:
 - https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/struct

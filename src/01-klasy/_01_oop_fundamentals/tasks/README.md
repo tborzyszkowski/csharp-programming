@@ -31,13 +31,13 @@ Utwórz system zarządzania pojazami, który demonstruje wszystkie cztery filary
 ### Przykład wyjścia
 
 ```
-Car starts: Silnik benzynowy rusza...
-Motorcycle starts: Silnik 2-cylindrowy warczy!
-Truck starts: Diesel włącza się z hukiem!
+Toyota car: Silnik benzynowy rusza...
+Harley motorcycle: Silnik 2-cylindrowy warczy!
+Volvo truck: Diesel włącza się z hukiem!
 
-Car honks: Pip! Pip!
-Motorcycle honks: Brrrrr!
-Truck honks: HUUUUU!
+Toyota car: Pip! Pip!
+Harley motorcycle: Brrrrr!
+Volvo truck: HUUUUU!
 ```
 
 ### 🎯 Wskazówki
@@ -45,6 +45,7 @@ Truck honks: HUUUUU!
 - Używaj abstract class dla Vehicle
 - Każda klasa pochodna musi zaimplementować wszystkie abstrakcyjne metody
 - Przetestuj każdy pojazd w kolekcji `Vehicle[]`
+- `Brake` nie może sprowadzić prędkości poniżej 0
 
 ---
 
@@ -52,33 +53,33 @@ Truck honks: HUUUUU!
 
 ### Opis
 
-Stwórz system zarządzania bibliotekę, gdzie książki są chronione przed niewłaściwymi operacjami.
+Stwórz system zarządzania biblioteką, gdzie książki są chronione przed niewłaściwymi operacjami.
 
 ### Wymagania
 
 1. **Klasa Book**:
-   - `private` pole `availableCopies` (liczba dostępnych kopii)
+   - `private` pola `availableCopies` (liczba dostępnych kopii) i `totalCopies` (ile egzemplarzy ma biblioteka)
    - `public` property `Title`, `Author`
    - `public` property `AvailableCopies` (tylko do odczytu)
-   - `public` method `Borrow()` - zmniejsza kopie (jeśli > 0)
-   - `public` method `Return()` - zwiększa kopie
+   - `public` method `Borrow()` - zmniejsza kopie (jeśli > 0), zwraca `bool`
+   - `public` method `Return()` - zwiększa kopie, zwraca `bool`
 
 2. **Klasa Library**:
    - Przechowuje książki w kolekcji
    - `public` method `AddBook(Book)`
    - `public` method `BorrowBook(string title)`
    - `public` method `ReturnBook(string title)`
-   - `public` method `GetBookInfo(string title)`
+   - `public` method `GetBookInfo(string title)` - zwraca opis (`string`) lub informację, że książki brak
 
 3. **Walidacja**:
-   - Nie można pożyczyć książki jeśli kopie < 1
-   - Można zwrócić maksymalnie 5 kopii na raz
+   - Nie można pożyczyć książki, jeśli kopie < 1
+   - Nie można zwrócić więcej egzemplarzy niż biblioteka posiada w sumie (`availableCopies <= totalCopies`)
 
 ### 🎯 Wskazówki
 
 - Używaj enkapsulacji do ochrony `availableCopies`
 - Każda operacja powinna wypisać komunikat o powodzeniu/błędzie
-- Przechowuj książki w `Dictionary<string, Book>`
+- Przechowuj książki w `Dictionary<string, Book>`; do wyszukiwania użyj `TryGetValue`
 
 ---
 
@@ -90,13 +91,13 @@ Stwórz system payroll dla różnych typów pracowników z polimorfizmem.
 
 ### Wymagania
 
-1. **Klasa Employee** (bazowa):
+1. **Klasa Employee** (bazowa, abstrakcyjna):
    - `string Name`, `decimal BaseSalary`, `int EmployeeId`
    - `virtual decimal CalculateSalary()`
    - `virtual void PrintDetails()`
 
 2. **Klasy pochodne** (każda wylicza pensję inaczej):
-   - **FullTimeEmployee**: BaseSalary + Heath Insurance (200)
+   - **FullTimeEmployee**: BaseSalary + Health Insurance (200)
    - **PartTimeEmployee**: BaseSalary * 0.5 (pracuje pół etatu)
    - **Contractor**: BaseSalary * 1.1 (brak benefitów +10%)
    - **Manager**: BaseSalary + Bonus (parametr)
@@ -121,8 +122,9 @@ TOTAL:                7800.00
 
 ### 🎯 Wskazówki
 
-- Używaj `Employee[]` lub `List<Employee>`
+- Używaj `List<Employee>`
 - Polimorfizm: każdy typ pracownika inaczej liczy pensję
+- Do sformatowania kolumn użyj wyrównania w interpolacji: `{Name,-20}` (lewe) i `{value,10:C}` (prawe)
 - Przetestuj przy użyciu xUnit
 
 ---
@@ -156,25 +158,18 @@ public abstract class Vehicle
     
     public void Accelerate(int increase)
     {
-        if (increase > 0)
-        {
-            speed += increase;
-            Console.WriteLine($"Speed increased to {speed} km/h");
-        }
+        if (increase <= 0) return;
+        
+        speed += increase;
+        Console.WriteLine($"Speed increased to {speed} km/h");
     }
     
     public void Brake(int decrease)
     {
-        if (decrease > 0 && speed - decrease >= 0)
-        {
-            speed -= decrease;
-            Console.WriteLine($"Speed decreased to {speed} km/h");
-        }
-        else if (decrease > speed)
-        {
-            speed = 0;
-            Console.WriteLine("Vehicle stopped!");
-        }
+        if (decrease <= 0) return;
+        
+        speed = Math.Max(0, speed - decrease);   // prędkość nigdy nie spada poniżej 0
+        Console.WriteLine(speed == 0 ? "Vehicle stopped!" : $"Speed decreased to {speed} km/h");
     }
 }
 
@@ -276,16 +271,20 @@ using System.Collections.Generic;
 public class Book
 {
     private int availableCopies;
+    private readonly int totalCopies;
     
-    public string Title { get; set; }
-    public string Author { get; set; }
+    public string Title { get; }
+    public string Author { get; }
     public int AvailableCopies => availableCopies;
     
     public Book(string title, string author, int copies)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(copies);
+        
         Title = title;
         Author = author;
         availableCopies = copies;
+        totalCopies = copies;
     }
     
     public bool Borrow()
@@ -300,34 +299,35 @@ public class Book
     
     public bool Return()
     {
-        availableCopies++;
-        return true;
+        // Nie można oddać więcej egzemplarzy, niż biblioteka posiada
+        if (availableCopies < totalCopies)
+        {
+            availableCopies++;
+            return true;
+        }
+        return false;
     }
+    
+    public override string ToString() => $"'{Title}' - {Author} (dostępne: {availableCopies}/{totalCopies})";
 }
 
 public class Library
 {
-    private Dictionary<string, Book> books;
-    
-    public Library()
-    {
-        books = new Dictionary<string, Book>();
-    }
+    private readonly Dictionary<string, Book> books = new();
     
     public void AddBook(Book book)
     {
-        if (!books.ContainsKey(book.Title))
-        {
-            books.Add(book.Title, book);
+        if (books.TryAdd(book.Title, book))
             Console.WriteLine($"✓ '{book.Title}' dodana do biblioteki");
-        }
+        else
+            Console.WriteLine($"✗ '{book.Title}' już istnieje w bibliotece");
     }
     
     public bool BorrowBook(string title)
     {
-        if (books.ContainsKey(title) && books[title].Borrow())
+        if (books.TryGetValue(title, out var book) && book.Borrow())
         {
-            Console.WriteLine($"✓ '{title}' pożyczona. Zostało: {books[title].AvailableCopies}");
+            Console.WriteLine($"✓ '{title}' pożyczona. Zostało: {book.AvailableCopies}");
             return true;
         }
         Console.WriteLine($"✗ '{title}' niedostępna!");
@@ -336,13 +336,18 @@ public class Library
     
     public bool ReturnBook(string title)
     {
-        if (books.ContainsKey(title))
+        if (books.TryGetValue(title, out var book) && book.Return())
         {
-            books[title].Return();
-            Console.WriteLine($"✓ '{title}' zwrócona. Dostępnych: {books[title].AvailableCopies}");
+            Console.WriteLine($"✓ '{title}' zwrócona. Dostępnych: {book.AvailableCopies}");
             return true;
         }
+        Console.WriteLine($"✗ Nie można zwrócić '{title}'");
         return false;
+    }
+    
+    public string GetBookInfo(string title)
+    {
+        return books.TryGetValue(title, out var book) ? book.ToString() : $"Brak książki '{title}'";
     }
 }
 
@@ -359,11 +364,44 @@ public class Program
         library.BorrowBook("Clean Code");
         library.BorrowBook("Clean Code");
         library.BorrowBook("Clean Code");
-        library.BorrowBook("Clean Code");  // Błąd
+        library.BorrowBook("Clean Code");  // Błąd - brak kopii
         
         library.ReturnBook("Clean Code");
         library.BorrowBook("Clean Code");
+        
+        library.ReturnBook("Design Patterns");   // Błąd - wszystkie egzemplarze już w bibliotece
+        
+        Console.WriteLine(library.GetBookInfo("Clean Code"));
     }
+}
+```
+
+### Testy
+
+```csharp
+[Fact]
+public void Borrow_WhenNoCopies_ReturnsFalse()
+{
+    var book = new Book("A", "B", 1);
+    Assert.True(book.Borrow());
+    Assert.False(book.Borrow());
+    Assert.Equal(0, book.AvailableCopies);
+}
+
+[Fact]
+public void Return_CannotExceedTotalCopies()
+{
+    var book = new Book("A", "B", 2);
+    Assert.False(book.Return());            // wszystkie egzemplarze już w bibliotece
+    book.Borrow();
+    Assert.True(book.Return());
+    Assert.Equal(2, book.AvailableCopies);
+}
+
+[Fact]
+public void GetBookInfo_UnknownTitle_ReturnsMessage()
+{
+    Assert.Contains("Brak", new Library().GetBookInfo("Nie ma"));
 }
 ```
 
@@ -378,11 +416,11 @@ using System.Linq;
 
 public abstract class Employee
 {
-    public string Name { get; set; }
-    public decimal BaseSalary { get; set; }
-    public int EmployeeId { get; set; }
+    public string Name { get; }
+    public decimal BaseSalary { get; }
+    public int EmployeeId { get; }
     
-    public Employee(string name, decimal salary, int id)
+    protected Employee(string name, decimal salary, int id)
     {
         Name = name;
         BaseSalary = salary;
@@ -393,7 +431,8 @@ public abstract class Employee
     
     public virtual void PrintDetails()
     {
-        Console.WriteLine($"{Name:20} {CalculateSalary():10:C}");
+        // {Name,-20} = wyrównanie do lewej w 20 znakach; {x,10:C} = wyrównanie do prawej w 10 znakach + format walutowy
+        Console.WriteLine($"{Name,-20} {CalculateSalary(),10:C}");
     }
 }
 
@@ -417,9 +456,18 @@ public class PartTimeEmployee : Employee
         => BaseSalary * 0.5m;
 }
 
+public class Contractor : Employee
+{
+    public Contractor(string name, decimal salary, int id)
+        : base(name, salary, id) { }
+    
+    public override decimal CalculateSalary()
+        => BaseSalary * 1.1m;   // brak benefitów => +10%
+}
+
 public class Manager : Employee
 {
-    private decimal bonus;
+    private readonly decimal bonus;
     
     public Manager(string name, decimal salary, decimal bonus, int id)
         : base(name, salary, id) => this.bonus = bonus;
@@ -430,9 +478,7 @@ public class Manager : Employee
 
 public class PayrollSystem
 {
-    private List<Employee> employees;
-    
-    public PayrollSystem() => employees = new List<Employee>();
+    private readonly List<Employee> employees = new();
     
     public void AddEmployee(Employee emp)
         => employees.Add(emp);
@@ -440,12 +486,15 @@ public class PayrollSystem
     public decimal CalculateTotalPayroll()
         => employees.Sum(e => e.CalculateSalary());
     
+    public IEnumerable<Employee> GetEmployeesSalaryAbove(decimal amount)
+        => employees.Where(e => e.CalculateSalary() > amount);
+    
     public void PrintPayroll()
     {
         Console.WriteLine("=== PAYROLL SYSTEM ===\n");
         foreach (var emp in employees)
-            emp.PrintDetails();
-        Console.WriteLine($"\nTOTAL: {CalculateTotalPayroll():C}");
+            emp.PrintDetails();   // polimorfizm: każdy typ pracownika liczy pensję po swojemu
+        Console.WriteLine($"\n{"TOTAL:",-20} {CalculateTotalPayroll(),10:C}");
     }
 }
 
@@ -459,9 +508,39 @@ public class Program
         payroll.AddEmployee(new FullTimeEmployee("John", 2000, 1));
         payroll.AddEmployee(new Manager("Jane", 3000, 500, 2));
         payroll.AddEmployee(new PartTimeEmployee("Bob", 2000, 3));
+        payroll.AddEmployee(new Contractor("Alice", 1000, 4));
         
         payroll.PrintPayroll();
     }
+}
+```
+
+### Testy
+
+```csharp
+[Fact]
+public void TotalPayroll_SumsAllEmployeeTypes()
+{
+    var payroll = new PayrollSystem();
+    payroll.AddEmployee(new FullTimeEmployee("John", 2000, 1));   // 2200
+    payroll.AddEmployee(new Manager("Jane", 3000, 500, 2));       // 3500
+    payroll.AddEmployee(new PartTimeEmployee("Bob", 2000, 3));    // 1000
+    payroll.AddEmployee(new Contractor("Alice", 1000, 4));        // 1100
+
+    Assert.Equal(7800m, payroll.CalculateTotalPayroll());
+}
+
+[Fact]
+public void GetEmployeesSalaryAbove_FiltersByCalculatedSalary()
+{
+    var payroll = new PayrollSystem();
+    payroll.AddEmployee(new FullTimeEmployee("John", 2000, 1));   // 2200
+    payroll.AddEmployee(new PartTimeEmployee("Bob", 2000, 3));    // 1000
+
+    var result = payroll.GetEmployeesSalaryAbove(2000).ToList();
+
+    Assert.Single(result);
+    Assert.Equal("John", result[0].Name);
 }
 ```
 

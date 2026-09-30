@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Xunit;
 
 namespace AccessModifiers;
@@ -55,15 +56,15 @@ public class BankAccount
     }
     
     // Metody prywatne - pomocnicze
-    private bool VerifyPin(int provided Pin) => provided Pin == pin;
+    private bool VerifyPin(int providedPin) => providedPin == pin;
     private bool ValidateAmount(decimal amount) => amount > 0;
 }
 
 public class Document
 {
     public string Title { get; set; }
-    protected string Content { get; set; }
-    private string Metadata { get; set; }
+    protected string Content { get; set; }       // widoczne w klasie i klasach pochodnych
+    private string Metadata { get; set; }        // widoczne tylko w klasie Document
     
     public Document(string title)
     {
@@ -72,10 +73,15 @@ public class Document
         Metadata = "";
     }
     
+    // Publiczny punkt dostępu do chronionego pola - klasa sama kontroluje, jak jest ono zmieniane
+    public void SetContent(string content) => Content = content;
+    
     public virtual void Print()
     {
         Console.WriteLine($"Dokument: {Title}");
         Console.WriteLine($"Zawartość: {Content}");
+        if (Metadata.Length > 0)
+            Console.WriteLine($"Metadane: {Metadata}");
     }
     
     protected void AddMetadata(string meta)
@@ -92,6 +98,7 @@ public class SecretDocument : Document
     {
         Console.WriteLine($"TAJNE: {Title}");
         Console.WriteLine($"Zawartość: {Content}");  // OK - protected
+        // Console.WriteLine(Metadata);            // BŁĄD KOMPILACJI - private w klasie bazowej
     }
     
     public void AddClassification(string level)
@@ -108,6 +115,8 @@ public class Program
 {
     public static void Main()
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+
         Console.WriteLine("╔════════════════════════════════════════════════════════╗");
         Console.WriteLine("║  MODYFIKATORY DOSTĘPU                                 ║");
         Console.WriteLine("║  public, private, protected, internal                 ║");
@@ -146,14 +155,15 @@ public class Program
         Console.WriteLine("──────────────────────────────────────────\n");
         
         var doc = new SecretDocument("Tajne Sprawozdanie");
-        doc.Content = "To jest tajne!";
-        doc.AddClassification("TOP SECRET");
+        doc.SetContent("To jest tajne!");  // publiczna metoda ustawia chronione pole
+        doc.AddClassification("TOP SECRET"); // publiczna metoda wewnątrz woła chronioną AddMetadata
         
         doc.Print();
         
-        // Poniższe byłyby błędami:
-        // doc.Content = "...";       // Błąd - protected (widoczne dla pochodnych, nie publiczne)
-        // doc.AddMetadata("...");    // Błąd - private (niedostępne z zewnątrz)
+        // Poniższe byłyby błędami kompilacji:
+        // doc.Content = "...";       // Błąd - protected: niedostępne spoza klasy i klas pochodnych
+        // doc.AddMetadata("...");    // Błąd - protected: niedostępne spoza klasy i klas pochodnych
+        // doc.Metadata;              // Błąd - private: dostępne tylko w klasie Document
     }
 }
 
@@ -204,5 +214,31 @@ public class AccessModifiersTests
         
         Assert.False(result);
         Assert.Equal(1000, account.Balance);
+    }
+
+    [Fact]
+    public void BankAccount_Withdraw_MoreThanBalance_Fails()
+    {
+        var account = new BankAccount("John Doe", "123456", 1234);
+        account.Deposit(100);
+
+        Assert.False(account.Withdraw(500, 1234));
+        Assert.Equal(100, account.Balance);
+    }
+
+    [Fact]
+    public void SecretDocument_Print_CanUseProtectedContent()
+    {
+        var doc = new SecretDocument("Raport");
+        doc.SetContent("treść");
+
+        var writer = new StringWriter();
+        var original = Console.Out;
+        Console.SetOut(writer);
+        try { doc.Print(); }
+        finally { Console.SetOut(original); }
+
+        Assert.Contains("TAJNE: Raport", writer.ToString());
+        Assert.Contains("treść", writer.ToString());
     }
 }

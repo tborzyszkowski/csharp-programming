@@ -1,6 +1,8 @@
 # Zadania - Modyfikatory Dostępu
 
-## 📝 Zadanie: Klasa User
+## 📝 Zadanie 1: Klasa User
+
+Zaimplementuj klasę `User` zgodnie z poniższym szkicem:
 
 ```csharp
 public class User
@@ -11,17 +13,25 @@ public class User
     public string Username { get; }
     public string Email { get; private set; }
     
-    public bool ValidatePassword(string inputPassword)
+    public bool Login(string inputPassword)
     {
-        // private metoda
+        // publiczna metoda korzystająca z prywatnej VerifyPassword
     }
 }
 ```
 
-- Password: private
-- LastLogin: private
-- Username: public read-only
-- Email: public read, private write
+- `password`: private (nigdy nie udostępniany na zewnątrz)
+- `lastLogin`: private (odczyt przez metodę `GetLastLogin()`)
+- `Username`: public, tylko do odczytu (ustawiany w konstruktorze)
+- `Email`: public odczyt, private zapis (zmiana tylko przez `ChangeEmail`)
+- Po **3 nieudanych logowaniach z rzędu** konto jest blokowane i **żadne** dalsze logowanie (także z poprawnym
+  hasłem) nie może się udać
+
+## 📝 Zadanie 2: Klasa pochodna i `protected`
+
+Rozszerz `User` o klasę `AdminUser : User`, której konto jest blokowane dopiero po **5** nieudanych logowaniach
+(zwykły użytkownik – po 3). Pomyśl, które składowe klasy bazowej muszą być `protected`, a które mogą pozostać
+`private`. Uzasadnij wybór każdego modyfikatora.
 
 ---
 
@@ -37,26 +47,31 @@ public class User
     private DateTime lastLogin;
     private int loginAttempts;
     
-    // PUBLIC READ-ONLY - zaraz po konstruktorze się nie zmienia
+    // PROTECTED - klasa pochodna może zmienić regułę blokady, ale nie dotyka stanu (loginAttempts)
+    protected virtual int MaxLoginAttempts => 3;
+    
+    // PUBLIC READ-ONLY - ustawiane tylko w konstruktorze, potem się nie zmieniają
     public string Username { get; }
     
-    // PUBLIC READ, PRIVATE WRITE - czytane publicznie, zmieniane tylko wewnątrz
+    // PUBLIC READ, PRIVATE WRITE - czytane publicznie, zmieniane tylko wewnątrz klasy
     public string Email { get; private set; }
     public bool IsActive { get; private set; }
     
     public User(string username, string email, string password)
     {
-        Username = username;      // Ustawiane w konstruktorze
+        Username = username;
         Email = email;
-        this.password = password; // private - nie można zmienić z zewnątrz
-        this.lastLogin = DateTime.MinValue;
-        this.loginAttempts = 0;
+        this.password = password;   // UWAGA: uproszczenie dydaktyczne - patrz niżej
+        lastLogin = DateTime.MinValue;
         IsActive = true;
     }
     
     // PUBLIC metody
     public bool Login(string inputPassword)
     {
+        if (!IsActive)
+            return false;              // zablokowane konto nie może się zalogować nawet poprawnym hasłem
+        
         if (VerifyPassword(inputPassword))
         {
             lastLogin = DateTime.Now;
@@ -65,33 +80,36 @@ public class User
         }
         
         loginAttempts++;
-        if (loginAttempts >= 3)
+        if (loginAttempts >= MaxLoginAttempts)
         {
-            IsActive = false;  // Blokada konta
-            Console.WriteLine("⚠️  Konto zablokowane po 3 nieudanych próbach");
+            IsActive = false;          // blokada konta
+            Console.WriteLine($"⚠️  Konto zablokowane po {MaxLoginAttempts} nieudanych próbach");
         }
         return false;
     }
     
     public void ChangeEmail(string newEmail)
     {
-        Email = newEmail;  // OK - private set
+        if (string.IsNullOrWhiteSpace(newEmail) || !newEmail.Contains('@'))
+            throw new ArgumentException("Niepoprawny adres e-mail", nameof(newEmail));
+        Email = newEmail;   // OK - private set
     }
     
-    public DateTime GetLastLogin() => lastLogin;  // Zamiast property
+    public DateTime GetLastLogin() => lastLogin;   // tylko odczyt, bez możliwości zapisu z zewnątrz
     
-    // PRIVATE metody - pomocnicze
-    private bool VerifyPassword(string inputPassword)
-    {
-        return password == inputPassword;  // Uproszczone - w rzeczywistości byłoby hashing
-    }
-    
-    private void LogActivity(string action)
-    {
-        Console.WriteLine($"[{DateTime.Now}] {Username}: {action}");
-    }
+    // PRIVATE metoda pomocnicza - szczegół implementacji
+    private bool VerifyPassword(string inputPassword) => password == inputPassword;
     
     public override string ToString() => $"{Username} ({Email})";
+}
+
+public class AdminUser : User
+{
+    public AdminUser(string username, string email, string password)
+        : base(username, email, password) { }
+    
+    // protected override: zmiana reguły bez dostępu do prywatnego licznika prób
+    protected override int MaxLoginAttempts => 5;
 }
 
 // W Main():
@@ -125,10 +143,17 @@ Console.WriteLine($"\nOstatnie logowanie: {user.GetLastLogin()}");
 
 | Modyfikator | Gdzie widać | Przykład |
 |-------------|------------|----------|
-| **public** | Wszędzie | `Email { get; private set; }` - czytać można wszędzie |
-| **private** | Tylko wewnątrz klasy | `password` - bezpieczne przechowywanie |
-| **read-only** | Ustawić można tylko w konstruktorze | `Username` - nie zmienia się nigdy |
-| **private set** | Setter dostępny tylko wewnątrz | `Email` - zmieniane tylko metodą |
+| **public** | Wszędzie | `Username { get; }` - czytać można wszędzie |
+| **private** | Tylko wewnątrz klasy | `password`, `VerifyPassword()` - szczegóły ukryte przed światem |
+| **protected** | Klasa i klasy pochodne | `MaxLoginAttempts` - punkt rozszerzenia dla `AdminUser` |
+| **get-only** (`{ get; }`) | Wartość ustawiana tylko w konstruktorze | `Username` - nie zmienia się nigdy |
+| **private set** | Publiczny odczyt, zapis tylko wewnątrz klasy | `Email`, `IsActive` - zmieniane tylko przez metody klasy |
+
+> ⚠️ **Hasła w prawdziwej aplikacji.** Przechowywanie hasła jako zwykłego `string` i porównywanie przez `==`
+> to uproszczenie dydaktyczne. Prawdziwy system **nigdy** nie przechowuje hasła jawnie: zapisuje się jego
+> *hash* wyliczony wolnym, solonym algorytmem (PBKDF2, bcrypt, Argon2 – w ASP.NET Core `PasswordHasher<T>`),
+> a porównanie wykonuje się w stałym czasie (np. `CryptographicOperations.FixedTimeEquals`). Modyfikatory
+> dostępu chronią przed błędami programisty, **nie** przed kimś, kto ma dostęp do pamięci lub bazy danych.
 
 ### Testy
 
@@ -160,11 +185,44 @@ public void ThreeFailedLogins_BlocksAccount()
 }
 
 [Fact]
-public void UsernameIsReadOnly_CannotChange()
+public void BlockedAccount_CannotLoginEvenWithCorrectPassword()
 {
     var user = new User("test", "test@example.com", "pass123");
-    // user.Username = "newname";  // Nie skompiluje się!
-    Assert.Equal("test", user.Username);
+    user.Login("x"); user.Login("x"); user.Login("x");   // blokada
+    
+    Assert.False(user.Login("pass123"));
+}
+
+[Fact]
+public void SuccessfulLogin_ResetsFailedAttemptsCounter()
+{
+    var user = new User("test", "test@example.com", "pass123");
+    user.Login("x"); user.Login("x");
+    user.Login("pass123");          // poprawne logowanie zeruje licznik
+    user.Login("x"); user.Login("x");
+    
+    Assert.True(user.IsActive);     // w sumie 4 porażki, ale nie 3 z rzędu
+}
+
+[Fact]
+public void AdminUser_AllowsFiveAttempts()
+{
+    var admin = new AdminUser("root", "root@example.com", "pass123");
+    
+    for (int i = 0; i < 4; i++) admin.Login("bad");
+    Assert.True(admin.IsActive);
+    
+    admin.Login("bad");             // piąta nieudana próba
+    Assert.False(admin.IsActive);
+}
+
+[Fact]
+public void ChangeEmail_InvalidAddress_Throws()
+{
+    var user = new User("test", "test@example.com", "pass123");
+    
+    Assert.Throws<ArgumentException>(() => user.ChangeEmail("not-an-email"));
+    Assert.Equal("test@example.com", user.Email);
 }
 ```
 

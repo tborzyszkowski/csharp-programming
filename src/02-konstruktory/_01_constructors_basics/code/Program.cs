@@ -64,12 +64,15 @@ public class Car
 public class Logger
 {
     private static int instanceCount = 0;
+    private static int staticInitCount = 0;
     private static readonly string logFilePath;
     
-    // Konstruktor statyczny - uruchamia się raz, przed pierwszą instancją
+    // Konstruktor statyczny - CLR uruchamia go dokładnie raz, przed pierwszym użyciem klasy.
+    // Bez modyfikatora dostępu i bez parametrów; nie wolno go wywołać ręcznie.
     static Logger()
     {
         logFilePath = "application.log";
+        staticInitCount++;
         Console.WriteLine($"[STATIC CONSTRUCTOR] Logger zainicjalizowany, log file: {logFilePath}");
     }
     
@@ -80,6 +83,7 @@ public class Logger
     }
     
     public static int GetInstanceCount() => instanceCount;
+    public static int StaticInitCount => staticInitCount;
     public static string GetLogFile() => logFilePath;
 }
 
@@ -87,7 +91,8 @@ public class Logger
 
 public class Database
 {
-    private static Database? instance = null;
+    // Lazy<T> gwarantuje bezpieczne wielowątkowo, leniwe utworzenie dokładnie jednej instancji
+    private static readonly Lazy<Database> instance = new(() => new Database());
     
     // Prywatny konstruktor - nie można tworzyć z zewnątrz
     private Database()
@@ -95,14 +100,7 @@ public class Database
         Console.WriteLine("[DATABASE] Singleton instance created");
     }
     
-    public static Database GetInstance()
-    {
-        if (instance == null)
-        {
-            instance = new Database();
-        }
-        return instance;
-    }
+    public static Database GetInstance() => instance.Value;
     
     public void Query(string sql) => Console.WriteLine($"Executing: {sql}");
 }
@@ -183,6 +181,7 @@ public class Program
 {
     public static void Main()
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.WriteLine("=== TEMAT 1: KONSTRUKTORY - O CO CHODZI? ===\n");
         
         // 1. Konstruktor parametrowy
@@ -283,10 +282,14 @@ public class ConstructorTests
     [Fact]
     public void StaticConstructor_RunsOnce()
     {
+        int before = Logger.GetInstanceCount();
+        
         var log1 = new Logger("First");
         var log2 = new Logger("Second");
         
-        Assert.Equal(2, Logger.GetInstanceCount());
+        // Licznik instancji rośnie przy każdym new, a konstruktor statyczny wykonał się tylko raz
+        Assert.Equal(before + 2, Logger.GetInstanceCount());
+        Assert.Equal(1, Logger.StaticInitCount);
         Assert.Equal("application.log", Logger.GetLogFile());
     }
     
@@ -296,7 +299,25 @@ public class ConstructorTests
         var db1 = Database.GetInstance();
         var db2 = Database.GetInstance();
         
-        Assert.True(ReferenceEquals(db1, db2));
+        Assert.Same(db1, db2);
+    }
+    
+    [Fact]
+    public void Singleton_IsSafeWhenCreatedFromManyThreads()
+    {
+        var instances = new Database[20];
+        
+        System.Threading.Tasks.Parallel.For(0, instances.Length, i => instances[i] = Database.GetInstance());
+        
+        Assert.All(instances, db => Assert.Same(instances[0], db));
+    }
+    
+    [Fact]
+    public void PrivateConstructor_CannotBeCalledFromOutside()
+    {
+        var constructors = typeof(Database).GetConstructors();   // tylko publiczne
+        
+        Assert.Empty(constructors);
     }
     
     [Fact]

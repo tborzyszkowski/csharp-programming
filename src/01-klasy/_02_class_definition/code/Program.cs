@@ -220,6 +220,8 @@ public class Program
 {
     public static void Main()
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+
         Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
         Console.WriteLine("║  DEFINICJA KLASY W C#                                ║");
         Console.WriteLine("║  Konstruktory, pola, właściwości i metody           ║");
@@ -421,13 +423,24 @@ public class ClassDefinitionTests
     [Fact]
     public void Student_StaticField_CountsAllStudents()
     {
-        // Reset - każdy test powinien być niezależny
+        // Pole statyczne jest wspólne dla wszystkich testów - porównujemy względnie, nie ze sztywną wartością
+        int before = Student.TotalStudents;
+
         var student1 = new Student("Anna", 3.8);
         var student2 = new Student("Piotr", 3.5);
-        
-        Assert.Equal(1, student1.StudentId);
-        Assert.Equal(2, student2.StudentId);
-        Assert.Equal(2, Student.TotalStudents);
+
+        Assert.Equal(before + 2, Student.TotalStudents);
+        Assert.Equal(student1.StudentId + 1, student2.StudentId);
+    }
+
+    [Fact]
+    public void Student_UpdateGPA_IgnoresValueOutOfRange()
+    {
+        var student = new Student("Anna", 3.0);
+
+        student.UpdateGPA(5.0);
+
+        Assert.Equal(3.0, student.GPA);
     }
     
     [Fact]

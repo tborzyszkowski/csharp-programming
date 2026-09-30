@@ -1,12 +1,12 @@
 graph TB
     A["Klasa Employee<br/>(logicznie jedna)"]
     
-    A --> B["Część 1<br/>Właściwości"]
-    A --> C["Część 2<br/>Logika biznesowa"]
-    A --> D["Część 3<br/>Walidacja"]
+    A --> B["Część 1: Employee.cs<br/>Dane i konstruktor"]
+    A --> C["Część 2: Employee.Business.cs<br/>Logika biznesowa"]
+    A --> D["Część 3: Employee.Validation.cs<br/>Walidacja"]
     
-    B --> E["Program.cs"]
+    B --> E["Kompilator"]
     C --> E
     D --> E
     
-    E --> F["W kompilacji<br/>traktowana jako<br/>JEDNA klasa"]
+    E --> F["JEDEN typ Employee<br/>(jedna klasa w IL)"]

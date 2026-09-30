@@ -2,17 +2,21 @@
 
 ## 📝 Zadanie 1: Logger
 
+Utwórz klasę `Logger` z metodami `Info`, `Warning`, `Error`, które zapisują wpis na liste logów, a następnie wołają
+metodę częściową `OnLogAdded(string level, string message)`. Implementacja (w drugiej części klasy) wypisuje wpis
+na konsolę. Sprawdź, co się stanie po **usunięciu** implementacji – czy kod nadal się kompiluje i działa?
+
 ```csharp
 public partial class Logger
 {
-    partial void Log(string message);
+    partial void OnLogAdded(string level, string message);   // deklaracja
 }
 
 public partial class Logger
 {
-    partial void Log(string message)
+    partial void OnLogAdded(string level, string message)    // implementacja
     {
-        Console.WriteLine($"[{DateTime.Now}] {message}");
+        Console.WriteLine($"[{level}] {message}");
     }
 }
 ```
@@ -22,7 +26,7 @@ public partial class Logger
 ## 📝 Zadanie 2: Event handler
 
 Stwórz `UserManager` z metodą częściową:
-- Część 1: `partial void OnUserRegistered(string name)`
+- Część 1: `partial void OnUserRegistered(string username)`
 - Część 2: Implementacja - wypisz komunikat
 
 ---
@@ -31,7 +35,16 @@ Stwórz `UserManager` z metodą częściową:
 
 Utwórz `Form` z metodami częściowymi:
 - `partial void OnValidating()`
-- `partial void OnValidationFailed()`
+- `partial void OnValidationPassed()`
+- `partial void OnValidationFailed(string error)`
+
+---
+
+## 📝 Zadanie 4 (dla chętnych): Rozszerzona metoda częściowa
+
+Dodaj do `UserManager` metodę `public partial bool CanRegister(string username)`, która decyduje, czy
+użytkownika wolno zarejestrować (np. odrzuca już istniejące nazwy). Sprawdź, jaki błąd kompilatora dostaniesz,
+jeśli pominiesz implementację, i wyjaśnij dlaczego (por. README tematu).
 
 ---
 
@@ -92,9 +105,9 @@ Console.WriteLine($"Total logs: {logger.GetLogs().Count}");
 ### Wyjaśnienie
 
 - **Część 1**: Deklaruje metodę częściową `partial void OnLogAdded`
-- **Część 2**: Implementuje to co w Części 1
-- Jeśli Część 2 nie istnieje, kompilator **ignoruje** wywołanie w Części 1
-- Przydatne dla: hooksy, callbacki, warunkowe logowanie
+- **Część 2**: Implementuje to, co zadeklarowano w Części 1
+- Jeśli implementacji **nie ma**, kompilator **usuwa** wywołanie w Części 1 (i nie oblicza jego argumentów)
+- Przydatne dla: hooków, callbacków, opcjonalnego logowania w kodzie generowanym
 
 ---
 
@@ -145,10 +158,11 @@ Console.WriteLine($"Total users: {manager.UserCount}");
 
 ### Wyjaśnienie
 
-- Hook `OnUserRegistered` jest wywoływany **za każdym razem** gdy ktoś się zarejestruje
+- Hook `OnUserRegistered` jest wywoływany **za każdym razem**, gdy ktoś się zarejestruje
 - Implementacja w Części 2 decyduje **co się dzieje**
-- Jeśli usunąć Część 2, hook się **nic nie robi** (bez błędu!)
-- To jak Event w .NET ale **lżejsze**
+- Jeśli usunąć Część 2, hook nic nie robi (bez błędu!)
+- Podobne do zdarzenia w .NET, ale rozstrzygane w czasie kompilacji i **lżejsze** (zero kosztu, gdy brak implementacji);
+  ma jednak tylko jedną implementację i nie można jej zmieniać w czasie działania
 
 ---
 
@@ -228,8 +242,8 @@ Console.WriteLine($"Valid: {form2.Validate()}");
 
 - **3 hooki** dla różnych faz: start → sukces/błąd
 - Implementacja w Części 2 decyduje o **logowaniu/monitoringu**
-- Łatwo włączyć/wyłączyć logowanie bez zmiany logiki
-- Przydatne dla: testowania, debuggowania, AOP (Aspect-Oriented Programming)
+- Łatwo włączyć/wyłączyć logowanie bez zmiany logiki walidacji
+- Przydatne dla: testowania, debugowania, instrumentacji kodu generowanego
 
 ---
 
@@ -241,7 +255,7 @@ public void PartialMethod_Logger_Works()
 {
     var logger = new Logger();
     logger.Info("Test");
-    Assert.Equal(1, logger.GetLogs().Count);
+    Assert.Single(logger.GetLogs());
 }
 
 [Fact]
@@ -255,9 +269,13 @@ public void PartialMethod_UserManager_Works()
 [Fact]
 public void PartialMethod_Form_Validation()
 {
-    var form = new Form();
-    form.AddField("Name", "Jan");
-    Assert.True(form.Validate());
+    var valid = new Form();
+    valid.AddField("Name", "Jan");
+    Assert.True(valid.Validate());
+
+    var invalid = new Form();
+    invalid.AddField("Name", "");
+    Assert.False(invalid.Validate());
 }
 ```
 
@@ -266,13 +284,11 @@ public void PartialMethod_Form_Validation()
 ## 📚 Zasoby Edukacyjne
 
 **Pojęcia kluczowe**:
-- Metody częściowe mają deklarację i opcjonalnie implementację
+- Metody częściowe mają deklarację i (w wersji klasycznej) opcjonalną implementację
 - Jeśli implementacja nie istnieje, wywołanie jest **usuwane** przez kompilator
-- Zawsze zwracają `void`
-- Kompilator łączy Część 1 i Część 2 w jedną metodę
-
-**YouTube - Partial Methods in C#**:
-- https://www.youtube.com/results?search_query=C%23+partial+methods+tutorial
+- Klasyczne metody częściowe zwracają `void` i są `private`; od C# 9 **rozszerzone** metody częściowe mogą
+  mieć modyfikator dostępu i zwracać wartość – wtedy implementacja jest obowiązkowa
+- Kompilator łączy deklarację i implementację w jedną metodę klasy
 
 **Microsoft Docs**:
 - https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/partial-classes-and-methods

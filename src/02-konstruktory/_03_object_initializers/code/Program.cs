@@ -47,10 +47,31 @@ public class Employee
     public List<string> Skills { get; set; } = new();
 }
 
+// init + required: wymuszone przy tworzeniu i niezmienne później
+public class User
+{
+    public required string Email { get; init; }
+    public string? Nick { get; init; }
+}
+
+// Setter ze skutkiem ubocznym - dowodzi, że inicjalizator wywołuje settery
+public class AuditedItem
+{
+    public int SetterCalls { get; private set; }
+    
+    private string name = "";
+    public string Name
+    {
+        get => name;
+        set { name = value; SetterCalls++; }
+    }
+}
+
 public class Program
 {
     public static void Main()
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.WriteLine("=== TEMAT 3: INICJALIZATORY OBIEKTÓW ===\n");
         
         // 1. Object Initializer - prosty
@@ -125,6 +146,13 @@ public class Program
             Year = 2024
         };
         Console.WriteLine($"{car.Brand} {car.Model} ({car.Year})");
+        Console.WriteLine();
+        
+        // 7. Wyrażenia kolekcji (C# 12)
+        Console.WriteLine("7. WYRAŻENIA KOLEKCJI (C# 12)");
+        List<int> list = [1, 2, 3];
+        int[] more = [..list, 4, 5];
+        Console.WriteLine($"list: {string.Join(", ", list)}; more: {string.Join(", ", more)}");
     }
 }
 
@@ -193,5 +221,83 @@ public class InitializerTests
         };
         
         Assert.Equal(2, team.Members.Count);
+    }
+    
+    [Fact]
+    public void CollectionInitializer_WithoutNew_AddsToExistingCollection()
+    {
+        var team = new Team { Members = { "Alice" } };
+        var originalList = team.Members;
+        
+        var other = new Team { Members = { "Bob" } };
+        
+        Assert.Single(team.Members);
+        Assert.Single(other.Members);
+        Assert.Same(originalList, team.Members);   // ta sama lista, nie nowa
+        Assert.NotSame(team.Members, other.Members);
+    }
+    
+    [Fact]
+    public void DictionaryInitializer_AddThrowsOnDuplicate_IndexerOverwrites()
+    {
+        Assert.Throws<ArgumentException>(() => new Dictionary<string, int>
+        {
+            { "Anna", 1 },
+            { "Anna", 2 }   // Add -> wyjątek
+        });
+        
+        var ok = new Dictionary<string, int>
+        {
+            ["Anna"] = 1,
+            ["Anna"] = 2    // indeksator -> nadpisanie
+        };
+        Assert.Equal(2, ok["Anna"]);
+    }
+    
+    [Fact]
+    public void ObjectInitializer_CallsSetters()
+    {
+        var item = new AuditedItem { Name = "x" };
+        
+        Assert.Equal(1, item.SetterCalls);
+    }
+    
+    [Fact]
+    public void ObjectInitializer_WithFailingSetter_DoesNotAssignVariable()
+    {
+        Person? person = null;
+        
+        // Wyjątek rzucony w trakcie inicjalizatora - zmienna pozostaje nieprzypisana
+        Assert.Throws<InvalidOperationException>(() =>
+        {
+            person = new Person { Name = "Jan", Age = Fail() };
+        });
+        
+        Assert.Null(person);
+        
+        static int Fail() => throw new InvalidOperationException();
+    }
+    
+    [Fact]
+    public void RequiredInitProperty_SetInInitializer_IsImmutableAfterwards()
+    {
+        var user = new User { Email = "jan@example.com" };
+        
+        Assert.Equal("jan@example.com", user.Email);
+        Assert.Null(user.Nick);
+        
+        // init-only: setter ma modyfikator IsExternalInit
+        var setter = typeof(User).GetProperty(nameof(User.Email))!.SetMethod!;
+        Assert.Contains(setter.ReturnParameter.GetRequiredCustomModifiers(),
+            m => m.Name == "IsExternalInit");
+    }
+    
+    [Fact]
+    public void CollectionExpression_CreatesCollectionsAndSupportsSpread()
+    {
+        List<int> list = [1, 2, 3];
+        int[] more = [..list, 4, 5];
+        
+        Assert.Equal(new[] { 1, 2, 3, 4, 5 }, more);
     }
 }

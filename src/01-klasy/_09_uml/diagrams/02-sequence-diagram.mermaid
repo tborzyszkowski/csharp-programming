@@ -1,8 +1,11 @@
 sequenceDiagram
     actor User
-    participant System
+    participant Dept as Department
+    participant Emp as Employee
     
-    User->>System: CreateEmployee(name, age, salary)
-    System->>System: ValidateData()
-    System->>System: CreateInstance()
-    System-->>User: Employee created
+    User->>Dept: TotalPayroll()
+    loop dla każdego pracownika
+        Dept->>Emp: GetMonthlyPay()
+        Emp-->>Dept: decimal
+    end
+    Dept-->>User: suma

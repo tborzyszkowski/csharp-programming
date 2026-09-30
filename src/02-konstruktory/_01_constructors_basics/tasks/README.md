@@ -81,7 +81,7 @@ Stwórz klasę `FileLogger` implementującą Singleton pattern:
 
 - Prywatny konstruktor
 - Statyczna metoda `GetInstance()`
-- Statyczne pole dla instancji
+- Statyczne pole dla instancji (bezpieczne wielowątkowo – użyj `Lazy<T>`)
 - Statyczny konstruktor dla inicjalizacji
 
 ### Przykład użycia
@@ -101,8 +101,8 @@ Console.WriteLine(ReferenceEquals(logger1, logger2));  // true
 ```csharp
 public class FileLogger
 {
-    private static FileLogger? instance = null;
     private static readonly string logPath;
+    private static readonly Lazy<FileLogger> instance = new(() => new FileLogger());
     
     static FileLogger()
     {
@@ -115,11 +115,7 @@ public class FileLogger
         Console.WriteLine("FileLogger instance created");
     }
     
-    public static FileLogger GetInstance()
-    {
-        instance ??= new FileLogger();
-        return instance;
-    }
+    public static FileLogger GetInstance() => instance.Value;
     
     public void Log(string message)
     {
@@ -127,6 +123,9 @@ public class FileLogger
     }
 }
 ```
+
+> `Lazy<T>` zapewnia, że nawet przy wielu wątkach powstanie dokładnie jedna instancja. Wersja z
+> `instance ??= new FileLogger();` działa poprawnie tylko w programie jednowątkowym.
 
 ---
 
@@ -223,11 +222,18 @@ public void Rectangle_DefaultConstructor_CreatesSquare()
 }
 
 [Fact]
+public void Rectangle_NonPositiveSize_Throws()
+{
+    Assert.Throws<ArgumentException>(() => new Rectangle(0, 5));
+    Assert.Throws<ArgumentException>(() => new Rectangle(5, -1));
+}
+
+[Fact]
 public void FileLogger_Singleton_ReturnsAlwaysSameInstance()
 {
     var logger1 = FileLogger.GetInstance();
     var logger2 = FileLogger.GetInstance();
-    Assert.True(ReferenceEquals(logger1, logger2));
+    Assert.Same(logger1, logger2);
 }
 
 [Fact]
@@ -236,6 +242,12 @@ public void User_Factory_CreatesUserWithCorrectRole()
     var admin = User.CreateAdmin("Anna");
     Assert.Equal("Admin", admin.Role);
     Assert.True(admin.IsActive);
+}
+
+[Fact]
+public void User_Factory_EmptyName_Throws()
+{
+    Assert.Throws<ArgumentException>(() => User.CreateAdmin("  "));
 }
 ```
 

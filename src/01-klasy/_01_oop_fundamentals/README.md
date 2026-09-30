@@ -43,7 +43,7 @@ dotnet test
 ├── BankAccount (enkapsulacja)
 ├── Employee hierarchy (dziedziczenie & polimorfizm)
 ├── Main() - demonstracja
-└── OOPFundamentalsTests - 8 testów xUnit
+└── OOPFundamentalsTests - 11 testów xUnit
 ```
 
 ### Zadania dla studentów
@@ -75,15 +75,18 @@ Po przeczytaniu tego materiału przejdź do [📝 ZADANIA](tasks/README.md) gdzi
 
 ### Historia i motywacja
 
-Koncepcja OOP powstała w latach 60. XX wieku z potrzeby lepszego organizowania rosnących projektów informatycznych. Językami pionierami były Simula (1967) i Smalltalk (1980). Dzisiaj OOP jest jednym z dominujących paradygmatów, używanym w Java, C#, C++, Python i wielu innych językach.
+Koncepcja OOP powstała w latach 60. XX wieku z potrzeby lepszego organizowania rosnących projektów informatycznych. Językami pionierami były Simula 67 (1967) i Smalltalk (rozwijany od lat 70., wydany publicznie jako Smalltalk-80). Dzisiaj OOP jest jednym z dominujących paradygmatów, używanym w Java, C#, C++, Python i wielu innych językach.
 
 ### Korzyści OOP
 
 - **Modularność**: Kod jest podzielony na niezależne obiekty
-- **Ponowne wykorzystanie**: Klasy mogą być dziedziczone i rozszerzane
-- **Łatwość konserwacji**: Zmiany w jednym obiekcie nie wpływają na inne
-- **Skalowość**: Łatwiej zarządzać dużymi projektami
-- **Intuicyjność**: Obiekty modelują rzeczywistość
+- **Ponowne wykorzystanie**: Klasy mogą być dziedziczone i rozszerzane (często lepiej przez kompozycję niż dziedziczenie)
+- **Łatwość konserwacji**: Dzięki enkapsulacji zmiana wewnętrznej implementacji obiektu ma ograniczony wpływ na resztę programu
+- **Skalowalność**: Łatwiej zarządzać dużymi projektami
+- **Intuicyjność**: Obiekty modelują pojęcia z dziedziny problemu
+
+> OOP nie jest jedynym paradygmatem – nowoczesny C# łączy go z elementami programowania funkcyjnego (LINQ, lambdy,
+> `record`). Dobry inżynier dobiera narzędzia do problemu.
 
 ---
 
@@ -104,17 +107,17 @@ graph TB
 
 ### 1. Abstrakcja
 
-**Abstrakcja** to proces wyodrębniania istotnych cech obiektu i ukrywania nieważnych szczegółów implementacji.
+**Abstrakcja** to proces wyodrębniania istotnych cech obiektu i ukrywania nieistotnych szczegółów implementacji. Modelujemy tylko to, co jest potrzebne w danym kontekście (klient banku ma numer konta i saldo, ale nie interesuje nas jego wzrost).
 
 #### Przykład koncepcyjny
 
-Gdy jeździmy samochodem, nie musimy wiedzieć, jak dokładnie pracuje silnik. Interfejs (kierownica, pedały) abstrakcyjnie pokazuje nam, co możemy zrobić. To jest abstrakcja.
+Gdy jeździmy samochodem, nie musimy wiedzieć, jak dokładnie pracuje silnik. Interfejs (kierownica, pedały) pokazuje nam, co możemy zrobić. To jest abstrakcja.
 
 #### W kodzie C#
 
 ```csharp
-// Abstrakcja: Definiujemy, co powinien robić samochód
-// bez szczegółów implementacji
+// Abstrakcja: definiujemy, CO powinien robić pojazd,
+// bez szczegółów JAK to robi
 public abstract class Pojazd
 {
     public abstract void Uruchom();
@@ -137,55 +140,52 @@ public class Samochod : Pojazd
 }
 ```
 
+> Abstrakcję w C# wyrażamy klasami abstrakcyjnymi (`abstract class`) oraz **interfejsami** (`interface`).
+> Interfejsy poznasz w module o dziedziczeniu i abstrakcji.
+
 #### Diagram abstrakcji
 
 ```mermaid
 graph TD
-    A["Pojazd<br/>(Abstrakcja)"] -->|"implementuje"| B["Samochód"]
-    A -->|"implementuje"| C["Rower"]
-    A -->|"implementuje"| D["Motocykl"]
+    A["Pojazd<br/>(abstrakcja)"] -->|"specjalizują (dziedziczą)"| B["Samochód"]
+    A -->|"specjalizują (dziedziczą)"| C["Rower"]
+    A -->|"specjalizują (dziedziczą)"| D["Motocykl"]
     
     A -.->|"ukrywa szczegóły"| E["Jak pracuje silnik"]
-    A -.->|"ukrywa szczegóły"| F["Jak działa hamulce"]
+    A -.->|"ukrywa szczegóły"| F["Jak działają hamulce"]
 ```
 
 ### 2. Enkapsulacja
 
-**Enkapsulacja** to bundlowanie danych i metod w jedną jednostkę (klasę) oraz ograniczenie dostępu do tych danych za pośrednictwem modyfikatorów dostępu.
+**Enkapsulacja** to zgrupowanie danych i metod w jednej jednostce (klasie) oraz ograniczenie dostępu do wewnętrznego stanu za pomocą modyfikatorów dostępu. Obiekt sam pilnuje, by jego stan był zawsze poprawny.
 
 #### Cel enkapsulacji
 
 - **Ochrona danych**: Dane wewnętrzne nie mogą być zmieniane w dowolny sposób
-- **Spójność**: Zawsze zachowujemy prawidłowy stan obiektu
-- **Zmienność**: Możemy zmienić implementację bez wpływu na kod zewnętrzny
+- **Spójność**: Obiekt zawsze pozostaje w poprawnym stanie (niezmienniki klasy)
+- **Elastyczność**: Możemy zmienić implementację bez wpływu na kod zewnętrzny
 
 #### Przykład
 
 ```csharp
 public class Konto
 {
-    private decimal saldo;  // Dane chronione
-    
-    // Dostęp do danych tylko przez publiczne metody
-    public decimal Saldo
-    {
-        get { return saldo; }
-        private set { saldo = value; }  // Tylko klasa może modyfikować
-    }
+    // Publiczny odczyt, ale zapis tylko wewnątrz klasy
+    public decimal Saldo { get; private set; }
     
     public void Wplata(decimal kwota)
     {
         if (kwota > 0)
         {
-            saldo += kwota;
+            Saldo += kwota;
         }
     }
     
     public bool Wyplata(decimal kwota)
     {
-        if (kwota > 0 && kwota <= saldo)
+        if (kwota > 0 && kwota <= Saldo)
         {
-            saldo -= kwota;
+            Saldo -= kwota;
             return true;
         }
         return false;
@@ -201,14 +201,14 @@ graph LR
     B -->|"public"| C["Saldo - property"]
     B -->|"public"| D["Wplata()"]
     B -->|"public"| E["Wyplata()"]
-    C --> F["private saldo"]
+    C --> F["private Saldo (setter)"]
     D --> F
     E --> F
 ```
 
 ### 3. Dziedziczenie
 
-**Dziedziczenie** pozwala klasie dziedziczyć pola i metody z innej klasy, tworzą hierarchię klas.
+**Dziedziczenie** pozwala klasie przejąć pola i metody z innej klasy, tworząc hierarchię klas. Klasa pochodna jest *rodzajem* klasy bazowej (relacja „jest”, *is-a*): Pies **jest** Zwierzęciem.
 
 #### Koncepcja
 
@@ -264,9 +264,12 @@ graph TD
     C -.->|"dziedziczy"| E
     D -.->|"dziedziczy"| E
     
-    B -->|"przesławia"| F["Odglos() → szczeka"]
-    C -->|"przesławia"| G["Odglos() → miauczy"]
+    B -->|"przesłania"| F["Odglos() → szczeka"]
+    C -->|"przesłania"| G["Odglos() → miauczy"]
 ```
+
+> C# pozwala na dziedziczenie po **jednej** klasie bazowej (ale po wielu interfejsach). Dziedziczenia nie nadużywamy:
+> jeśli relacja „jest” nie zachodzi, lepiej użyć kompozycji („ma”, *has-a*).
 
 ### 4. Polimorfizm
 
@@ -274,8 +277,10 @@ graph TD
 
 #### Rodzaje polimorfizmu
 
-1. **Polimorfizm kompilacji** (static) - przeładowanie metod
-2. **Polimorfizm czasu wykonania** (dynamic) - przesłanianie metod
+1. **Polimorfizm kompilacji** (statyczny, *ad hoc*) - przeciążanie metod: wybór wersji metody następuje w czasie kompilacji na podstawie typów argumentów
+2. **Polimorfizm czasu wykonania** (dynamiczny) - przesłanianie metod `virtual`/`override`: wybór implementacji zależy od **rzeczywistego typu obiektu** w czasie działania programu
+
+W kontekście czterech filarów OOP „polimorfizm” oznacza zwykle ten drugi rodzaj.
 
 #### Przykład
 
@@ -309,25 +314,25 @@ public class Kierownik : Pracownik
 
 // Użycie
 Pracownik p1 = new Pracownik();
-Pracownik p2 = new Kierownik();
+Pracownik p2 = new Kierownik();   // zmienna typu bazowego, obiekt typu pochodnego
 
 Console.WriteLine(p1.ObliczPensje());  // 2000
-Console.WriteLine(p2.ObliczPensje());  // 4000 (ten sam typ, inne zachowanie!)
+Console.WriteLine(p2.ObliczPensje());  // 4000 (ten sam typ zmiennej, inne zachowanie!)
 ```
 
 #### Diagram polimorfizmu
 
 ```mermaid
 graph TB
-    A["Pracownik (interfejs)"]
-    A --> B["ObliczPensje()"]
+    A["Pracownik (klasa bazowa)"]
+    A --> B["virtual ObliczPensje()"]
     
-    A -.->|"implementacja 1"| C["Pracownik<br/>ObliczPensje() → 2000"]
-    A -.->|"implementacja 2"| D["Kierownik<br/>ObliczPensje() → 4000"]
-    A -.->|"implementacja 3"| E["Praktykant<br/>ObliczPensje() → 1500"]
+    A -.->|"wersja bazowa"| C["Pracownik<br/>ObliczPensje() → 2000"]
+    A -.->|"override"| D["Kierownik<br/>ObliczPensje() → 4000"]
+    A -.->|"override"| E["Praktykant<br/>ObliczPensje() → 1500"]
     
     F["Kod klienta<br/>Pracownik p = GetPracownik();"] -.->|"wywołuje"| B
-    F -.->|"dynamiczne wybranie"| G["Prawidłowa<br/>implementacja"]
+    F -.->|"wybór wg rzeczywistego typu obiektu"| G["Właściwa<br/>implementacja"]
 ```
 
 ---
@@ -338,11 +343,11 @@ graph TB
 
 | Aspekt | Klasa | Obiekt |
 |--------|-------|--------|
-| **Czym jest?** | Plan/Szablon | Instancja klasy |
-| **Istnienie** | Istnieje w kodzie | Istnieje w pamięci |
+| **Czym jest?** | Plan/Szablon (typ) | Instancja klasy |
+| **Istnienie** | Definicja w kodzie; metadane typu ładowane raz w czasie działania | Istnieje w pamięci podczas działania programu |
 | **Liczba** | Jedna klasa | Wiele obiektów z jednej klasy |
 | **Tworzenie** | Definiujemy raz | Tworzymy za pomocą `new` |
-| **Pamięć** | Nie zajmuje pamięci | Zajmuje pamięć RAM |
+| **Pamięć** | Nie zajmuje jej *każdy obiekt osobno* (kod metod jest wspólny) | Każdy obiekt zajmuje pamięć na własne pola |
 
 ### Analogia ze świata rzeczywistego
 
@@ -389,20 +394,20 @@ classDiagram
         -string ISBN
         -bool dostepna
         +PrzypiszCzytelnikowi(Czytelnik)
-        +ZwrocOdCzytelmika()
+        +ZwrocOdCzytelnika()
     }
     
     class Czytelnik {
         -string imie
         -string nazwisko
-        -int idCzytelmika
+        -int idCzytelnika
         -Ksiazka[] wypozyczone
         +WypozyczKsiazke(Ksiazka)
         +ZwrocKsiazke(Ksiazka)
     }
     
-    Biblioteka "1" --> "wiele" Ksiazka
-    Czytelnik "wiele" --> "wiele" Ksiazka
+    Biblioteka "1" o-- "*" Ksiazka : zawiera
+    Czytelnik "*" --> "*" Ksiazka : wypożycza
 ```
 
 ### Diagram sekwencji - Wypożyczenie książki
@@ -434,8 +439,8 @@ sequenceDiagram
 // Abstrakcja - Osoba (klasa abstrakcyjna)
 public abstract class Osoba
 {
-    public string Imie { get; set; }
-    public string Nazwisko { get; set; }
+    public string Imie { get; set; } = "";
+    public string Nazwisko { get; set; } = "";
     
     public abstract void Przedstaw();
 }
@@ -443,7 +448,7 @@ public abstract class Osoba
 // Konkretna klasa
 public class Student : Osoba
 {
-    public string NumerIndeksu { get; set; }
+    public string NumerIndeksu { get; set; } = "";
     public decimal Srednia { get; set; }
     
     public override void Przedstaw()
@@ -467,8 +472,8 @@ Student student = new Student
     Srednia = 4.5m
 };
 
-student.Przedstaw();      // Polymorphism
-student.IdzNaZajecia();    // Student-specific method
+student.Przedstaw();       // wywołanie przesłoniętej metody abstrakcyjnej
+student.IdzNaZajecia();    // metoda specyficzna dla Studenta
 ```
 
 ### Przykład 2: Implementacja czterech filarów
@@ -504,7 +509,7 @@ public class SamochodSportowy : Samochod
 {
     public override void Uruchom()
     {
-        Console.WriteLine("Silnik V8 rura! VROOOOM!");
+        Console.WriteLine("Silnik V8 ryczy! VROOOOM!");
     }
 }
 

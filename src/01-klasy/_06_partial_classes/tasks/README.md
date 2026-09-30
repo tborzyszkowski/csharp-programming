@@ -1,9 +1,12 @@
 # Zadania - Klasy Częściowe
 
+> Każdą część klasy umieść w **osobnym pliku** (np. `Student.cs`, `Student.Methods.cs`, `Student.Validation.cs`),
+> tak jak w przykładzie `Employee` w katalogu `code/`.
+
 ## 📝 Zadanie 1: Student z partial classes
 
 Rozbij klasę Student na 3 części:
-- Część 1: Właściwości (Name, Id, GPA)
+- Część 1: Właściwości (Name, Id, GPA) i konstruktor
 - Część 2: Metody (UpdateGPA, IsExcellent)
 - Część 3: Walidacja (IsValid)
 
@@ -20,9 +23,9 @@ Stwórz klasę `Logger` rozproszoną na 2 części:
 ## 📝 Zadanie 3: Configuration builder
 
 Utwórz klasę `AppConfig` (partial) ze:
-- Częścią 1: Pola (AppName, Version, Settings)
-- Częścią 2: Metody Load/Save
-- Częścią 3: Validacja
+- Częścią 1: Pola i właściwości (AppName, Version, Settings)
+- Częścią 2: Operacje na ustawieniach oraz `Save(path)` / `Load(path)` (JSON)
+- Częścią 3: Walidacja
 
 ---
 
@@ -98,9 +101,11 @@ Console.WriteLine($"After update: {student}");
 
 - **Część 1**: Pola i konstruktor - definicja struktury
 - **Część 2**: Metody biznesowe - działania na obiekcie
-- **Część 3**: Walidacja i ToString - Ochrona danych i prezentacja
-- Są one **logicznie osobne** ale fizycznie (dla kompilatora) **jeden plik**
-- Zaleta: Łatwiej organizować dużo kodu
+- **Część 3**: Walidacja i ToString - ochrona danych i prezentacja
+- Części są **logicznie osobne** i zwykle leżą w **osobnych plikach**, ale dla kompilatora tworzą **jedną klasę**
+  (część 2 i 3 korzystają z prywatnych pól zadeklarowanych w części 1)
+- Zaleta: łatwiej organizować dużą ilość kodu
+- Uwaga: jeśli klasa jest tak duża, że trzeba ją dzielić na pliki, rozważ również podział na kilka klas o jednej odpowiedzialności
 
 ---
 
@@ -149,8 +154,8 @@ logger.Error("Błąd połączenia");
 
 - Metody publiczne w **Części 1**
 - Metody prywatne/helper w **Części 2**
-- Czytelniej rozdzielić interfejs public od implementacji
-- Łatwiej testować każdą część osobno
+- Część 1 używa prywatnej metody zdefiniowanej w Części 2 – to możliwe, bo to jedna klasa
+- Czytelniej rozdzielić interfejs publiczny od implementacji
 
 ---
 
@@ -178,9 +183,11 @@ public partial class AppConfig
 }
 ```
 
-### Kod - Część 2 (Load/Save)
+### Kod - Część 2 (Operacje i Load/Save)
 
 ```csharp
+using System.Text.Json;
+
 public partial class AppConfig
 {
     public void AddSetting(string key, string value)
@@ -197,10 +204,26 @@ public partial class AppConfig
     {
         settings.Clear();
     }
+    
+    public void Save(string path)
+    {
+        File.WriteAllText(path, JsonSerializer.Serialize(settings));
+    }
+    
+    public void Load(string path)
+    {
+        var loaded = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(path));
+        settings.Clear();
+        if (loaded is not null)
+        {
+            foreach (var pair in loaded)
+                settings[pair.Key] = pair.Value;
+        }
+    }
 }
 ```
 
-### Kod - Część 3 (Validacja)
+### Kod - Część 3 (Walidacja)
 
 ```csharp
 public partial class AppConfig
@@ -251,7 +274,14 @@ public void PartialClass_Student_Works()
 public void PartialClass_Logger_Works()
 {
     var logger = new Logger();
-    logger.Log("Test message");  // Powinno się wypisać
+
+    var writer = new StringWriter();
+    var original = Console.Out;
+    Console.SetOut(writer);
+    try { logger.Log("Test message"); }
+    finally { Console.SetOut(original); }
+
+    Assert.Contains("[INFO] Test message", writer.ToString());
 }
 
 [Fact]
@@ -262,6 +292,27 @@ public void PartialClass_Config_Works()
     Assert.Equal("Value1", config.GetSetting("Key1"));
     Assert.True(config.IsValid());
 }
+
+[Fact]
+public void PartialClass_Config_SaveAndLoad_RoundTrips()
+{
+    var path = Path.GetTempFileName();
+    try
+    {
+        var config = new AppConfig("TestApp", "1.0");
+        config.AddSetting("Port", "5432");
+        config.Save(path);
+
+        var loaded = new AppConfig("TestApp", "1.0");
+        loaded.Load(path);
+
+        Assert.Equal("5432", loaded.GetSetting("Port"));
+    }
+    finally
+    {
+        File.Delete(path);
+    }
+}
 ```
 
 ---
@@ -271,11 +322,8 @@ public void PartialClass_Config_Works()
 **Pojęcia kluczowe**:
 - Klasy częściowe umożliwiają rozłożyć definicję klasy na wiele plików
 - Każda część musi mieć słowo kluczowe `partial`
-- Kompilator łączy wszystkie części w jedną klasę
-- Przydatne dla: wielkich klas, generowanego kodu, podziału pracy
-
-**YouTube - Partial Classes in C#**:
-- https://www.youtube.com/results?search_query=C%23+partial+classes+tutorial
+- Kompilator łączy wszystkie części w jedną klasę (w jednym zestawie)
+- Przydatne dla: kodu generowanego, podziału pracy, porządkowania dużych klas
 
 **Microsoft Docs**:
 - https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/partial-classes-and-methods

@@ -1,158 +1,3 @@
-## Enkapsulacja w praktyce
-
-### Pełny przykład klasy
-
-```csharp
-public class Pracownik
-{
-    // ========== POLA PRYWATNE ==========
-    private string firstName;
-    private string lastName;
-    private decimal salary;
-    private DateTime dateOfBirth;
-    private static int employeeCount = 0;
-    
-    // ========== KONSTRUKTORY ==========
-    
-    /// <summary>
-    /// Konstruktor domyślny
-    /// </summary>
-    public Pracownik()
-    {
-        firstName = "Nieznane";
-        lastName = "Nieznane";
-        salary = 0;
-        employeeCount++;
-    }
-    
-    /// <summary>
-    /// Konstruktor z parametrami
-    /// </summary>
-    public Pracownik(string firstName, string lastName, DateTime dateOfBirth)
-    {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
-        this.salary = 0;
-        employeeCount++;
-    }
-    
-    // ========== WŁAŚCIWOŚCI ==========
-    
-    public string FirstName
-    {
-        get { return firstName; }
-        set { firstName = value ?? ""; }
-    }
-    
-    public string LastName
-    {
-        get { return lastName; }
-        set { lastName = value ?? ""; }
-    }
-    
-    public string FullName => $"{firstName} {lastName}";
-    
-    public decimal Salary
-    {
-        get { return salary; }
-        set
-        {
-            if (value >= 0)
-                salary = value;
-            else
-                throw new ArgumentException("Pensja nie może być ujemna");
-        }
-    }
-    
-    public int Age => DateTime.Now.Year - dateOfBirth.Year;
-    
-    public static int EmployeeCount => employeeCount;
-    
-    // ========== METODY ==========
-    
-    public void GiveRaise(decimal amount)
-    {
-        if (amount > 0)
-            salary += amount;
-    }
-    
-    public void PrintInfo()
-    {
-        Console.WriteLine($"Pracownik: {FullName}");
-        Console.WriteLine($"Wiek: {Age}");
-        Console.WriteLine($"Pensja: {Salary:C}");
-    }
-    
-    public override string ToString()
-    {
-        return $"{FullName} ({Salary:C})";
-    }
-}
-```
-
-### Użycie
-
-```csharp
-var emp1 = new Pracownik("Jan", "Kowalski", new DateTime(1990, 5, 15));
-emp1.Salary = 3000;
-emp1.PrintInfo();
-
-emp1.GiveRaise(500);
-Console.WriteLine($"Nowa pensja: {emp1.Salary:C}");
-
-Console.WriteLine($"Liczba pracowników: {Pracownik.EmployeeCount}");
-```
-
----
-
-## Podsumowanie
-
-### Kluczowe pojęcia
-
-✅ **Klasa** - szablon dla obiektów  
-✅ **Pola** - przechowują dane  
-✅ **Konstruktory** - inicjalizują obiekty  
-✅ **Metody** - definiują zachowanie  
-✅ **Właściwości** - kontrolowany dostęp do danych  
-✅ **Enkapsulacja** - ochrona danych  
-
-### Konwencje C#
-
-- PascalCase dla klas, metod, właściwości
-- camelCase dla parametrów i zmiennych lokalnych
-- `_` lub `private` dla pól prywatnych
-- Properties do publicznego dostępu do danych
-
-### Następny krok
-
-W kolejnym rozdziale nauczysz się **tworzyć obiekty i z nich korzystać**.
-
----
-
-## 📖 Literatura i referencje
-
-1. **Microsoft Docs** - Classes and Structs  
-   https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/types/classes
-
-2. **Microsoft Docs** - Properties  
-   https://learn.microsoft.com/en-us/dotnet/csharp/properties
-
-3. **C# Player** - Classes  
-   https://csharpplayersguide.com/
-
-4. **Code Maze** - C# Properties  
-   https://code-maze.com/csharp-properties/
-
----
-
-## 💡 Notatki dla wykładowcy
-
-- Podkreśl różnicę między polem a właściwością
-- Pokaż, dlaczego enkapsulacja jest ważna (niemożliwość ustawienia wiek=-10)
-- Omów konwencje nazewnictwa C#
-- Przygotuj interaktywne demo z modyfikowaniem pól
-
 # Definicja Klasy w Języku C#
 
 ## 🎯 Cel rozdziału
@@ -189,9 +34,9 @@ dotnet test
 ### Zadania dla studentów
 
 [📝 ZADANIA](tasks/README.md) – 3 praktyczne ćwiczenia:
-- Tworzenie klasy `Person` z konstruktorami
-- System `BankAccount` z enkapsulacją
-- Klasa `Product` ze statycznymi polami
+- Klasa `Rectangle` z walidacją właściwości
+- Klasa `NumericSequence` (ciąg arytmetyczny) z właściwościami obliczanymi
+- Klasa `Employee` z walidacją i statycznym licznikiem identyfikatorów
 
 ---
 
@@ -226,11 +71,16 @@ public class NazwaKlasy
 | Element | Konwencja | Przykład |
 |---------|-----------|----------|
 | Klasa | PascalCase | `Person`, `BankAccount` |
-| Pole prywatne | camelCase z `_` | `_age`, `_firstName` |
-| Własność publiczna | PascalCase | `Age`, `FirstName` |
+| Pole prywatne | `_camelCase` (zalecenie Microsoft) | `_age`, `_firstName` |
+| Właściwość publiczna | PascalCase | `Age`, `FirstName` |
 | Metoda | PascalCase | `GetAge()`, `CalculateSalary()` |
 | Parametr metody | camelCase | `age`, `firstName` |
 | Zmienna lokalna | camelCase | `totalSalary`, `isActive` |
+
+> **Uwaga:** w przykładach tego modułu pola prywatne są często zapisywane bez prefiksu `_` (np. `firstName`)
+> i rozróżniane od parametrów przez `this.firstName` – to druga, również spotykana konwencja.
+> Ważne, aby w jednym projekcie stosować jedną z nich konsekwentnie. Identyfikatory w kodzie piszemy
+> po angielsku; polskie nazwy (`Osoba`, `Pracownik`) pojawiają się tylko w przykładach dydaktycznych w README.
 
 ---
 
@@ -287,8 +137,12 @@ public class Osoba
 }
 
 // Użycie
-var osoba = new Osoba();  // Bezboolowe wartości
+var osoba = new Osoba();  // imie = "Nieznane", wiek = 0
 ```
+
+> **Domyślny konstruktor kompilatora:** jeśli klasa nie definiuje *żadnego* konstruktora, kompilator dodaje
+> niejawny konstruktor bezparametrowy. Gdy tylko dopiszesz własny konstruktor (z parametrami lub bez),
+> niejawny konstruktor **znika** – `new Osoba()` przestaje się kompilować, jeśli sam go nie zdefiniujesz.
 
 #### 2. Konstruktor z parametrami
 
@@ -525,17 +379,17 @@ osoba.Przywitaj(pozdrowienie: "Hej", imie: "Sławek");  // Hej, Sławek!
 ### Czemu właściwości zamiast pól publicznych?
 
 ```csharp
-// ❌ ZŁEGO - pole publiczne
+// ❌ ŹLE - pole publiczne
 public class Osoba
 {
     public int Wiek;  // Można ustawić na -100!
 }
 
 var osoba = new Osoba();
-osoba.Wiek = -100;  // Błąd logiczny
+osoba.Wiek = -100;  // Błąd logiczny - nic tego nie blokuje
 
 
-// ✅ DOBRY - właściwość
+// ✅ DOBRZE - właściwość z walidacją
 public class Osoba
 {
     private int wiek;
@@ -545,16 +399,21 @@ public class Osoba
         get { return wiek; }
         set 
         { 
-            if (value >= 0)
-                wiek = value;
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(nameof(value), "Wiek nie może być ujemny");
+            wiek = value;
         }
     }
 }
 
 var osoba = new Osoba();
-osoba.Wiek = -100;  // Bez efektu
 osoba.Wiek = 25;    // OK
+osoba.Wiek = -100;  // ArgumentOutOfRangeException
 ```
+
+> Niepoprawną wartość można też po cichu zignorować lub zastąpić domyślną (tak robi część przykładów
+> w `Program.cs`), ale rzucenie wyjątku jest bezpieczniejsze: błąd jest widoczny natychmiast, a nie
+> dopiero jako dziwne zachowanie programu później.
 
 ### Rodzaje właściwości
 
@@ -567,8 +426,12 @@ public class Osoba
     public int Wiek { get; set; }
 }
 
-// C# automatycznie tworzy pola prywatne
+// C# automatycznie tworzy ukryte pole prywatne (backing field)
 ```
+
+Ponieważ włączone są typy referencyjne dopuszczające null (`<Nullable>enable</Nullable>`), właściwości typu
+`string` muszą dostać wartość przed zakończeniem konstruktora – inaczej kompilator ostrzeże (CS8618).
+Najprościej: `public string Imie { get; set; } = "";` albo `public required string Imie { get; set; }` (C# 11).
 
 #### 2. Właściwość read-only (tylko do odczytu)
 
@@ -577,7 +440,7 @@ public class Osoba
 {
     private int wiek;
     
-    public int Wiek => wiek;  // Wyrażenie lambda
+    public int Wiek => wiek;  // expression-bodied member (składnia =>)
     
     public void ObchodziUrodziny()
     {
@@ -600,22 +463,24 @@ public class Konto
 }
 ```
 
+Właściwości tylko do zapisu są rzadkie i uważane za zły styl (trudno je odczytać, np. w debugerze).
+Lepiej udostępnić metodę, np. `ZmienPin(string staryPin, string nowyPin)`, jak w `BankAccount` z `Program.cs`.
+
 #### 4. Właściwość z walidacją
 
 ```csharp
 public class Osoba
 {
-    private string email;
+    private string email = "";
     
     public string Email
     {
         get { return email; }
         set
         {
-            if (value.Contains("@"))
-                email = value;
-            else
-                throw new ArgumentException("Email musi zawierać @");
+            if (string.IsNullOrWhiteSpace(value) || !value.Contains('@'))
+                throw new ArgumentException("Email musi zawierać @", nameof(value));
+            email = value;
         }
     }
 }
@@ -624,17 +489,16 @@ public class Osoba
 #### 5. Właściwość z różnymi poziomami dostępu
 
 ```csharp
-public class Osoba
+public class Konto
 {
-    private int _pin;
-    
-    public string Imie { get; set; }
-    
-    // Publiczny getter, prywatny setter
-    public int Pin
+    // Publiczny getter, prywatny setter: czytać może każdy, zmieniać tylko sama klasa
+    public decimal Saldo { get; private set; }
+
+    public void Wplata(decimal kwota)
     {
-        get { return _pin; }
-        private set { _pin = value; }
+        if (kwota <= 0)
+            throw new ArgumentOutOfRangeException(nameof(kwota));
+        Saldo += kwota;
     }
 }
 ```
@@ -648,3 +512,184 @@ graph LR
     B --> D["setter<br/>z walidacją"]
     C --> E["Kod publiczny"]
     D --> E
+    D -.->|"wartość poprawna"| A
+    D -.->|"wartość niepoprawna"| F["Wyjątek"]
+```
+
+#### 6. Właściwości `init` i `required` (C# 9 / C# 11)
+
+```csharp
+public class Osoba
+{
+    // init: wartość można ustawić tylko w konstruktorze lub inicjalizatorze obiektu,
+    // potem obiekt jest niezmienny
+    public required string Imie { get; init; }
+    public required string Nazwisko { get; init; }
+    public int Wiek { get; init; }
+}
+
+var osoba = new Osoba { Imie = "Anna", Nazwisko = "Nowak", Wiek = 28 };
+// osoba.Imie = "Ewa";   // BŁĄD KOMPILACJI - init pozwala ustawić wartość tylko przy tworzeniu
+// new Osoba { Wiek = 3 } // BŁĄD KOMPILACJI - brak wymaganych właściwości (required)
+```
+
+`required` wymusza na kompilatorze ustawienie właściwości przy tworzeniu obiektu, a `init` zapobiega
+późniejszej zmianie. Szerzej: moduł *03-wlasciwosci*.
+
+---
+
+## Enkapsulacja w praktyce
+
+### Pełny przykład klasy
+
+```csharp
+public class Pracownik
+{
+    // ========== POLA ==========
+    private string _firstName = "";
+    private string _lastName = "";
+    private decimal _salary;
+    private readonly DateTime _dateOfBirth;        // readonly: ustawiane tylko w konstruktorze
+    private static int _employeeCount;             // wspólne dla wszystkich obiektów
+
+    // ========== KONSTRUKTORY ==========
+
+    // Jeden konstruktor "główny"; pozostałe delegują do niego przez this(...)
+    public Pracownik(string firstName, string lastName, DateTime dateOfBirth)
+    {
+        FirstName = firstName;     // przez właściwość, więc walidacja działa również tutaj
+        LastName = lastName;
+        _dateOfBirth = dateOfBirth;
+        _employeeCount++;
+    }
+
+    public Pracownik() : this("Nieznane", "Nieznane", DateTime.Today) { }
+
+    // ========== WŁAŚCIWOŚCI ==========
+
+    public string FirstName
+    {
+        get => _firstName;
+        set => _firstName = string.IsNullOrWhiteSpace(value)
+            ? throw new ArgumentException("Imię nie może być puste", nameof(value))
+            : value;
+    }
+
+    public string LastName
+    {
+        get => _lastName;
+        set => _lastName = string.IsNullOrWhiteSpace(value)
+            ? throw new ArgumentException("Nazwisko nie może być puste", nameof(value))
+            : value;
+    }
+
+    public string FullName => $"{_firstName} {_lastName}";
+
+    public decimal Salary
+    {
+        get => _salary;
+        set
+        {
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(nameof(value), "Pensja nie może być ujemna");
+            _salary = value;
+        }
+    }
+
+    // Wiek liczymy z uwzględnieniem tego, czy urodziny już były w tym roku
+    public int Age
+    {
+        get
+        {
+            var today = DateTime.Today;
+            int age = today.Year - _dateOfBirth.Year;
+            if (_dateOfBirth.Date > today.AddYears(-age)) age--;
+            return age;
+        }
+    }
+
+    public static int EmployeeCount => _employeeCount;
+
+    // ========== METODY ==========
+
+    public void GiveRaise(decimal amount)
+    {
+        if (amount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(amount), "Podwyżka musi być dodatnia");
+        _salary += amount;
+    }
+
+    public override string ToString() => $"{FullName}, {Age} lat ({Salary:C})";
+}
+```
+
+> **Dlaczego nie `DateTime.Now.Year - dateOfBirth.Year`?** Taki wzór pomija to, czy urodziny już
+> były w bieżącym roku, więc przez część roku zwraca wiek o 1 za duży. Zawsze sprawdzaj wzory
+> na przypadkach granicznych.
+
+### Użycie
+
+```csharp
+var emp1 = new Pracownik("Jan", "Kowalski", new DateTime(1990, 5, 15));
+emp1.Salary = 3000;
+emp1.GiveRaise(500);
+Console.WriteLine(emp1);                                  // Jan Kowalski, 36 lat (3 500,00 zł)
+
+Console.WriteLine($"Liczba pracowników: {Pracownik.EmployeeCount}");   // dostęp przez NAZWĘ KLASY
+
+emp1.Salary = -1;   // ArgumentOutOfRangeException - obiekt nigdy nie trafia w niepoprawny stan
+```
+
+> **Pole statyczne a wielowątkowość:** `_employeeCount++` nie jest operacją atomową. W programie
+> wielowątkowym użyj `Interlocked.Increment(ref _employeeCount)`. Do tego tematu wrócimy w module o
+> programowaniu współbieżnym.
+
+---
+
+## Podsumowanie
+
+### Kluczowe pojęcia
+
+✅ **Klasa** - szablon dla obiektów  
+✅ **Pola** - przechowują dane  
+✅ **Konstruktory** - inicjalizują obiekty; własny konstruktor wyłącza niejawny bezparametrowy  
+✅ **Metody** - definiują zachowanie  
+✅ **Właściwości** - kontrolowany dostęp do danych (walidacja, pola obliczane, `init`)  
+✅ **Enkapsulacja** - ochrona danych i gwarancja poprawnego stanu obiektu  
+
+### Konwencje C#
+
+- PascalCase dla klas, metod, właściwości
+- camelCase dla parametrów i zmiennych lokalnych
+- `_camelCase` dla pól prywatnych (albo camelCase z `this.` – konsekwentnie w całym projekcie)
+- Właściwości do publicznego dostępu do danych, pola zawsze prywatne
+
+### Następny krok
+
+W kolejnym rozdziale nauczysz się **tworzyć obiekty i z nich korzystać**.
+
+---
+
+## 📖 Literatura i referencje
+
+1. **Microsoft Docs** - Classes and Structs  
+   https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/types/classes
+
+2. **Microsoft Docs** - Properties  
+   https://learn.microsoft.com/en-us/dotnet/csharp/properties
+
+3. **Microsoft Docs** - C# Coding Conventions  
+   https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/identifier-names
+
+4. **Code Maze** - C# Properties  
+   https://code-maze.com/csharp-properties/
+
+---
+
+## 💡 Notatki dla wykładowcy
+
+- Podkreśl różnicę między polem a właściwością
+- Pokaż, dlaczego enkapsulacja jest ważna (niemożliwość ustawienia wieku = -10)
+- Omów konwencje nazewnictwa C# i dlaczego spójność jest ważniejsza niż sama konwencja
+- Zapytaj: co się stanie z `new Osoba()`, gdy dopiszemy konstruktor z parametrami?
+- Przygotuj interaktywne demo z modyfikowaniem pól

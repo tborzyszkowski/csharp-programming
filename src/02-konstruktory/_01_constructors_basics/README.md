@@ -26,9 +26,11 @@ Zrozumienie roli konstruktorów w C#, ich syntaktyki, parametrów, i różnych t
 ```csharp
 public class Person
 {
-    // Konstruktor - ma taką samą nazwę jak klasa
+    // Konstruktor - ma taką samą nazwę jak klasa i NIE ma typu zwracanego (nawet void)
     public Person(string name, int age)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        
         Name = name;
         Age = age;
     }
@@ -37,6 +39,13 @@ public class Person
     public int Age { get; set; }
 }
 ```
+
+Cechy konstruktora:
+- nazwa = nazwa klasy, brak typu zwracanego
+- można go **przeciążać** (wiele wersji z różnymi parametrami)
+- **nie jest dziedziczony** – klasa pochodna musi zdefiniować własne konstruktory i wywołać konstruktor klasy bazowej (`: base(...)`)
+- nie może być `virtual`, `abstract` ani `override`
+- jego zadaniem jest doprowadzić obiekt do **poprawnego stanu początkowego** – jeśli nie może, rzuca wyjątek
 
 ### Kiedy konstruktor się uruchamia?
 
@@ -49,29 +58,31 @@ var person = new Person("Anna", 30);  // ← Tutaj uruchamia się konstruktor
 
 ## Konstruktor domyślny
 
-**Konstruktor domyślny** to konstruktor bez parametrów. Jeśli go nie zdefiniujesz, C# automatycznie generuje pusty:
+**Konstruktor domyślny** to konstruktor bez parametrów. Jeśli klasa **nie definiuje żadnego** konstruktora, kompilator dodaje pusty konstruktor domyślny:
 
 ```csharp
 public class Car
 {
     // Jeśli nie definiujesz żadnego konstruktora,
-    // C# automatycznie tworzy domyślny:
-    // public Car() { }
+    // kompilator automatycznie dodaje:  public Car() { }
 }
 
 // Użycie
 var car = new Car();  // Domyślny konstruktor uruchamia się automatycznie
 ```
 
-### Problem: domyślny konstruktor może być zbyt permisywny
+> **Uwaga:** gdy tylko dopiszesz *jakikolwiek* własny konstruktor (np. z parametrami), konstruktor domyślny generowany
+> przez kompilator **znika**. Jeśli chcesz mieć też wersję bezparametrową, musisz ją zapisać jawnie.
+
+### Problem: domyślny konstruktor pozwala utworzyć obiekt w niepełnym stanie
 
 ```csharp
 public class BankAccount
 {
+    public string? AccountNumber { get; set; }
     public decimal Balance { get; set; }
     
-    // Niebezpieczeństwo: można utworzyć konto bez inicjalizacji
-    // var account = new BankAccount();  // Balance = 0 (nieistniejące konto!)
+    // Niebezpieczeństwo: new BankAccount() daje konto bez numeru - obiekt jest "niepełny"
 }
 ```
 
@@ -150,24 +161,23 @@ Powyższy kod ma duplikacje. Rozwiązanie: łańcuchowe konstruktory (`this()`) 
 
 ## Konstruktor statyczny
 
-**Konstruktor statyczny** inicjalizuje statyczne pola klasy. Uruchamia się raz, przed pierwszym użyciem klasy:
+**Konstruktor statyczny** inicjalizuje statyczne składowe klasy. Wykonuje się **dokładnie raz** – uruchamia go środowisko wykonawcze (CLR) przed pierwszym utworzeniem instancji lub pierwszym odwołaniem do składowej statycznej:
 
 ```csharp
 public class Logger
 {
-    // Statyczne pole - dzielone przez wszystkie instancje
+    // Statyczne pole - wspólne dla wszystkich instancji
     private static int logCount = 0;
-    private static string logFile;
+    private static readonly string logFile;
     
-    // Konstruktor statyczny - uruchamia się raz
+    // Konstruktor statyczny - bez modyfikatora dostępu, bez parametrów
     static Logger()
     {
         logFile = "logs.txt";
-        File.WriteAllText(logFile, "Logger initialized\n");
         Console.WriteLine("Logger static constructor called");
     }
     
-    // Konstruktor zwykły
+    // Konstruktor zwykły (instancji)
     public Logger(string name)
     {
         Console.WriteLine($"Logger instance for {name} created");
@@ -190,6 +200,14 @@ Logger instance for Main created
 Logger instance for Service created
 ```
 
+**Zasady:**
+- może być **tylko jeden** na klasę, bez parametrów i bez modyfikatora dostępu; nie można go wywołać ręcznie
+- wykonywany jest **bezpiecznie wielowątkowo** (CLR pilnuje, by zrobił to tylko jeden wątek)
+- jeśli rzuci wyjątek, typ staje się bezużyteczny: każda próba użycia kończy się `TypeInitializationException`
+  – dlatego **nie umieszczaj w nim operacji, które mogą zawieść** (plik, sieć, baza danych)
+- dokładny moment uruchomienia jest ścisły tylko wtedy, gdy klasa ma konstruktor statyczny; dla klasy, w której są tylko
+  inicjalizatory pól statycznych, CLR może je wykonać wcześniej (`beforefieldinit`)
+
 ---
 
 ## Konstruktor prywatny
@@ -201,7 +219,8 @@ Logger instance for Service created
 ```csharp
 public class Database
 {
-    private static Database instance;
+    // Lazy<T> - leniwe i bezpieczne wielowątkowo utworzenie instancji
+    private static readonly Lazy<Database> instance = new(() => new Database());
     
     // Prywatny konstruktor - nie można tworzyć z zewnątrz
     private Database()
@@ -209,15 +228,8 @@ public class Database
         Console.WriteLine("Database initialized");
     }
     
-    // Statyczna metoda do pobrania instancji
-    public static Database GetInstance()
-    {
-        if (instance == null)
-        {
-            instance = new Database();  // OK - wewnątrz klasy
-        }
-        return instance;
-    }
+    // Statyczna właściwość/metoda do pobrania instancji
+    public static Database GetInstance() => instance.Value;
     
     public void Query(string sql)
     {
@@ -232,6 +244,14 @@ Console.WriteLine(ReferenceEquals(db1, db2));  // True - to ta sama instancja!
 
 // var db3 = new Database();  // BŁĄD! Konstruktor jest prywatny
 ```
+
+> **Klasyczna, naiwna wersja** z `if (instance == null) instance = new Database();` **nie jest bezpieczna wielowątkowo** –
+> dwa wątki mogą jednocześnie zobaczyć `null` i utworzyć dwie instancje. Rozwiązania: `Lazy<T>` (jak wyżej),
+> inicjalizacja `static readonly Database Instance = new();` albo blokada (`lock`).
+>
+> **Singleton ma wady:** globalny stan, trudniejsze testowanie. W nowoczesnych aplikacjach zwykle zastępuje się go
+> **wstrzykiwaniem zależności** (DI) z rejestracją usługi jako *singleton* w kontenerze (`AddSingleton`) – klasa sama
+> nie pilnuje wtedy swojej unikalności.
 
 ### Factory Pattern
 
@@ -274,21 +294,22 @@ Console.WriteLine(doc.Type);   // Word
 
 ### ✅ Dobre praktyki
 
-1. **Zawsze waliduj parametry** w konstruktorze:
+1. **Zawsze waliduj parametry** w konstruktorze (nowoczesne metody pomocnicze skracają kod):
    ```csharp
    public class Age
    {
-       private int years;
+       private readonly int years;
        
        public Age(int years)
        {
-           if (years < 0 || years > 150)
-               throw new ArgumentException("Wiek musi być między 0 a 150");
+           ArgumentOutOfRangeException.ThrowIfNegative(years);
+           ArgumentOutOfRangeException.ThrowIfGreaterThan(years, 150);
            
            this.years = years;
        }
    }
    ```
+   Dla `null`: `ArgumentNullException.ThrowIfNull(arg)`; dla pustych napisów: `ArgumentException.ThrowIfNullOrWhiteSpace(arg)`.
 
 2. **Unikaj ciężkich operacji w konstruktorze**:
    ```csharp
@@ -347,11 +368,10 @@ Console.WriteLine(doc.Type);   // Word
    /// </summary>
    /// <param name="name">Pełne imię i nazwisko</param>
    /// <param name="age">Wiek osoby (0-150)</param>
-   /// <exception cref="ArgumentNullException">Jeśli name jest null</exception>
+   /// <exception cref="ArgumentException">Jeśli name jest null, pusty lub składa si tylko z białych znaków</exception>
    public Person(string name, int age)
    {
-       if (string.IsNullOrWhiteSpace(name))
-           throw new ArgumentNullException(nameof(name));
+       ArgumentException.ThrowIfNullOrWhiteSpace(name);
        
        Name = name;
        Age = age;
@@ -372,9 +392,9 @@ graph TB
     end
     
     subgraph Cechy["Cechy"]
-        A1["Brak parametrów<br/>Uruchamia się raz"]
+        A1["Brak parametrów<br/>Uruchamia się przy każdym new"]
         B1["Z parametrami<br/>Overloading"]
-        C1["Statyczne pola<br/>Raz na klasę"]
+        C1["Statyczne pola<br/>Raz na klasę (przez CLR)"]
         D1["Brak dostępu z<br/>zewnątrz"]
     end
     
@@ -403,16 +423,17 @@ graph TB
 ```mermaid
 sequenceDiagram
     participant Code as Kod
-    participant Heap as Heap Memory
+    participant CLR as Runtime (CLR)
     participant Constructor as Konstruktor
     participant Fields as Pola
     
-    Code->>Heap: new Person("Jan", 30)
-    Heap->>Constructor: Uruchom konstruktor
+    Code->>CLR: new Person("Jan", 30)
+    CLR->>CLR: Przydziel pamięć na stercie (pola wyzerowane)
+    CLR->>Constructor: Uruchom konstruktor
     Constructor->>Fields: Inicjalizuj Name
     Constructor->>Fields: Inicjalizuj Age
-    Constructor-->>Heap: Zwróć referencję
-    Heap-->>Code: var person = [referencja]
+    Constructor-->>Code: Zwróć referencję
+    Note right of Code: var person = [referencja]
 ```
 
 ---
@@ -449,7 +470,6 @@ dotnet build
 
 - [Microsoft Learn: Constructors](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/constructors)
 - [MSDN: Static Constructors](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/static-constructors)
-- [YouTube: C# Constructors](https://www.youtube.com/results?search_query=C%23+constructors+tutorial)
 
 ---
 

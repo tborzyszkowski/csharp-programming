@@ -3,44 +3,11 @@ using Xunit;
 
 namespace PartialClasses;
 
-// Część 1: Definicja podstawowa
-public partial class Employee
-{
-    private string name;
-    private int id;
-    private decimal salary;
-    
-    public string Name => name;
-    public int Id => id;
-    public decimal Salary => salary;
-    
-    public Employee(string name, int id, decimal salary)
-    {
-        this.name = name;
-        this.id = id;
-        this.salary = salary;
-    }
-}
-
-// Część 2: Logika biznesowa
-public partial class Employee
-{
-    public void GiveRaise(decimal amount)
-    {
-        if (amount > 0)
-            salary += amount;
-    }
-    
-    public bool IsHighEarner() => salary >= 5000;
-}
-
-// Część 3: Walidacja
-public partial class Employee
-{
-    public bool IsValid() => !string.IsNullOrEmpty(name) && salary >= 0;
-    
-    public override string ToString() => $"{name} (ID:{id}) - {salary:C}";
-}
+// Klasa Employee jest rozłożona na trzy pliki w tym katalogu:
+//   Employee.cs            - dane i konstruktor
+//   Employee.Business.cs   - logika biznesowa
+//   Employee.Validation.cs - walidacja i prezentacja
+// Kompilator łączy je w jeden typ, więc Program widzi jedną klasę Employee.
 
 /// ============================================
 /// DEMONSTRACJA
@@ -50,6 +17,7 @@ public class Program
 {
     public static void Main()
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.WriteLine("╔════════════════════════════════════════════════════════╗");
         Console.WriteLine("║  KLASY CZĘŚCIOWE (PARTIAL CLASSES)                    ║");
         Console.WriteLine("╚════════════════════════════════════════════════════════╝\n");
@@ -88,5 +56,31 @@ public class PartialClassesTests
         Assert.True(emp.IsValid());
         emp.GiveRaise(1000);
         Assert.Equal(4000, emp.Salary);
+    }
+
+    [Fact]
+    public void PartialClass_NonPositiveRaise_IsIgnored()
+    {
+        var emp = new Employee("John", 789, 3000);
+
+        emp.GiveRaise(-100);
+
+        Assert.Equal(3000, emp.Salary);
+    }
+
+    [Fact]
+    public void PartialClass_IsHighEarner_UsesThresholdFromBusinessPart()
+    {
+        Assert.False(new Employee("A", 1, 4999).IsHighEarner());
+        Assert.True(new Employee("B", 2, 5000).IsHighEarner());
+    }
+
+    [Fact]
+    public void PartialClass_AllPartsFormSingleType()
+    {
+        // Metody z różnych plików należą do tego samego typu w czasie wykonania
+        Assert.NotNull(typeof(Employee).GetMethod("GiveRaise"));   // Employee.Business.cs
+        Assert.NotNull(typeof(Employee).GetMethod("IsValid"));     // Employee.Validation.cs
+        Assert.NotNull(typeof(Employee).GetProperty("Salary"));    // Employee.cs
     }
 }

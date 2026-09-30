@@ -1,7 +1,7 @@
 graph TD
-    A["Pojazd<br/>(Abstrakcja)"] -->|"implementuje"| B["Samochód"]
-    A -->|"implementuje"| C["Rower"]
-    A -->|"implementuje"| D["Motocykl"]
+    A["Pojazd<br/>(abstrakcja)"] -->|"specjalizują (dziedziczą)"| B["Samochód"]
+    A -->|"specjalizują (dziedziczą)"| C["Rower"]
+    A -->|"specjalizują (dziedziczą)"| D["Motocykl"]
     
     A -.->|"ukrywa szczegóły"| E["Jak pracuje silnik"]
-    A -.->|"ukrywa szczegóły"| F["Jak działa hamulce"]
+    A -.->|"ukrywa szczegóły"| F["Jak działają hamulce"]

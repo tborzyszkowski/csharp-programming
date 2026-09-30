@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Xunit;
 
 namespace OOPFundamentals;
@@ -24,7 +25,7 @@ public abstract class Animal
     public Animal(string name) => Name = name;
     
     /// <summary>
-    /// Abstrakcyjna metoda - każne zwierzę musi wydawać dźwięk
+    /// Abstrakcyjna metoda - każde zwierzę musi wydawać dźwięk
     /// </summary>
     public abstract void MakeSound();
     
@@ -59,7 +60,7 @@ public class Dog : Animal
     
     public void Fetch()
     {
-        Console.WriteLine($"{Name} przynosisz piłkę");
+        Console.WriteLine($"{Name} przynosi piłkę");
     }
 }
 
@@ -93,7 +94,7 @@ public class Cat : Animal
 public class BankAccount
 {
     private decimal balance;  // Prywatna zmienna
-    private int pin;          // Chroniony PIN
+    private int pin;          // Chroniony PIN (uproszczenie: w realnym systemie przechowuje się hash, nie PIN)
     
     public string AccountHolder { get; }
     
@@ -244,9 +245,12 @@ public class Program
 {
     static void Main()
     {
+        // Bez tego polskie znaki i ramki mogą być źle wyświetlane w konsoli Windows
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+
         Console.WriteLine("╔════════════════════════════════════════════════════════╗");
         Console.WriteLine("║  OOP FUNDAMENTALS - Cztery filary programowania        ║");
-        Console.WriteLine("║  obiektowego w C#                                     ║");
+        Console.WriteLine("║  obiektowego w C#                                      ║");
         Console.WriteLine("╚════════════════════════════════════════════════════════╝\n");
         
         DemonstrateAbstraction();
@@ -274,7 +278,7 @@ public class Program
             new Dog("Buddy")
         };
         
-        // Polimorfizm - każne zwierzę wydaje inny dźwięk
+        // Polimorfizm - każde zwierzę wydaje inny dźwięk
         Console.WriteLine("Każde zwierzę wydaje inny dźwięk:");
         foreach (var animal in animals)
         {
@@ -344,7 +348,7 @@ public class Program
         foreach (var emp in employees)
         {
             decimal salary = emp.CalculateSalary();
-            Console.WriteLine($"{emp.Name:20} - {salary:C}");
+            Console.WriteLine($"{emp.Name,-10} - {salary:C}");
         }
     }
 }
@@ -355,23 +359,50 @@ public class Program
 
 public class OOPFundamentalsTests
 {
+    // Przechwytuje tekst wypisany na konsolę podczas wykonania akcji
+    private static string CaptureConsole(Action action)
+    {
+        var original = Console.Out;
+        var writer = new StringWriter();
+        Console.SetOut(writer);
+        try { action(); }
+        finally { Console.SetOut(original); }
+        return writer.ToString();
+    }
+
     [Fact]
     public void Dog_MakeSound_OutputsCorrectSound()
     {
-        // Arrange
         var dog = new Dog("Rex");
-        
-        // Act & Assert
-        Assert.NotNull(dog);
-        Assert.Equal("Rex", dog.Name);
+
+        var output = CaptureConsole(dog.MakeSound);
+
+        Assert.Contains("Rex: Hau! Hau!", output);
     }
     
     [Fact]
     public void Cat_MakeSound_OutputsCorrectSound()
     {
         var cat = new Cat("Whiskers");
-        Assert.NotNull(cat);
-        Assert.Equal("Whiskers", cat.Name);
+
+        var output = CaptureConsole(cat.MakeSound);
+
+        Assert.Contains("Whiskers: Miau!", output);
+    }
+
+    [Fact]
+    public void Animals_Polymorphism_EachTypeUsesOwnImplementation()
+    {
+        Animal[] animals = { new Dog("Rex"), new Cat("Mruczek") };
+
+        var output = CaptureConsole(() =>
+        {
+            foreach (var animal in animals)
+                animal.MakeSound();
+        });
+
+        Assert.Contains("Hau!", output);
+        Assert.Contains("Miau!", output);
     }
     
     [Fact]
@@ -437,5 +468,24 @@ public class OOPFundamentalsTests
     {
         var intern = new Intern("Bob", 2000);
         Assert.Equal(1000, intern.CalculateSalary());
+    }
+
+    [Fact]
+    public void Employee_Polymorphism_ReferenceOfBaseTypeCallsOverride()
+    {
+        Employee employee = new Manager("Jane", 3000, 500);
+
+        // Typ zmiennej to Employee, ale wykonuje się Manager.CalculateSalary()
+        Assert.Equal(3500, employee.CalculateSalary());
+    }
+
+    [Fact]
+    public void BankAccount_Deposit_NegativeAmount_DoesNotChangeBalance()
+    {
+        var account = new BankAccount("John Doe", 1234);
+
+        account.Deposit(-50);
+
+        Assert.Equal(0, account.Balance);
     }
 }

@@ -1,10 +1,10 @@
 graph TB
-    A["Pracownik (interfejs)"]
-    A --> B["ObliczPensje()"]
+    A["Pracownik (klasa bazowa)"]
+    A --> B["virtual ObliczPensje()"]
     
-    A -.->|"implementacja 1"| C["Pracownik<br/>ObliczPensje() → 2000"]
-    A -.->|"implementacja 2"| D["Kierownik<br/>ObliczPensje() → 4000"]
-    A -.->|"implementacja 3"| E["Praktykant<br/>ObliczPensje() → 1500"]
+    A -.->|"wersja bazowa"| C["Pracownik<br/>ObliczPensje() → 2000"]
+    A -.->|"override"| D["Kierownik<br/>ObliczPensje() → 4000"]
+    A -.->|"override"| E["Praktykant<br/>ObliczPensje() → 1500"]
     
     F["Kod klienta<br/>Pracownik p = GetPracownik();"] -.->|"wywołuje"| B
-    F -.->|"dynamiczne wybranie"| G["Prawidłowa<br/>implementacja"]
+    F -.->|"wybór wg rzeczywistego typu obiektu"| G["Właściwa<br/>implementacja"]

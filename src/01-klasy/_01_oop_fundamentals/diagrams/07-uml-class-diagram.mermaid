@@ -12,17 +12,17 @@ classDiagram
         -string ISBN
         -bool dostepna
         +PrzypiszCzytelnikowi(Czytelnik)
-        +ZwrocOdCzytelmika()
+        +ZwrocOdCzytelnika()
     }
     
     class Czytelnik {
         -string imie
         -string nazwisko
-        -int idCzytelmika
+        -int idCzytelnika
         -Ksiazka[] wypozyczone
         +WypozyczKsiazke(Ksiazka)
         +ZwrocKsiazke(Ksiazka)
     }
     
-    Biblioteka "1" --> "wiele" Ksiazka
-    Czytelnik "wiele" --> "wiele" Ksiazka
+    Biblioteka "1" o-- "*" Ksiazka : zawiera
+    Czytelnik "*" --> "*" Ksiazka : wypożycza

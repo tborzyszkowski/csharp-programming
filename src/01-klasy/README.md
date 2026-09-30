@@ -63,7 +63,7 @@ Referencja do bieżącego obiektu, łańcuchowanie konstruktorów, fluent API.
 
 ### **Temat 5: Ukrywanie Informacji – Modyfikatory Dostępu**
 
-`public`, `private`, `protected`, `internal` – kontrol dostępu do członków klasy.
+`public`, `private`, `protected`, `internal`, `private protected` – kontrola dostępu do członków klasy.
 
 - 📄 [README](_05_access_modifiers/README.md)
 - 💻 [Kod źródłowy](_05_access_modifiers/code/)
@@ -169,36 +169,31 @@ dotnet clean
 
 ## 🎯 Zadania dla studentów
 
-Każdy temat zawiera **3-5 praktycznych zadań** przeznaczonych do samodzielnego wykonania.
+Każdy temat zawiera **kilka praktycznych zadań** (zwykle 2–4) przeznaczonych do samodzielnego wykonania.
 
 ### Struktura zadań
 
 Każde zadanie zawiera:
 - **Opis problemu** – Czego należy się nauczyć
 - **Wymagania** – Co dokładnie zaimplementować
-- **Przykład wyjścia** – Jak powinien wyglądać efekt
-- **Wskazówki** – Podpowiedzi dla utknięcia
-- **Rozwiązanie** – Kompletny kod z objaśnieniami
+- **Przykład wyjścia / testy** – Jak powinien wyglądać efekt
+- **Wskazówki** – Podpowiedzi na wypadek utknięcia
+- **Rozwiązanie** – Kompletny kod z objaśnieniami (zajrzyj do niego dopiero po własnej próbie!)
 
 ### Jak pracować z zadaniami
 
 ```bash
-# 1. Wejdź do folderu zadań tematu
+# 1. Wejdź do folderu zadań tematu i przeczytaj README.md
 cd _01_oop_fundamentals/tasks/
 
-# 2. Przeczytaj README.md
-cat README.md
-
-# 3. Stwórz nowy plik C# z własnym kodem
-# Lub zmodyfikuj Program.cs w code/
-
-# 4. Przetestuj swoją implementację
+# 2. Napisz własny kod: zmodyfikuj Program.cs w code/ lub dodaj nowy plik .cs
 cd ../code/
-dotnet run
 
-# 5. Sprawdź swój kod z rozwiązaniem
-cd ../tasks/
-# (porównaj swój kod z sekcją "Rozwiązanie")
+# 3. Uruchom program i testy
+dotnet run
+dotnet test
+
+# 4. Dopiero teraz porównaj swój kod z sekcją "Rozwiązanie" w ../tasks/README.md
 ```
 
 ### 📝 Przykład zadania
@@ -271,24 +266,21 @@ graph TB
 ## 📝 Konwencje kodu
 
 ```csharp
-// Klasy
+// Typy i ich składowe: PascalCase
 public class MyClass { }
-
-// Pola prywatne
-private int myField;
-private string _myField;
-
-// Właściwości
 public int MyProperty { get; set; }
-
-// Metody
 public void MyMethod() { }
-public string GetName() { }
 
-// Zmienne lokalne
-int localVariable;
-string myString;
+// Pola prywatne: _camelCase (w przykładach często też samo camelCase + this., patrz temat 2)
+private string _myField = "";
+
+// Parametry i zmienne lokalne: camelCase
+int localVariable = 0;
+string myString = "";
 ```
+
+> Identyfikatory w kodzie pisz po angielsku. Polskie nazwy (`Osoba`, `Pracownik`) pojawiają się wyłącznie
+> w niektórych przykładach w plikach README, żeby zwiększyć ich czytelność dla początkujących.
 
 ---
 
@@ -349,6 +341,7 @@ Jeśli odpowiedziałeś "TAK" na wszystkie pytania – **Gratuluję! Jesteś got
 | Wersja | Data | Zmiana |
 |--------|------|--------|
 | 1.0 | 2024-08-30 | Inicjalna wersja |
+| 1.1 | 2026-09-30 | Przegląd merytoryczny: naprawa kompilacji projektów i testów (`dotnet test`), korekty treści (modyfikatory dostępu, typy wartościowe/referencyjne, metody i klasy częściowe, struktury), uzupełnienie zadań i diagramów UML |
 
 ---
 
@@ -374,7 +367,7 @@ Jeśli odpowiedziałeś "TAK" na wszystkie pytania – **Gratuluję! Jesteś got
 
 ## 📄 Licencja
 
-Te materiały są dostępne na licencji **CC BY-NC-SA 4.0**
+Te materiały są dostępne na licencji **CC BY-NC 4.0** (Uznanie autorstwa – Użycie niekomercyjne) – szczegóły w pliku [LICENSE.md](../../LICENSE.md)
 
 ---
 

@@ -60,17 +60,18 @@ public class Student
 }
 
 // Przykład 3: Fluent API - zwracanie this
-public class StringBuilder
+// (nazwa TextBuilder, żeby nie mylić z System.Text.StringBuilder)
+public class TextBuilder
 {
     private string content = "";
     
-    public StringBuilder Append(string text)
+    public TextBuilder Append(string text)
     {
         content += text;
         return this;  // Zwraca bieżący obiekt
     }
     
-    public StringBuilder AppendLine(string text = "")
+    public TextBuilder AppendLine(string text = "")
     {
         content += text + Environment.NewLine;
         return this;  // Pozwala na łańcuchowanie
@@ -109,12 +110,14 @@ public class Program
 {
     public static void Main()
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+
         Console.WriteLine("╔════════════════════════════════════════════════════════╗");
         Console.WriteLine("║  SŁOWO KLUCZOWE this                                  ║");
         Console.WriteLine("║  Referencja do bieżącego obiektu                      ║");
         Console.WriteLine("╚════════════════════════════════════════════════════════╝\n");
         
-        DemonstrateFI eldVsParameter();
+        DemonstrateFieldVsParameter();
         Console.WriteLine("\n" + new string('─', 60) + "\n");
         
         DemonstrateConstructorChaining();
@@ -126,7 +129,7 @@ public class Program
         DemonstrateDelegateCallback();
     }
     
-    private static void DemonstrateFI eldVsParameter()
+    private static void DemonstrateFieldVsParameter()
     {
         Console.WriteLine("🔹 this - Rozróżnienie Pól od Parametrów");
         Console.WriteLine("──────────────────────────────────────────\n");
@@ -161,7 +164,7 @@ public class Program
         Console.WriteLine("⛓️  this - Fluent API (Łańcuchowanie Metod)");
         Console.WriteLine("──────────────────────────────────────────\n");
         
-        var sb = new StringBuilder()
+        var sb = new TextBuilder()
             .Append("Cześć ")
             .Append("Świecie")
             .AppendLine("!")
@@ -226,12 +229,44 @@ public class ThisKeywordTests
     [Fact]
     public void FluentAPIReturnsThis()
     {
-        var result = new StringBuilder()
+        var result = new TextBuilder()
             .Append("Hello")
             .Append(" ")
             .Append("World")
             .Build();
         
         Assert.Equal("Hello World", result);
+    }
+
+    [Fact]
+    public void FluentMethods_ReturnTheSameInstance()
+    {
+        var builder = new TextBuilder();
+
+        var returned = builder.Append("x");
+
+        Assert.Same(builder, returned);
+    }
+
+    [Fact]
+    public void ProcessWithDelegate_PassesCurrentObject()
+    {
+        var employee = new Employee("Jan", 1000);
+        Employee? received = null;
+
+        employee.ProcessWithDelegate(e => received = e);
+
+        Assert.Same(employee, received);
+    }
+
+    [Fact]
+    public void UpdateInfo_ParameterShadowsField_AssignsToField()
+    {
+        var person = new Person("Jan", 30);
+
+        person.UpdateInfo("Maria", 28);
+
+        Assert.Equal("Maria", person.Name);
+        Assert.Equal(28, person.Age);
     }
 }

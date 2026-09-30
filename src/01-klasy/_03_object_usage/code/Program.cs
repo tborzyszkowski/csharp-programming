@@ -16,9 +16,9 @@ namespace ObjectUsage;
 
 public class Person
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = "";
     public int Age { get; set; }
-    public string City { get; set; }
+    public string City { get; set; } = "";
     
     public override bool Equals(object? obj)
     {
@@ -34,7 +34,10 @@ public class Person
     public override string ToString() => $"{Name}, {Age} lat, {City}";
 }
 
-public class Point
+// STRUKTURA (typ wartościowy) - przypisanie kopiuje całą wartość.
+// Zmienna struktura (set) jest tu celowa, żeby pokazać semantykę kopiowania;
+// w produkcyjnym kodzie preferuj struktury niezmienne (readonly struct).
+public struct Point
 {
     public int X { get; set; }
     public int Y { get; set; }
@@ -72,6 +75,21 @@ public class BankAccount
     public override string ToString() => $"{Owner}: {balance:C}";
 }
 
+/// <summary>
+/// Metody pomocnicze pokazujące, że do metody przekazywana jest KOPIA referencji.
+/// </summary>
+public static class ReferenceDemo
+{
+    // Zmiana stanu obiektu jest widoczna u wołującego (obie referencje wskazują na ten sam obiekt)
+    public static void Rename(Person person) => person.Name = "Zmieniony";
+
+    // Przypisanie nowej wartości do parametru zmienia tylko lokalną kopię referencji
+    public static void Replace(Person person) => person = new Person { Name = "Nowy" };
+
+    // Modyfikator ref przekazuje samą zmienną - teraz podmiana jest widoczna u wołującego
+    public static void ReplaceByRef(ref Person person) => person = new Person { Name = "Nowy" };
+}
+
 /// ============================================
 /// KLASA GŁÓWNA - DEMONSTRACJA
 /// ============================================
@@ -80,6 +98,8 @@ public class Program
 {
     public static void Main()
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+
         Console.WriteLine("╔════════════════════════════════════════════════════════╗");
         Console.WriteLine("║  TWORZENIE I KORZYSTANIE Z OBIEKTÓW                   ║");
         Console.WriteLine("║  Operator new, referencje, inicjalizatory             ║");
@@ -95,6 +115,9 @@ public class Program
         Console.WriteLine("\n" + new string('─', 60) + "\n");
         
         DemonstrateEqualityAndIdentity();
+        Console.WriteLine("\n" + new string('─', 60) + "\n");
+        
+        DemonstrateNullAndParameterPassing();
     }
     
     private static void DemonstrateObjectCreation()
@@ -113,7 +136,7 @@ public class Program
         // Każde new tworzy nowy obiekt
         Person person2 = new Person { Name = "Jan", Age = 30, City = "Warszawa" };
         Console.WriteLine($"Person 2: {person2}");
-        Console.WriteLine($"Person 1 == Person 2 (==)? {ReferenceEquals(person1, person2)}");
+        Console.WriteLine($"ReferenceEquals(person1, person2)? {ReferenceEquals(person1, person2)}");
         Console.WriteLine($"Person 1.Equals(Person 2)? {person1.Equals(person2)}");
     }
     
@@ -125,7 +148,7 @@ public class Program
         // TYPY REFERENCYJNE - klasy
         Console.WriteLine(">>> Typ referencyjny (klasa Person):");
         var person1 = new Person { Name = "Jan", Age = 30, City = "Warszawa" };
-        var person2 = person1;  // Obie zmienne wskazują na TENSAMOBJEKT
+        var person2 = person1;  // Obie zmienne wskazują na TEN SAM OBIEKT
         
         Console.WriteLine($"  person1: {person1}");
         Console.WriteLine($"  person2: {person2}");
@@ -207,19 +230,42 @@ public class Program
         Console.WriteLine($"  person2: {person2} (identyczna zawartość)");
         Console.WriteLine($"  person3: {person3} (referencja do person1)");
         
-        Console.WriteLine("\nIdentyczność (czy to tensamobjekt?):");
+        Console.WriteLine("\nIdentyczność (czy to ten sam obiekt?):");
         Console.WriteLine($"  ReferenceEquals(person1, person2): {ReferenceEquals(person1, person2)}");
         Console.WriteLine($"  ReferenceEquals(person1, person3): {ReferenceEquals(person1, person3)}");
         
         Console.WriteLine("\nRówność (czy mają tę samą zawartość?):");
         Console.WriteLine($"  person1.Equals(person2): {person1.Equals(person2)}");
-        Console.WriteLine($"  person1 == person2: {person1 == person2} (==używa referencji)");
+        Console.WriteLine($"  person1 == person2: {person1 == person2} (operator == domyślnie porównuje referencje)");
         Console.WriteLine($"  person1.Equals(person3): {person1.Equals(person3)}");
         
         Console.WriteLine("\nJeśli person2.Name zmieni się:");
         person2.Name = "Maria";
         Console.WriteLine($"  person2: {person2}");
         Console.WriteLine($"  person1.Equals(person2): {person1.Equals(person2)} (już nie równe)");
+    }
+    
+    private static void DemonstrateNullAndParameterPassing()
+    {
+        Console.WriteLine("🔄 null i przekazywanie obiektów do metod");
+        Console.WriteLine("──────────────────────────────────────\n");
+        
+        // null = zmienna nie wskazuje na żaden obiekt
+        Person? nobody = null;
+        Console.WriteLine($"nobody?.Name ?? \"brak\": {nobody?.Name ?? "brak"}");
+        // Console.WriteLine(nobody.Name);  // NullReferenceException w czasie działania!
+        
+        var person = new Person { Name = "Jan", Age = 30, City = "Warszawa" };
+        
+        ReferenceDemo.Rename(person);
+        Console.WriteLine($"\nPo Rename(person):  {person.Name}  (obiekt został zmieniony)");
+        
+        person.Name = "Jan";
+        ReferenceDemo.Replace(person);
+        Console.WriteLine($"Po Replace(person): {person.Name}  (zmienna wołającego bez zmian)");
+        
+        ReferenceDemo.ReplaceByRef(ref person);
+        Console.WriteLine($"Po ReplaceByRef(ref person): {person.Name}  (zmienna podmieniona)");
     }
 }
 
@@ -296,6 +342,49 @@ public class ObjectUsageTests
         account.Deposit(500);
         
         Assert.Equal(1500, account.Balance);
+    }
+
+    [Fact]
+    public void PassingReference_ModifyingObject_IsVisibleToCaller()
+    {
+        var person = new Person { Name = "Jan" };
+
+        ReferenceDemo.Rename(person);
+
+        Assert.Equal("Zmieniony", person.Name);
+    }
+
+    [Fact]
+    public void PassingReference_ReassigningParameter_DoesNotAffectCaller()
+    {
+        var person = new Person { Name = "Jan" };
+        var original = person;
+
+        ReferenceDemo.Replace(person);
+
+        Assert.Same(original, person);
+        Assert.Equal("Jan", person.Name);
+    }
+
+    [Fact]
+    public void PassingReference_WithRef_ReplacesCallersVariable()
+    {
+        var person = new Person { Name = "Jan" };
+        var original = person;
+
+        ReferenceDemo.ReplaceByRef(ref person);
+
+        Assert.NotSame(original, person);
+        Assert.Equal("Nowy", person.Name);
+    }
+
+    [Fact]
+    public void NullConditionalOperator_OnNullReference_ReturnsNull()
+    {
+        Person? nobody = null;
+
+        Assert.Null(nobody?.Name);
+        Assert.Throws<NullReferenceException>(() => nobody!.Name.ToString());
     }
     
     [Fact]

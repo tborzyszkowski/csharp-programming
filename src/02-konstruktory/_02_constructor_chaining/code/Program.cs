@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace ConstructorChaining;
@@ -189,12 +190,47 @@ public class HttpRequestBuilder
     public override string ToString() => $"{Method} {Url} ({Headers.Count} headers)";
 }
 
+// ============ 5. KOLEJNOŚĆ WYKONANIA ŁAŃCUCHA ============
+
+// Pokazuje, że ciało konstruktora głównego (najdalej w łańcuchu) wykonuje się PIERWSZE,
+// a ciała konstruktorów, które do niego delegują, – dopiero potem (w odwrotnej kolejności wywołań).
+public class ChainOrderDemo
+{
+    public static List<string> Log { get; } = new();
+    
+    // Inicjalizator pola wykonuje się tylko raz - w konstruktorze, który NIE deleguje do this(...)
+    private readonly string marker = Trace("field initializer");
+    
+    public ChainOrderDemo() : this("A")
+    {
+        Trace("body of ctor()");
+    }
+    
+    public ChainOrderDemo(string a) : this(a, "B")
+    {
+        Trace("body of ctor(a)");
+    }
+    
+    public ChainOrderDemo(string a, string b)
+    {
+        Trace("body of ctor(a, b) - main");
+    }
+    
+    private static string Trace(string message)
+    {
+        Log.Add(message);
+        Console.WriteLine($"  {message}");
+        return message;
+    }
+}
+
 // ============ MAIN PROGRAM ============
 
 public class Program
 {
     public static void Main()
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.WriteLine("=== TEMAT 2: ŁAŃCUCHOWE WYWOŁANIE KONSTRUKTORÓW ===\n");
         
         // 1. Point - 2 konstruktory
@@ -234,6 +270,11 @@ public class Program
             .AddHeader("Content-Type", "application/json");
         Console.WriteLine(req);
         Console.WriteLine();
+        
+        // 5. Kolejność wykonania
+        Console.WriteLine("5. KOLEJNOŚĆ WYKONANIA ŁAŃCUCHA - new ChainOrderDemo():");
+        ChainOrderDemo.Log.Clear();
+        _ = new ChainOrderDemo();
     }
 }
 
@@ -334,5 +375,36 @@ public class ConstructorChainingTests
         Assert.Equal("https://api.example.com", req.Url);
         Assert.Equal("GET", req.Method);
         Assert.Equal(2, req.Headers.Count);
+    }
+    
+    [Fact]
+    public void ChainOrder_MainConstructorBodyRunsFirst()
+    {
+        ChainOrderDemo.Log.Clear();
+        
+        _ = new ChainOrderDemo();
+        
+        Assert.Equal(new[]
+        {
+            "field initializer",           // tylko raz, w konstruktorze bez this(...)
+            "body of ctor(a, b) - main",   // główny konstruktor jako pierwszy
+            "body of ctor(a)",
+            "body of ctor()"
+        }, ChainOrderDemo.Log);
+    }
+    
+    [Fact]
+    public void Validation_InMainConstructor_AppliesToAllOverloads()
+    {
+        Assert.Throws<ArgumentException>(() => new Employee(" "));
+        Assert.Throws<ArgumentException>(() => new Employee(" ", "IT"));
+        Assert.Throws<ArgumentException>(() => new Employee(" ", "IT", 1000));
+    }
+    
+    [Fact]
+    public void HttpRequest_EmptyUrl_ThrowsFromAnyOverload()
+    {
+        Assert.Throws<ArgumentException>(() => new HttpRequestBuilder(""));
+        Assert.Throws<ArgumentException>(() => new HttpRequestBuilder("", "POST"));
     }
 }

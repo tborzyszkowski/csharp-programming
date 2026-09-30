@@ -106,28 +106,42 @@ public class Employee
 
 ## Kolejność Wykonania
 
-Ważne: łańcuch konstruktorów wykonuje się **od najmniej do najbardziej parametrowego**:
+Musisz rozróżnić dwie rzeczy: **kolejność delegowania** (który konstruktor woła który) i **kolejność wykonywania ciał** konstruktorów.
 
 ```csharp
 var emp = new Employee("Jan");
-
-// Kolejność wykonania:
-// 1. Najpierw się uruchamia this(name, "HR")
-// 2. Potem this(name, department, 3000)
-// 3. Wreszcie kod głównego konstruktora (z 3 parametrami)
 ```
 
-### Wizualizacja
+1. **Delegowanie** – od konstruktora najmniej parametrowego do głównego:
+   `Employee(name)` → `Employee(name, "HR")` → `Employee(name, "HR", 3000)`
+2. **Wykonywanie ciał** – w kolejności **odwrotnej**: najpierw wykonuje się ciało **konstruktora głównego**
+   (ostatniego w łańcuchu), a potem, cofając się, ciała konstruktorów, które do niego delegowały.
 
 ```
 new Employee("Jan")
+        ↓ delegowanie (this(...))
+    Employee("Jan", "HR")
         ↓
-    this("Jan", "HR")
-        ↓
-    this("Jan", "HR", 3000)
-        ↓
-    [główny konstruktor - logika]
+    Employee("Jan", "HR", 3000)   ← główny konstruktor
+
+Wykonanie ciał:
+    1. ciało Employee(name, dept, salary)   ← NAJPIERW (walidacja i przypisania)
+    2. ciało Employee(name, dept)
+    3. ciało Employee(name)                 ← NA KOŃCU
 ```
+
+Dlatego w konstruktorach „pośrednich” można już bezpiecznie korzystać z w pełni zainicjowanego obiektu, a **logikę i walidację
+umieszczamy w konstruktorze głównym**. Demonstruje to klasa `ChainOrderDemo` w `code/Program.cs`:
+
+```
+field initializer
+body of ctor(a, b) - main
+body of ctor(a)
+body of ctor()
+```
+
+> **Inicjalizatory pól** (`private int x = 5;`) wykonują się tylko **raz** – w tym konstruktorze, który *nie* deleguje do `this(...)`
+> (tu: w głównym), przed jego ciałem. Więcej w temacie 4 (kolejność inicjalizacji).
 
 ---
 
@@ -200,6 +214,12 @@ public class DatabaseConfig
     public string GetConnectionString() 
         => $"Server={Server};Database={Database};Port={Port};User={Username}";
 }
+```
+
+> ⚠️ **Bezpieczeństwo:** domyślne hasło `"password"` wpisane w kodzie to tylko uproszczenie dydaktyczne. Dane uwierzytelniające
+> nigdy nie powinny być na stałe zapisane w kodzie źródłowym ani w repozytorium – czyta się je ze środowiska
+> (zmienne środowiskowe, *User Secrets*, Azure Key Vault). Domyślne konto `admin` z oczywistym hasłem to klasyczna luka
+> (OWASP: *Security Misconfiguration*).
 
 // Użycie
 var config1 = new DatabaseConfig();                          // Domyślna
@@ -281,16 +301,23 @@ var config3 = new DatabaseConfig("localhost", "test", 3306, "root", "secret");  
 ### ❌ Anty-wzorce
 
 ```csharp
-// ❌ Nie łańcuchuj w złej kolejności
+// ❌ Łańcuch w złą stronę: konstruktor pełny deleguje do uboższego
 public class Bad
 {
-    public Bad(string name, string dept, decimal salary)
-        : this(name) { }  // Źले - logika robi się skomplikowana
+    public string Name { get; }
+    public string Dept { get; }
     
-    public Bad(string name) { }
+    public Bad(string name, string dept)
+        : this(name) { }      // ZŁE: "pełny" konstruktor gubi argument dept, a logika ląduje w konstruktorze uboższym
+    
+    public Bad(string name)
+    {
+        Name = name;
+        Dept = "HR";
+    }
 }
 
-// ❌ Nie umieszczaj logiki w obu konstruktorach
+// ❌ Logika w wielu konstruktorach zamiast w jednym głównym
 public class Bad2
 {
     public Bad2(string name) 
@@ -298,8 +325,8 @@ public class Bad2
     
     public Bad2(string name, string dept)
     {
-        // Walidacja tutaj... i w konstruktorze 1? Duplikacja!
-        if (string.IsNullOrEmpty(name)) throw new Exception();
+        // Walidacja tylko tutaj... ale jeśli ktoś doda kolejny konstruktor bez this(...), znowu będzie duplikacja
+        if (string.IsNullOrEmpty(name)) throw new ArgumentException("name");
         Name = name;
     }
     
@@ -307,11 +334,33 @@ public class Bad2
 }
 ```
 
+**Ograniczenia `this(...)`:**
+- Łańcuch nie może być cykliczny (A→B→A) – błąd kompilacji CS0768
+- W argumentach `this(...)` nie można odwoływać się do składowych instancji (`this.x`), tylko do parametrów i składowych statycznych
+- Konstruktor może mieć **jedno** wywołanie inicjalizujące: albo `this(...)`, albo `base(...)`
+
+### Alternatywa: parametry opcjonalne
+
+Często pojedynczy konstruktor z wartościami domyślnymi zastępuje cały łańcuch:
+
+```csharp
+public Employee(string name, string department = "HR", decimal salary = 3000)
+{
+    // jedna logika, jedna walidacja
+}
+
+var emp = new Employee("Jan", salary: 4000);   // argumenty nazwane
+```
+
+Wybieraj łańcuch konstruktorów, gdy domyślne wartości są **obliczane** (np. `DateTime.Now`) albo gdy konstruktory różnią się
+semantyką, a nie tylko liczbą parametrów. (Uwaga: wartości domyślne parametrów są wpisywane w kod *wywołujący* w chwili
+kompilacji – zmiana w bibliotece wymaga rekompilacji klientów.)
+
 ---
 
 ## Zaawansowane Wzorce
 
-### Wzorzec Fluent Builder + Constructor Chaining
+### Fluent API + łańcuch konstruktorów
 
 ```csharp
 public class HttpRequest
@@ -386,7 +435,7 @@ graph TB
 |--------|------|
 | **Cel** | Unikanie duplikacji w konstruktorach |
 | **Syntaktyka** | `public Constructor(...) : this(...) { }` |
-| **Kolejność** | Najmniej → Najbardziej parametrowy |
+| **Kolejność** | Delegowanie: najmniej → najbardziej parametrowy; wykonanie ciał: odwrotnie (główny konstruktor pierwszy) |
 | **Walidacja** | W głównym konstruktorze |
 | **Korzyści** | DRY, łatwość utrzymania, czystość kodu |
 

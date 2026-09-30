@@ -34,10 +34,13 @@ public class Date
     public int Month { get; }
     public int Day { get; }
     
-    public Date() : this(DateTime.Now.Year) { }
+    public Date() : this(DateTime.Today.Year) { }
     
+    // Dziś, ale w podanym roku. Dzień jest "przycinany": 29 lutego w roku nieprzestępnym da 28 lutego
+    // (zwykłe new DateTime(year, 2, 29) rzuciłoby wyjątek)
     public Date(int year) 
-        : this(year, DateTime.Now.Month, DateTime.Now.Day) { }
+        : this(year, DateTime.Today.Month, 
+               Math.Min(DateTime.Today.Day, DateTime.DaysInMonth(Math.Clamp(year, 1, 9999), DateTime.Today.Month))) { }
     
     public Date(int year, int month, int day)
     {
@@ -76,7 +79,7 @@ Stwórz klasę `Vehicle` z co najmniej 4 konstruktorami:
 ### Wymagania
 
 - Wszystkie konstruktory połączone `this()`
-- Walidacja przeb iegu (nie ujemny)
+- Walidacja przebiegu (nie ujemny)
 - Metoda `GetAge()` - ile lat ma pojazd
 - Domyślne wartości w `this()` dla pól opcjonalnych
 
@@ -206,10 +209,25 @@ public class Book
 public void Date_DefaultConstructor_ReturnsTodayDate()
 {
     var date = new Date();
-    var today = DateTime.Now;
+    var today = DateTime.Today;
     
     Assert.Equal(today.Year, date.Year);
     Assert.Equal(today.Month, date.Month);
+}
+
+[Fact]
+public void Date_InvalidDay_Throws()
+{
+    Assert.Throws<ArgumentException>(() => new Date(2023, 2, 29));
+}
+
+[Fact]
+public void Date_YearConstructor_NeverThrowsForLeapDay()
+{
+    // Niezależnie od tego, jaki jest dzisiaj dzień (np. 29 lutego), konstruktor musi działać dla każdego roku
+    var date = new Date(2023);
+    
+    Assert.Equal(2023, date.Year);
 }
 
 [Fact]
@@ -224,12 +242,28 @@ public void Vehicle_Constructor_ChainsProperly()
 }
 
 [Fact]
+public void Vehicle_ShortConstructor_UsesDefaults()
+{
+    var v = new Vehicle("BMW");
+    
+    Assert.Equal("Unknown", v.Model);
+    Assert.Equal(0, v.Mileage);
+    Assert.Equal(DateTime.Now.Year, v.Year);
+}
+
+[Fact]
 public void Book_ValidatesFutureYear()
 {
     var futureYear = DateTime.Now.Year + 1;
     
     Assert.Throws<ArgumentException>(() 
         => new Book("Title", "Author", futureYear));
+}
+
+[Fact]
+public void Book_ShortConstructor_ValidatesTitle()
+{
+    Assert.Throws<ArgumentException>(() => new Book(" "));
 }
 ```
 
