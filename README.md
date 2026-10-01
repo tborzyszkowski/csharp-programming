@@ -7,7 +7,7 @@
 
 # C# Programowanie Obiektowe – Materiały Dydaktyczne
 
-## 🎓 O tym repozytorium
+## O tym repozytorium
 
 Kompletne materiały dydaktyczne do nauki **Programowania Obiektowego w C#** na poziomie uniwersytetu/szkoły, od podstaw po zaawansowane koncepty, aż do praktycznego zastosowania w ASP.NET Core.
 
@@ -15,7 +15,7 @@ Projekt zawiera szczegółową teorię, praktyczne przykłady kodu, diagramy UML
 
 ---
 
-## 📂 Struktura projektu
+## Struktura projektu
 
 Materiały podzielone są na 14 modułów tematycznych, każdy obejmujący 6-12 zagadnień szczegółowych:
 
@@ -42,15 +42,16 @@ csharp-programming/
 ```
 
 Każdy temat zawiera:
-- 📄 **README.md** – Szczegółowa dokumentacja (2000-3500 słów)
-- 💻 **code/** – Projekt .NET 9.0 z kodem + testami xUnit
-- 📊 **diagrams/** – Diagramy Mermaid UML
-- 📝 **tasks/** – Zadania z pełnymi rozwiązaniami
+
+- **README.md** – Szczegółowa dokumentacja (2000-3500 słów)
+- **code/** – Projekt .NET 9.0 z kodem + testami xUnit
+- **diagrams/** – Diagramy Mermaid UML
+- **tasks/** – Zadania z pełnymi rozwiązaniami
 
 
 ---
 
-## 🚀 Szybki Start
+## Szybki Start
 
 ### 1. Klonowanie repozytorium
 
@@ -74,7 +75,7 @@ dotnet run
 
 ---
 
-## �️ Mapa Zależności Modułów
+## Mapa Zależności Modułów
 
 Poniższy diagram pokazuje zalecaną kolejność nauki oraz zależności między modułami. Strzałka `A --> B` oznacza „A jest wymagane przed B”.
 
@@ -127,13 +128,14 @@ Każda sekcja modułu poniżej zawiera pola **Wymaga** i **Prowadzi do** z bezpo
 
 ---
 
-## �📚 Moduły Nauczania
+## Moduły Nauczania
 
 ### **Moduł 1: Klasy i Obiekty** – Fundament OOP
 
 **Cel:** Zrozumienie fundamentalnych koncepcji programowania obiektowego.
 
 Moduł obejmuje 9 tematów:
+
 1. Podstawowe pojęcia OOP (abstrakcja, enkapsulacja, dziedziczenie, polimorfizm)
 2. Definicja i struktura klasy
 3. Tworzenie i używanie obiektów
@@ -160,6 +162,7 @@ Moduł obejmuje 9 tematów:
 **Cel:** Opanowanie mechanizmów tworzenia i inicjalizacji obiektów.
 
 Moduł obejmuje 10 tematów:
+
 1. Konstruktory – podstawy, parametry
 2. Łańcuchowe wywołanie konstruktorów (`this()`)
 3. Inicjalizatory obiektów
@@ -187,6 +190,7 @@ Moduł obejmuje 10 tematów:
 **Cel:** Opanowanie właściwości (properties) i indeksatorów – klucza do dobrze zaprojektowanego kodu.
 
 Moduł obejmuje 7 tematów:
+
 1. Właściwości vs pola
 2. Auto properties (`{ get; set; }`)
 3. Walidacja właściwości
@@ -211,13 +215,14 @@ Moduł obejmuje 7 tematów:
 **Cel:** Zrozumienie statycznych pól, metod i wzorca Singleton.
 
 Moduł obejmuje 7 tematów:
+
 1. Pola statyczne – zmienne dzielane między instancje
 2. Metody statyczne – narzędzia utility
 3. Konstruktory statyczne – inicjalizacja
 4. Klasy statyczne – organizacja kodu
 5. Metody rozszerzające (extension methods) – dodawanie funkcjonalności
 6. Wzorzec Singleton – gwarantowanie jednej instancji
-7. Static properties z Lazy<T> – nowoczesna inicjalizacja
+7. Static properties z `Lazy<T>` – nowoczesna inicjalizacja
 
 **Dla kogo:** Średniozaawansowani. Niezbędny do zrozumienia wspólnych zasobów i patternów.
 
@@ -235,6 +240,7 @@ Moduł obejmuje 7 tematów:
 **Cel:** Opanowanie dziedziczenia – jednego z czterech filarów OOP.
 
 Moduł obejmuje 7 tematów:
+
 1. Podstawowe pojęcia dziedziczenia (klasa bazowa, pochodna)
 2. Modyfikatory dostępu w kontekście dziedziczenia
 3. Konstruktory klas pochodnych (`base` keyword)
@@ -259,6 +265,7 @@ Moduł obejmuje 7 tematów:
 **Cel:** Opanowanie polimorfizmu i wzorców projektowych opartych na metodach wirtualnych.
 
 Moduł obejmuje 6 tematów:
+
 1. Funkcje wirtualne – wstęp do polimorfizmu
 2. Praktyczne przykłady – payment gateway (real-world case study)
 3. `virtual` vs `new` – pułapki i best practices
@@ -282,6 +289,7 @@ Moduł obejmuje 6 tematów:
 **Cel:** Opanowanie interfejsów i abstrakcji – kluczy do słabo sprzężonego kodu.
 
 Moduł obejmuje 7 tematów:
+
 1. Klasy abstrakcyjne – wstęp
 2. Metody abstrakcyjne – umowy
 3. Sealed keyword – finalizacja hierarchii
@@ -306,6 +314,7 @@ Moduł obejmuje 7 tematów:
 **Cel:** Opanowanie typów generycznych i nowoczesnych kolekcji.
 
 Moduł obejmuje 7 tematów:
+
 1. Metody i klasy generyczne – wariancja typów
 2. Ograniczenia typów generycznych (`where`)
 3. IEnumerable i IEnumerator – iteracja
@@ -330,6 +339,7 @@ Moduł obejmuje 7 tematów:
 **Cel:** Zrozumienie mechanizmów callback'ów i event-driven architecture.
 
 Moduł obejmuje 8 tematów:
+
 1. Idea i motywacja delegacji
 2. Definicja i składnia delegacji
 3. Predefiniowane generyczne delegacje (Action, Func, Predicate)
@@ -355,6 +365,7 @@ Moduł obejmuje 8 tematów:
 **Cel:** Opanowanie przeciążania operatorów dla intuicyjnego API.
 
 Moduł obejmuje 10 tematów:
+
 1. Operatory które można przeciążać
 2. Operatory przeciążane pośrednio – relacje
 3. Metoda definiująca operator – zasady
@@ -382,6 +393,7 @@ Moduł obejmuje 10 tematów:
 **Cel:** Opanowanie async/await i Task-based asynchronous pattern (TAP).
 
 Moduł obejmuje 12 tematów:
+
 1. Fundamenty async/await i Task
 2. Breakfast example – sequential vs concurrent
 3. Operacje I/O (HttpClient, File I/O)
@@ -411,6 +423,7 @@ Moduł obejmuje 12 tematów:
 **Cel:** Opanowanie serializacji dla różnych formatów danych.
 
 Moduł obejmuje 10 tematów:
+
 1. Koncepty serializacji – object graphs
 2. Historia i ewolucja (.NET 1.0 → 9.0)
 3. XML serialization
@@ -438,6 +451,7 @@ Moduł obejmuje 10 tematów:
 **Cel:** Opanowanie refleksji do introspekcji typów i atrybutów do metaprogramowania.
 
 Moduł obejmuje 10 tematów:
+
 1. Refleksja – wprowadzenie
 2. Inspekcja typów – co można odkryć
 3. System.Activator – dynamiczne tworzenie instancji
@@ -465,6 +479,7 @@ Moduł obejmuje 10 tematów:
 **Cel:** Opanowanie testów jednostkowych w xUnit, podejścia Test-Driven Development oraz mokowania zależności.
 
 Moduł obejmuje 7 tematów:
+
 1. Testy jednostkowe – wprowadzenie i filozofia, piramida testów
 2. Test-Driven Development – cykl Red-Green-Refactor
 3. Asercje, organizacja i parametryzacja testów (`[Theory]`, `InlineData`, `MemberData`)
@@ -489,6 +504,7 @@ Moduł obejmuje 7 tematów:
 **Cel:** Praktyczne zastosowanie wszystkich koncepcji OOP w rzeczywistej aplikacji webowej.
 
 Moduł obejmuje:
+
 1. Fundamenty ASP.NET Core
 2. Architektura MVC
 3. Entity Framework Core i bazy danych
@@ -511,11 +527,12 @@ Moduł obejmuje:
 
 ---
 
-## 🎯 Cele Nauczania
+## Cele Nauczania
 
 Po ukończeniu całego kursu, zdobędziesz solidne fundamenty i zaawansowaną wiedzę z OOP w C#:
 
 ### Wiedza (Knowledge)
+
 - **Cztery filary OOP** – Abstrakcja, Enkapsulacja, Dziedziczenie, Polimorfizm (Moduł 1)
 - **Projektowanie klas** – Konstruktory, właściwości, indeksatory (Moduły 2-3)
 - **Hierarchie klas** – Dziedziczenie, abstract, sealed, interfejsy (Moduły 5-7)
@@ -527,6 +544,7 @@ Po ukończeniu całego kursu, zdobędziesz solidne fundamenty i zaawansowaną wi
 - **Aplikacje webowe** – ASP.NET Core, MVC, Entity Framework, LINQ (Moduł A01)
 
 ### Umiejętności (Skills)
+
 - **Projektowanie** – Tworzenie elastycznych architektur SOLID principles
 - **Kodowanie** – Pisanie czystego, testowalnego kodu C#
 - **Testowanie** – Testy jednostkowe z xUnit, TDD (Red-Green-Refactor), mokowanie zależności z Moq (Moduł 14)
@@ -535,6 +553,7 @@ Po ukończeniu całego kursu, zdobędziesz solidne fundamenty i zaawansowaną wi
 - **Real-world** – Integracja i wdrażanie w rzeczywistych projektach
 
 ### Nowoczesne C# (C# 8.0+)
+
 - Nullable reference types – bezpieczeństwo null safety
 - Init properties – niezmienność
 - Records – immutable data types
@@ -545,10 +564,10 @@ Po ukończeniu całego kursu, zdobędziesz solidne fundamenty i zaawansowaną wi
 
 ---
 
-## 💻 Wymagania i Technologia
+## Wymagania i Technologia
 
 | Komponenta | Wersja | Uwagi |
-|---|---|---|
+| ---|---|---|
 | **C#** | 12.0+ | Nowoczesne features |
 | **.NET** | 9.0+ | Cross-platform framework |
 | **xUnit** | 2.6+ | Testy jednostkowe |
@@ -557,15 +576,17 @@ Po ukończeniu całego kursu, zdobędziesz solidne fundamenty i zaawansowaną wi
 | **Git** | Latest | Kontrola wersji |
 
 **Wymagania przedwstępne:**
+
 - Podstawowa znajomość C# (zmienne, pętle, instrukcje warunkowe)
 - Zainstalowane .NET 9.0 SDK
 - Dowolny edytor (VS Code, Visual Studio, Rider)
 
 ---
 
-## 🌐 Referencje i Zasoby
+## Referencje i Zasoby
 
 ### Oficjalna Dokumentacja .NET
+
 - [Microsoft C# Documentation](https://learn.microsoft.com/en-us/dotnet/csharp/) – Kompletny reference
 - [.NET Official Documentation](https://learn.microsoft.com/en-us/dotnet/) – Framework
 - [C# Language Specification](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/introduction) – Formalna specyfikacja
@@ -574,32 +595,38 @@ Po ukończeniu całego kursu, zdobędziesz solidne fundamenty i zaawansowaną wi
 ### Polecane Książki
 
 **Fundamenty OOP:**
+
 - **"C# Player's Guide"** – RB Whitaker (najlepsza dla początkujących)
 - **"C# in Depth"** – Jon Skeet (zaawansowany, wszystkie wersje C#)
 - **"Object-Oriented Programming in C#"** – Szynkarczyk (polskie źródło)
 
 **Design Patterns i Architektura:**
+
 - **"Head First Design Patterns"** – Freeman & Robson (wizualne i zrozumiałe)
 - **"Design Patterns: Elements of Reusable Object-Oriented Software"** – Gang of Four (klasyka)
 - **"Refactoring: Improving the Design of Existing Code"** – Martin Fowler (praktyczne)
 - **"SOLID Principles in C#"** – Szymon Kulec (praktyczne SOLID)
 
 **Czysty Kod i Best Practices:**
+
 - **"Clean Code"** – Robert C. Martin (wszyscy powinni przeczytać)
 - **"The Pragmatic Programmer"** – Hunt & Thomas (mindset inżyniera)
 - **"Code Complete"** – Steve McConnell (kompletna encyklopedia)
 
 **Nowoczesny .NET:**
+
 - **"ASP.NET Core in Action"** – Andrew Lock (web development)
 - **"Entity Framework Core in Action"** – Jon P Smith (bazy danych)
 - **"Concurrency in C# Cookbook"** – Stephen Cleary (async i threading)
 
 **Testowanie i TDD:**
+
 - **"The Art of Unit Testing"** – Roy Osherove (klasyka, przykłady w C#)
 - **"Unit Testing Principles, Practices, and Patterns"** – Vladimir Khorikov (dobre i złe praktyki)
 - **"Test-Driven Development: By Example"** – Kent Beck (źródło podejścia TDD)
 
 ### Zasoby Online
+
 - [Refactoring.Guru](https://refactoring.guru/design-patterns/csharp) – Design patterns z C#
 - [C# Yellow Book](https://www.robmiles.com/c-yellow-book/) – Darmowy e-book
 - [Microsoft Learn C# Path](https://learn.microsoft.com/en-us/training/paths/csharp-first-steps/) – Interaktywne kursy
@@ -609,34 +636,40 @@ Po ukończeniu całego kursu, zdobędziesz solidne fundamenty i zaawansowaną wi
 
 ---
 
-## 🤝 Wkład w Projekt
+## Wkład w Projekt
 
 Twój wkład pomaga uczynić ten projekt lepszym dla wszystkich studentów!
 
 ### Jak Wnieść Swój Wkład?
 
-#### 🐛 Zgłaszanie Błędów
+#### Zgłaszanie Błędów
+
 Jeśli znaleźć literówkę, błąd w kodzie, lub mylące wyjaśnienie:
+
 1. Otwórz [GitHub Issue](https://github.com/tborzyszkowski/csharp-programming/issues/new)
 2. Opisz problem jasno
 3. Podaj link do konkretnego pliku/sekcji
 4. Preferownie daj sugestię jak to naprawić
 
-#### 💡 Prosimy o Opinie Studentów
+#### Prosimy o Opinie Studentów
+
 Jeśli jakiś temat jest niejasny lub wymaga lepszego wyjaśnienia:
+
 - **Które koncepty były najtrudniejsze?** – Pomóż nam ulepszyć objaśnienia
 - **Czy brakuje przykładów?** – Zaproponuj konkretne case study
 - **Czy jakiś kod nie działa?** – Zgłoś jako issue
 - **Czy są typy?** – Małe edycje mogą oszczędzić czas innym
 
-#### 🔧 Propozycje Ulepszeń
+#### Propozycje Ulepszeń
+
 - Nowe przykłady praktyczne
 - Dodatkowe diagramy
 - Wyjaśnienia dla bardziej wizualnych uczniów
 - Tłumaczenia
 - Lepsze formatowanie
 
-#### ✍️ Twój Kod/Artykuł
+#### Twój Kod/Artykuł
+
 - Dodaj zadania ćwiczeniowe
 - Rozszerz przykłady
 - Podziel się swoim doświadczeniem jako komentarz do issue
@@ -651,7 +684,7 @@ Jeśli jakiś temat jest niejasny lub wymaga lepszego wyjaśnienia:
 
 ---
 
-## 📝 Licencja
+## Licencja
 
 **CC BY-NC-SA 4.0** – Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 
@@ -668,60 +701,69 @@ Pełny tekst: [LICENSE.md](LICENSE.md)
 ## 💬 FAQ
 
 ### P: Ile czasu zajmie ten kurs?
+
 **O:** Aby przejść wszystkie moduły 1-7 (fundamenty): 40-50 godzin.
 Moduły 8-13 (zaawansowany): kolejne 30-40 godzin.
 Szacunkowo: 3-4 miesiące przy 10 godzinach tygodniowo.
 
 ### P: Czy potrzebuję wcześniejszej wiedzy?
+
 **O:** Tak. Powinieneś znać podstawy C# (zmienne, pętle, instrukcje warunkowe, metody). 
 Jeśli nie znasz – zacznij od [Microsoft Learn C# Path](https://learn.microsoft.com/en-us/training/paths/csharp-first-steps/).
 
 ### P: Czy mogę pracować ze swoim własnym IDE?
+
 **O:** Tak! Kod jest standardowy .NET. Możesz używać:
+
 - Visual Studio Code (polecane)
 - Visual Studio Community
 - JetBrains Rider
 - Dowolne IDE z obsługą .NET
 
 ### P: Czy kod jest testowany?
+
 **O:** Tak! Każdy temat ma testy xUnit. Możesz uruchomić `dotnet test` w każdym folderze tematu.
 
 ### P: Czy mogę używać tych materiałów komercyjnie?
+
 **O:** Nie. Licencja CC BY-NC-SA zabrania użytku komercyjnego. 
 Jeśli chcesz użyć w kursie płatnym – skontaktuj się bezpośrednio.
 
 ### P: Jak zgłosić błędy lub sugestie?
+
 **O:** [Otwórz GitHub Issue](https://github.com/tborzyszkowski/csharp-programming/issues) 
 z opisem problemu i linkiem do konkretnego pliku.
 
 ### P: Czy są materiały wideo?
+
 **O:** Dokumentacja ma linki do YouTube i Refactoring.Guru.
 Możesz znaleźć i dodać swoje filmy – zgłoś issue z sugestią.
 
 ---
 
-## 👨‍💼 O autorze
+## O autorze
 
 **Tomasz Borzyszkowski**  
 - 🎓 Nauczyciel Programowania Obiektowego na Uniwersytecie Gdańskim
-- 💻 Senior Software Engineer, C# / .NET specialist  
-- 📚 Autor materiałów edukacyjnych open-source
-- 🌐 GitHub: [@tborzyszkowski](https://github.com/tborzyszkowski)
+- Senior Software Architect, C# / .NET specialist  
+- Autor materiałów edukacyjnych open-source
+- GitHub: [@tborzyszkowski](https://github.com/tborzyszkowski)
 
 ---
 
-## 📞 Kontakt i Wsparcie
+## Kontakt i Wsparcie
 
-- 🐛 **Błędy i Sugestie**: [GitHub Issues](https://github.com/tborzyszkowski/csharp-programming/issues)
-- 💬 **Dyskusje**: [GitHub Discussions](https://github.com/tborzyszkowski/csharp-programming/discussions)
-- 📧 **Email**: Dostępny w moim profilu GitHub
-- ⭐ **Polubić**: Daj [Star](https://github.com/tborzyszkowski/csharp-programming) jeśli projekt Ci się podoba!
+- **Błędy i Sugestie**: [GitHub Issues](https://github.com/tborzyszkowski/csharp-programming/issues)
+- **Dyskusje**: [GitHub Discussions](https://github.com/tborzyszkowski/csharp-programming/discussions)
+- **Email**: Dostępny w moim profilu GitHub
+- **Polubić**: Daj [Star](https://github.com/tborzyszkowski/csharp-programming) jeśli projekt Ci się podoba!
 
 ---
 
-## 🙏 Podziękowania
+## Podziękowania
 
 Dziękuję za inspirację:
+
 - **Microsoft Learn Team** – za doskonałą dokumentację
 - **Refactoring.Guru** – za design patterns
 - **RB Whitaker** – autor "C# Player's Guide"
@@ -731,9 +773,9 @@ Dziękuję za inspirację:
 
 ---
 
-**Powodzenia w nauce! 🚀**
+**Powodzenia w nauce!**
 
-Jeśli ten projekt Ci się podoba, daj ⭐ Star i podziel się z innymi!
+Jeśli ten projekt Ci się podoba, daj gwiazdkę i podziel się z innymi!
 
 ## Wykorzystanie AI w materiałach
 
@@ -750,6 +792,6 @@ Ostateczna treść oraz układ dydaktyczny są wynikiem autorskiego nadzoru, co 
 
 ---
 
-_Last updated: 2026-08-31_  
+_Last updated: 2026-10-01_  
 _Version: 2.0 – Wszystkie 14 Modułów_  
 _Licencja: CC BY-NC-SA 4.0_
