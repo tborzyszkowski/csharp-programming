@@ -688,11 +688,11 @@ Jeśli jakiś temat jest niejasny lub wymaga lepszego wyjaśnienia:
 
 **CC BY-NC-SA 4.0** – Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 
-- ✅ Wolno dzielić, modyfikować i uczyć się na potrzeby edukacyjne
-- ✅ Wolno używać w kursach i materiałach szkoleniowych
-- ⚠️ Wymagane przypisanie autorstwa
-- ❌ Nie do celów komercyjnych
-- ❌ Pochodne prace muszą mieć tę samą licencję
+- Wolno dzielić, modyfikować i uczyć się na potrzeby edukacyjne
+- Wolno używać w kursach i materiałach szkoleniowych
+- Wymagane przypisanie autorstwa
+- Nie do celów komercyjnych
+- Pochodne prace muszą mieć tę samą licencję
 
 Pełny tekst: [LICENSE.md](LICENSE.md)
 
@@ -744,7 +744,7 @@ Możesz znaleźć i dodać swoje filmy – zgłoś issue z sugestią.
 ## O autorze
 
 **Tomasz Borzyszkowski**  
-- 🎓 Nauczyciel Programowania Obiektowego na Uniwersytecie Gdańskim
+- Nauczyciel Programowania Obiektowego na Uniwersytecie Gdańskim
 - Senior Software Architect, C# / .NET specialist  
 - Autor materiałów edukacyjnych open-source
 - GitHub: [@tborzyszkowski](https://github.com/tborzyszkowski)
