@@ -323,15 +323,15 @@ public class AbstractMethodsTests
         
         Assert.Equal(3, repo.Count);
     }
-    
+
     [Fact]
     public void PolymorphisticBehavior()
     {
         DocumentBase pdf = new PdfDocument();
         DocumentBase word = new WordDocument();
-        
+
         // Same method call, different implementations
-        pdf.Open();      // Opens with Adobe
-        word.Open();     // Opens with Word
-        
+        pdf.Open(); // Opens with Adobe
+        word.Open(); // Opens with Word
+    }
 }

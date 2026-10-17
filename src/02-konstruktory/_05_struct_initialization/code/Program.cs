@@ -19,6 +19,22 @@ public struct Point
     public override string ToString() => $"({X}, {Y})";
 }
 
+public class PointRef
+{
+    public double X { get; set; }
+    public double Y { get; set; }
+    
+    public PointRef(double x, double y)
+    {
+        X = x;
+        Y = y;
+    }
+    
+    public double Distance() => Math.Sqrt(X * X + Y * Y);
+    
+    public override string ToString() => $"({X}, {Y})";
+}
+
 public struct Color
 {
     public byte Red { get; init; }
@@ -68,6 +84,25 @@ public class Program
         Console.WriteLine("4. MONEY STRUCT:");
         var price = new Money(99.99m, "PLN");
         Console.WriteLine(price);
+
+        int x = 10;
+        int y = x;
+        Console.WriteLine($"x: {x}, y: {y}");
+        y = 30;
+        Console.WriteLine($"x: {x}, y: {y}");
+
+        var p_copy = p1;
+        Console.WriteLine($"p1: {p1}, p_copy: {p_copy}");
+        p_copy.X = 100;
+        Console.WriteLine($"p1: {p1}, p_copy: {p_copy}");
+
+        var p_ref1 = new PointRef(5, 5);
+        var p_ref_copy = p_ref1;
+        Console.WriteLine($"p_ref1: {p_ref1}, p_ref_copy: {p_ref_copy}");
+        p_ref_copy.X = 100;
+        Console.WriteLine($"p_ref1: {p_ref1}, p_ref_copy: {p_ref_copy}");
+
+
     }
 }
 
