@@ -111,6 +111,10 @@ public class ClassName : BaseClass
 - C# nie wspiera multiple inheritance (ale są interfejsy)
 - Wszystkie klasy dziedziczy z `object` (jawnie lub niejawnie)
 
+Dziedziczenie oznacza relację **is-a**, a nie tylko możliwość ponownego użycia kodu. `Dog` jest `Animal`, więc można przekazać go do metody przyjmującej `Animal`. Jeśli relacja brzmi raczej „ma” (`Car` ma `Engine`), kompozycja zwykle będzie lepszym rozwiązaniem niż kolejna klasa bazowa.
+
+Klasa pochodna nie otrzymuje osobnej kopii prywatnych pól klasy bazowej do bezpośredniego użycia. Stan bazowy istnieje w obiekcie, ale dostęp do niego odbywa się przez publiczne/protected API klasy bazowej.
+
 ## C# vs Java - Porównanie
 
 | Aspekt | C# | Java |
@@ -146,6 +150,14 @@ dog.Equals(other);    // object method
 dog.GetHashCode();    // object method
 ```
 
+Można sprawdzić zgodność z typem bazowym operatorem `is`, ale rzutowanie powinno mieć sens w modelu domeny:
+
+```csharp
+Animal animal = new Dog { Name = "Rex" };
+if (animal is Dog dog)
+    dog.Bark();
+```
+
 ## Łańcuch Dziedziczenia
 
 ```csharp
@@ -165,9 +177,12 @@ dotnet run
 dotnet test
 ```
 
+## 🧭 Nawigacja
+
+[← Moduł 05: dziedziczenie i polimorfizm](../README.md) · [Modyfikatory dostępu →](../_02_access_modifiers/README.md)
+
 ## 📚 Referencje
 
 - [Microsoft Learn: Inheritance](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/object-oriented/inheritance)
 - [C# Player's Guide - Chapter 13](https://csharpplayersguide.com/)
 - [Effective C# - Item 36: Base Class Design](https://www.informit.com/store/effective-c-plus-items-1-50-9780136834830)
-

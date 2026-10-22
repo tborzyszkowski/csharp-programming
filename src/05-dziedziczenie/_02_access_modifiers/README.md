@@ -138,6 +138,8 @@ void Method() { }                    // private
 public void Method() { }             // public
 ```
 
+`protected` jest częścią kontraktu dla klas pochodnych. Zbyt duża liczba protected pól wiąże klasę bazową z implementacją pochodnych, dlatego często lepiej udostępnić protected metodę lub właściwość z kontrolą niezmienników. `internal` dotyczy całego assembly, a `private protected` łączy ograniczenie do tego samego assembly z dostępem z klas pochodnych.
+
 ## protected vs private - Diagramatycznie
 
 ```
@@ -263,6 +265,8 @@ public class Person
 }
 ```
 
+Przy bibliotekach można użyć `protected internal`, gdy członek ma być dostępny klasom pochodnym także poza assembly oraz kodowi w bieżącym assembly. Te modyfikatory powinny być dobierane do API, a nie do wygody pojedynczej klasy pochodnej.
+
 ## 🚀 Jak pracować
 
 ```bash
@@ -276,3 +280,7 @@ dotnet test
 - [Microsoft Learn: Access Modifiers](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/access-modifiers)
 - [C# Language Specification](https://github.com/dotnet/csharpstandard)
 - [Java Protected Keyword](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html)
+
+## 🧭 Nawigacja
+
+[← Podstawy dziedziczenia](../_01_inheritance_basics/README.md) · [Moduł 05](../README.md) · [Konstruktory pochodne →](../_03_derived_constructors/README.md)

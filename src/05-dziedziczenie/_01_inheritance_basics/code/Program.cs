@@ -12,6 +12,8 @@ public class Animal
     
     public void Eat() => Console.WriteLine($"{Name} is eating");
     public void Sleep() => Console.WriteLine($"{Name} is sleeping");
+
+    public string GetIdentity() => $"{GetType().Name}: {Name}";
 }
 
 // Klasa pochodna
@@ -77,9 +79,11 @@ public class Program
         Console.WriteLine();
         
         Console.WriteLine("4. Typ is-a relacja:");
-        Console.WriteLine($"dog is Animal: {dog is Animal}");
-        Console.WriteLine($"dog is Dog: {dog is Dog}");
-        Console.WriteLine($"dog is Cat: {dog is Cat}");
+        Animal animalReference = dog;
+        Console.WriteLine($"animalReference is Animal: {animalReference is Animal}");
+        Console.WriteLine($"animalReference is Dog: {animalReference is Dog}");
+        Console.WriteLine($"animalReference is Cat: {animalReference is Cat}");
+        Console.WriteLine($"Identity: {animalReference.GetIdentity()}");
     }
 }
 
@@ -88,7 +92,7 @@ public class InheritanceBasicsTests
     [Fact]
     public void Dog_Inherits_From_Animal()
     {
-        var dog = new Dog { Name = "Rex" };
+        Animal dog = new Dog { Name = "Rex" };
         
         Assert.IsAssignableFrom<Animal>(dog);
     }
@@ -105,7 +109,7 @@ public class InheritanceBasicsTests
     [Fact]
     public void DerivedClass_CanCallBaseClassMethods()
     {
-        var dog = new Dog { Name = "Rex" };
+        Animal dog = new Dog { Name = "Rex" };
         
         // Should not throw
         dog.Eat();
@@ -124,12 +128,20 @@ public class InheritanceBasicsTests
     [Fact]
     public void IsOperator_ChecksInheritance()
     {
-        var dog = new Dog { Name = "Rex" };
-        var cat = new Cat { Name = "Whiskers" };
+        Animal dog = new Dog { Name = "Rex" };
+        Animal cat = new Cat { Name = "Whiskers" };
         
         Assert.True(dog is Animal);
         Assert.True(dog is Dog);
         Assert.False(dog is Cat);
         Assert.False(cat is Dog);
+    }
+
+    [Fact]
+    public void InheritedMethod_CanUseRuntimeType()
+    {
+        var dog = new Dog { Name = "Rex" };
+
+        Assert.Equal("Dog: Rex", dog.GetIdentity());
     }
 }

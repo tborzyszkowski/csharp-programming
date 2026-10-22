@@ -21,6 +21,8 @@ public class Animal
         Age = age;
         Console.WriteLine($"Animal constructor: {name}, age {age}");
     }
+
+    public int GetAge() => Age;
 }
 
 public class Dog : Animal
@@ -123,6 +125,7 @@ public class DerivedConstructorsTests
         
         Assert.Equal("Max", dog.Name);
         Assert.Equal("Shepherd", dog.Breed);
+        Assert.Equal(5, dog.GetAge());
     }
     
     [Fact]

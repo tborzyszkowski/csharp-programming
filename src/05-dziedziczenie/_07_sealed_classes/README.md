@@ -57,6 +57,8 @@ public sealed class String
 }
 ```
 
+Najważniejszym powodem użycia `sealed` jest zwykle zamknięcie projektu klasy, a nie obietnica mierzalnego przyspieszenia. Klasa sealed nadal może implementować interfejsy i być używana polimorficznie przez typ bazowy lub interfejs.
+
 ### 2. Security - Zapobieganie Nadużyciu
 
 ```csharp
@@ -191,6 +193,8 @@ public sealed class IRepository { }
 public interface IRepository { }
 ```
 
+`sealed override` zamyka tylko konkretny punkt rozszerzania, ale nie musi zamykać całej klasy. Jest przydatne, gdy klasa pochodna ustala krytyczny algorytm i dalsze override mogłoby złamać jej niezmienniki.
+
 ## Hierarchia Z Sealed
 
 ```
@@ -245,3 +249,7 @@ dotnet test
 
 - [Microsoft Learn: Sealed keyword](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/sealed)
 - [Abstract and Sealed Classes](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/abstract-and-sealed-classes-and-class-members)
+
+## 🧭 Nawigacja
+
+[← Klasy abstrakcyjne](../_06_abstract_classes/README.md) · [Moduł 05](../README.md) · [Następny moduł: 06-polimorfizm →](../../06-polimorfizm/README.md)

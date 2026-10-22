@@ -61,7 +61,13 @@ public class Circle : Shape
 {
     private double radius;
     
-    public Circle(double radius) => this.radius = radius;
+    public Circle(double radius)
+    {
+        if (radius <= 0)
+            throw new ArgumentOutOfRangeException(nameof(radius));
+
+        this.radius = radius;
+    }
     
     public override double CalculateArea() => 3.14 * radius * radius;
     public override string GetInfo() => $"Circle (R={radius})";
@@ -155,5 +161,11 @@ public class AbstractClassesTests
         };
         
         Assert.Equal(2, databases.Count);
+    }
+
+    [Fact]
+    public void Shape_RejectsNonPositiveRadius()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Circle(0));
     }
 }

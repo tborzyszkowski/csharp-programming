@@ -1,10 +1,12 @@
-# MODUŁ 05-DZIEDZICZENIE: Dziedziczenie i Polimorfizm w C#
+# MODUŁ 05-DZIEDZICZENIE: Dziedziczenie i polimorfizm w C#
 
 ## 📚 Wprowadzenie
 
 Moduł kompleksowo omawia **dziedziczenie (inheritance)** i **polimorfizm** w C# - mechanizmy fundamentalne dla programowania obiektowego pozwalające na reużywalność kodu, hierarchie klas i flexible design'y.
 
-Od podstawowych pojęć, przez modyfikatory dostępu, aż po zaawansowane wzorce z abstract i sealed klasami.
+Od podstawowych pojęć, przez modyfikatory dostępu i inicjalizację, aż po polimorfizm, klasy abstrakcyjne i `sealed`.
+
+> **Jak korzystać z modułu:** każdy podrozdział jest samodzielnym projektem .NET. Przeczytaj README, uruchom `dotnet run`, zmień przykład w `Program.cs`, a następnie uruchom `dotnet test`.
 
 ---
 
@@ -12,13 +14,13 @@ Od podstawowych pojęć, przez modyfikatory dostępu, aż po zaawansowane wzorce
 
 | # | Temat | Opis | Status | Code | Testy | Zadania |
 |---|-------|------|--------|------|-------|---------|
-| 1 | [Podstawowe pojęcia](#temat-1-podstawowe-pojęcia-dziedziczenia) | Klasa bazowa, pochodna, is-a relacja | ✅ | ✅ | ✅ | ✅ |
-| 2 | [Modyfikatory dostępu](#temat-2-modyfikatory-dostępu) | public, private, protected, internal + tabela porównania C# vs Java | ✅ | ✅ | ✅ | ✅ |
-| 3 | [Konstruktory pochodne](#temat-3-inicjalizacja-klas-pochodnych) | base keyword, inicjalizacja, łańcuchy konstruktorów | ✅ | ✅ | ✅ | ✅ |
-| 4 | [Override vs New](#temat-4-przesłonięcie-metod) | override (polimorfizm) vs new (ukrycie), virtual | ✅ | ✅ | ✅ | ✅ |
-| 5 | [Virtual & Polymorfizm](#temat-5-virtual-methods-i-polimorfizm) | Dynamic dispatch, is/as operatory, payment system | ✅ | ✅ | ✅ | ✅ |
-| 6 | [Klasy abstrakcyjne](#temat-6-klasy-abstrakcyjne) | abstract members, interface, abstract vs virtual | ✅ | ✅ | ✅ | ✅ |
-| 7 | [Sealed classes](#temat-7-sealed-classes) | sealed keyword, zapobieganie dziedziczeniu | ✅ | ✅ | ✅ | ✅ |
+| 1 | [Podstawowe pojęcia](_01_inheritance_basics/README.md) | Relacja `is-a`, klasa bazowa i pochodna | ✅ | ✅ | ✅ | ✅ |
+| 2 | [Modyfikatory dostępu](_02_access_modifiers/README.md) | `public`, `private`, `protected`, `internal` | ✅ | ✅ | ✅ | ✅ |
+| 3 | [Konstruktory pochodne](_03_derived_constructors/README.md) | `base`, kolejność inicjalizacji i konstruktory | ✅ | ✅ | ✅ | ✅ |
+| 4 | [Override vs New](_04_method_overriding/README.md) | Przesłonięcie i ukrycie metod | ✅ | ✅ | ✅ | ✅ |
+| 5 | [Virtual i polimorfizm](_05_virtual_polymorphism/README.md) | Dynamic dispatch, `is`/`as`, polimorfizm | ✅ | ✅ | ✅ | ✅ |
+| 6 | [Klasy abstrakcyjne](_06_abstract_classes/README.md) | `abstract`, interfejsy i kontrakty | ✅ | ✅ | ✅ | ✅ |
+| 7 | [Klasy sealed](_07_sealed_classes/README.md) | Ograniczenie dziedziczenia i override | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -39,6 +41,22 @@ Temat 6: Abstract Classes (wzorce)
     ↓
 Temat 7: Sealed Classes (finalizacja)
 ```
+
+### Nawigacja po module
+
+| Przejdź do | Link |
+|---|---|
+| Temat 1 | [_01_inheritance_basics](_01_inheritance_basics/README.md) |
+| Temat 2 | [_02_access_modifiers](_02_access_modifiers/README.md) |
+| Temat 3 | [_03_derived_constructors](_03_derived_constructors/README.md) |
+| Temat 4 | [_04_method_overriding](_04_method_overriding/README.md) |
+| Temat 5 | [_05_virtual_polymorphism](_05_virtual_polymorphism/README.md) |
+| Temat 6 | [_06_abstract_classes](_06_abstract_classes/README.md) |
+| Temat 7 | [_07_sealed_classes](_07_sealed_classes/README.md) |
+| Poprzedni moduł | [04-statyczne](../04-statyczne/README.md) |
+| Następny moduł | [06-polimorfizm](../06-polimorfizm/README.md) |
+
+Każdy podrozdział zawiera w stopce link do tej strony oraz odnośniki do poprzedniego i następnego tematu.
 
 ---
 

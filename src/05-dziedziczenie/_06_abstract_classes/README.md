@@ -129,6 +129,8 @@ db.ExecuteQuery("SELECT * FROM Users");
 | Może być private/protected | Zwykle public |
 | Jedna bazowa klasa | Wiele interfejsów |
 
+Klasa abstrakcyjna jest właściwa, gdy typy mają wspólny stan lub implementację oraz silną relację bazową. Interfejs opisuje zdolność albo kontrakt, który może zostać dodany do klasy mającej już inną klasę bazową. C# pozwala dziedziczyć tylko po jednej klasie, ale implementować wiele interfejsów.
+
 ```csharp
 // Abstract class - implementacja + interface
 public abstract class Animal
@@ -193,6 +195,8 @@ public abstract class AbstractBase { }
 public abstract class Animal { public abstract void Speak(); }
 ```
 
+Metoda abstrakcyjna wymusza implementację w każdej konkretnej klasie pochodnej. Metoda wirtualna daje domyślne zachowanie, które można zastąpić. Wspólne reguły i walidację warto trzymać w metodach bazowych, a szczegóły zależne od typu pozostawić metodom abstrakcyjnym.
+
 ## Hierarchia Abstrakcji
 
 ```
@@ -225,3 +229,7 @@ dotnet test
 - [Microsoft Learn: Abstract Classes](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/abstract-and-sealed-classes-and-class-members)
 - [Abstract keyword](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/abstract)
 - [Interfaces](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/types/interfaces)
+
+## 🧭 Nawigacja
+
+[← Virtual i polimorfizm](../_05_virtual_polymorphism/README.md) · [Moduł 05](../README.md) · [Klasy sealed →](../_07_sealed_classes/README.md)

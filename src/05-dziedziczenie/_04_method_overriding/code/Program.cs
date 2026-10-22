@@ -11,6 +11,8 @@ public class Animal
     {
         Console.WriteLine("Animal makes a sound");
     }
+
+    public virtual string Sound => "Animal sound";
 }
 
 public class Dog : Animal
@@ -19,6 +21,8 @@ public class Dog : Animal
     {
         Console.WriteLine("Woof!");
     }
+
+    public override string Sound => "Woof!";
 }
 
 public class Cat : Animal
@@ -27,6 +31,8 @@ public class Cat : Animal
     {
         Console.WriteLine("Meow!");
     }
+
+    public override string Sound => "Meow!";
 }
 
 // ===== NEW Example (Hiding) =====
@@ -162,6 +168,14 @@ public class MethodOverridingTests
         
         // Should not throw
         car.Drive();
+    }
+
+    [Fact]
+    public void Override_UsesRuntimeImplementation()
+    {
+        Animal animal = new Dog();
+
+        Assert.Equal("Woof!", animal.Sound);
     }
     
     [Fact]

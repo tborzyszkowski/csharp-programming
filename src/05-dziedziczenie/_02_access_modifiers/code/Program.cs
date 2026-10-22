@@ -27,6 +27,11 @@ public class BankAccount
         if (amount > 0 && IsActive)
             balance += amount;
     }
+
+    public void Close()
+    {
+        IsActive = false;
+    }
     
     protected void DeductFee(double fee)
     {
@@ -57,6 +62,7 @@ public class Vehicle
     private double fuelTank = 50.0;
     protected int MaxSpeed { get; set; } = 100;
     internal string VIN { get; set; } = "";
+    protected double FuelLevel => fuelTank;
 }
 
 public class Car : Vehicle
@@ -71,6 +77,7 @@ public class Car : Vehicle
         
         // ✅ OK - internal
         Console.WriteLine($"VIN: {VIN}");
+        Console.WriteLine($"Fuel: {FuelLevel}");
         
         // ❌ Nie można - private
         // Console.WriteLine(fuelTank);
@@ -94,6 +101,8 @@ public class Program
         
         Console.WriteLine("2. Private Field (hidden):");
         account.Deposit(1000);
+        account.Close();
+        account.Deposit(500); // Konto zamknięte - wpłata odrzucona.
         Console.WriteLine($"   Balance (via GetBalance): {account.GetBalance()}");
         Console.WriteLine();
         
@@ -170,5 +179,16 @@ public class AccessModifiersTests
         
         // vehicle.MaxSpeed = 150;  // Compile error - protected
         Assert.NotNull(vehicle);
+    }
+
+    [Fact]
+    public void ClosedAccount_DoesNotAcceptDeposits()
+    {
+        var account = new BankAccount();
+        account.Deposit(100);
+        account.Close();
+        account.Deposit(50);
+
+        Assert.Equal(100, account.GetBalance());
     }
 }

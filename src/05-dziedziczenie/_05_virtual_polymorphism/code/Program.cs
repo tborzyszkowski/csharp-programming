@@ -46,11 +46,14 @@ public class Circle : Shape
     
     public Circle(string name, double radius)
     {
+        if (radius <= 0)
+            throw new ArgumentOutOfRangeException(nameof(radius));
+
         Name = name;
         this.radius = radius;
     }
     
-    public override double CalculateArea() => 3.14 * radius * radius;
+    public override double CalculateArea() => Math.PI * radius * radius;
     public override string GetInfo() => $"Circle: {Name}, R={radius}";
 }
 
@@ -181,6 +184,12 @@ public class VirtualPolymorphismTests
         Animal dog = new Dog { Name = "Rex" };
         
         Assert.Equal("Rex", dog.Name);
+    }
+
+    [Fact]
+    public void Circle_RejectsNonPositiveRadius()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Circle("Invalid", 0));
     }
 }
 

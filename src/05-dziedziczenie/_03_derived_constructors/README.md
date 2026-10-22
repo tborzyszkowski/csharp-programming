@@ -39,6 +39,8 @@ var dog = new Dog("Rex", "Labrador");
 ## Kolejność Inicjalizacji
 
 ```
+
+W praktyce przed wejściem do konstruktora klasy pochodnej wykonywane są także inicjalizatory pól i właściwości bazowych. Następnie inicjalizowany jest stan pochodny. Klasa pochodna może korzystać z chronionych członków bazowych, ale nie powinna omijać reguł walidacji z konstruktora bazowego.
 new Dog("Rex", "Labrador")
     ↓
 Dog constructor code: base(name)
@@ -236,6 +238,8 @@ public class Dog : Animal
 }
 ```
 
+Konstruktor klasy pochodnej powinien przekazać do `base(...)` wszystkie dane niezbędne do utworzenia poprawnego obiektu bazowego. Dzięki temu po zakończeniu konstruktora bazowego obiekt spełnia swój kontrakt, niezależnie od tego, która klasa pochodna jest tworzona.
+
 ## Porównanie C# i Java
 
 Składnia jest prawie taka sama!
@@ -267,3 +271,7 @@ dotnet test
 
 - [Microsoft Learn: Constructors](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/constructors)
 - [C# base keyword](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/base)
+
+## 🧭 Nawigacja
+
+[← Modyfikatory dostępu](../_02_access_modifiers/README.md) · [Moduł 05](../README.md) · [Override vs New →](../_04_method_overriding/README.md)

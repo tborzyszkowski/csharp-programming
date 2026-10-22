@@ -65,6 +65,8 @@ Animal polymorphic = dog;
 polymorphic.Speak();  // "Animal sound" - nie "Woof!"!
 ```
 
+`new` nie zmienia implementacji zapisanej w klasie bazowej. Wybór metody zależy od typu referencji, dlatego po przekazaniu obiektu do kodu bazowego może zostać wywołana inna metoda. Jeśli zachowanie ma być wybierane według rzeczywistego typu obiektu, użyj `virtual` i `override`.
+
 ## Override vs New - Porównanie
 
 ```
@@ -221,6 +223,8 @@ public class Base { public virtual void Do() { } }
 public class Derived : Base { public override void Do() { } }
 ```
 
+Kompilator ostrzega, gdy członek klasy pochodnej ukrywa członka bazowego bez jawnego `new`. Użycie `new` powinno być świadomą decyzją, najlepiej opisaną komentarzem lub dokumentacją API.
+
 ## Abstract Methods
 
 ```csharp
@@ -278,3 +282,7 @@ dotnet test
 - [Microsoft Learn: Polymorphism](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/object-oriented/polymorphism)
 - [Override keyword](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/override)
 - [Virtual keyword](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/virtual)
+
+## 🧭 Nawigacja
+
+[← Konstruktory pochodne](../_03_derived_constructors/README.md) · [Moduł 05](../README.md) · [Virtual i polimorfizm →](../_05_virtual_polymorphism/README.md)

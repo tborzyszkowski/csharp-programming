@@ -32,6 +32,8 @@ public class Dog : Animal
 public abstract class PaymentProcessor
 {
     public abstract void Process();
+
+    public string ProcessorType => GetType().Name;
 }
 
 public sealed class CreditCardProcessor : PaymentProcessor
@@ -130,6 +132,7 @@ public class SealedClassesTests
         PaymentProcessor processor = new CreditCardProcessor();
         
         Assert.IsType<CreditCardProcessor>(processor);
+        Assert.Equal("CreditCardProcessor", processor.ProcessorType);
     }
     
     [Fact]

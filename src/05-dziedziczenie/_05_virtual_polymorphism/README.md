@@ -54,6 +54,8 @@ Base baseRef2 = new Base();
 baseRef2.Method();          // "Base" - typ runtime: Base
 ```
 
+Typ zmiennej określa, jakie członki są dostępne w czasie kompilacji, natomiast typ obiektu decyduje o implementacji metody wirtualnej w czasie działania. To pozwala pisać kod pracujący z `List<Payment>` bez znajomości każdej konkretnej metody płatności.
+
 ## Bez Virtual = Static Dispatch
 
 ```csharp
@@ -125,6 +127,8 @@ if (dog2 != null)
     dog2.Bark();
 }
 ```
+
+Preferuj pattern matching `animal is Dog dog` nad osobnym `is` i rzutowaniem, bo sprawdzenie i uzyskanie typowanej zmiennej odbywa się w jednej operacji. `as` zwraca `null` przy niezgodnym typie i działa tylko dla typów, które mogą przyjąć `null`.
 
 ## Prakticzny Przykład: Payment System
 
@@ -213,6 +217,8 @@ public void Method() { }
 // Używaj virtual gdy logika tego wymaga!
 ```
 
+Nie wybieraj `virtual` wyłącznie na podstawie mikrooptymalizacji. Ważniejsze są kontrakt klasy i możliwość rozszerzania. Z kolei publiczne metody wirtualne są częścią API, więc ich zachowanie i kompatybilność trzeba utrzymywać.
+
 ## Best Practices
 
 ✅ **Virtual dla inheritance hierarchies**:
@@ -270,3 +276,7 @@ dotnet test
 - [Microsoft Learn: Polymorphism](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/object-oriented/polymorphism)
 - [Virtual keyword](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/virtual)
 - [Is operator](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/type-testing-and-conversion#is-operator)
+
+## 🧭 Nawigacja
+
+[← Override vs New](../_04_method_overriding/README.md) · [Moduł 05](../README.md) · [Klasy abstrakcyjne →](../_06_abstract_classes/README.md)
