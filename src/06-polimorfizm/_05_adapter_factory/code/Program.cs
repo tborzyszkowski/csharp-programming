@@ -227,13 +227,16 @@ public class PaymentGatewayFactory
 {
     public static PaymentGateway Create(string providerName)
     {
-        return providerName.ToLower() switch
+        if (string.IsNullOrWhiteSpace(providerName))
+            throw new ArgumentException("Provider name cannot be empty.", nameof(providerName));
+
+        return providerName.Trim().ToLowerInvariant() switch
         {
             "stripe" => new StripeAdapter(),
             "paypal" => new PayPalAdapter(),
             "legacy" => new LegacyAdapter(),
             "fake" or "test" => new FakeGateway(),
-            _ => throw new ArgumentException($"Unknown provider: {providerName}")
+            _ => throw new ArgumentException($"Unknown provider: {providerName}", nameof(providerName))
         };
     }
 }
@@ -404,6 +407,21 @@ public class AdapterFactoryTests
         Assert.Throws<ArgumentException>(() =>
             PaymentGatewayFactory.Create("unknown_provider")
         );
+    }
+
+    [Fact]
+    public void Factory_IgnoresCaseAndWhitespace()
+    {
+        var gateway = PaymentGatewayFactory.Create("  StRiPe ");
+
+        Assert.IsType<StripeAdapter>(gateway);
+    }
+
+    [Fact]
+    public void Factory_EmptyProvider_ThrowsArgumentException()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            PaymentGatewayFactory.Create(" "));
     }
     
     [Fact]

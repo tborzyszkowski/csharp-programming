@@ -92,9 +92,9 @@ public class UserRepository : IRepository<User>
     
     // ✅ Nie trzeba implementować SaveAll - korzysta z default!
     // Ale możemy przesłonić:
-    public void Count()
+    public int Count()
     {
-        Console.WriteLine($"Total users: {_users.Count}");
+        return _users.Count;
     }
 }
 
@@ -183,7 +183,7 @@ public interface IAdvancedLogging
     }
     
     // Private - dostęp tylko w interface'ie
-    private void FormatMessage(string message)
+    private string FormatMessage(string message)
     {
         return $"Formatted: {message}";
     }
@@ -193,13 +193,18 @@ public interface IAdvancedLogging
     {
         Console.WriteLine($"[PROTECTED] {message}");
     }
+
+    public void LogFromImplementation()
+    {
+        ProtectedLog("Called by an interface default member");
+    }
 }
 
 public class AdvancedLogger : IAdvancedLogging
 {
     public void UseProtected()
     {
-        ProtectedLog("Can access protected");
+        ((IAdvancedLogging)this).LogFromImplementation();
     }
 }
 
@@ -281,7 +286,7 @@ public class Program
             new User { Id = 4, Name = "Alice" }
         });
         
-        repo.Count();
+        Console.WriteLine($"Total users: {repo.Count()}");
         
         // ====================================================================
         Console.WriteLine("\n\nSCENARIUSZ 3: Combining Methods (Wrapper Pattern)\n");
@@ -365,7 +370,7 @@ public class DefaultInterfaceMembersTests
         // Default implementation
         repo.SaveAll(users);
         
-        Assert.NotNull(repo);
+        Assert.Equal(2, repo.Count());
     }
     
     [Fact]

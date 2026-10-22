@@ -122,13 +122,13 @@ Vehicle vehicle = new Car();
 vehicle.Start();  // Wywoła: Car.Start() - decyzja w runtime!
 ```
 
-**Późne wiązanie** = runtime patrzy na rzeczywisty typ obiektu (`Car`) i wola metodę z Car.
+**Późne wiązanie** = wywołanie metody wirtualnej jest rozstrzygane na podstawie rzeczywistego typu obiektu (`Car`). Nie oznacza to, że wszystkie wywołania metod w C# są dynamiczne: zwykłe metody, przeciążenia i `static` są wiązane według innych reguł.
 
 ---
 
 ## 🔍 Dlaczego to Działa? - Virtual Method Table (VMT)
 
-Każda klasa z wirtualnymi metodami posiada **tablicę metod wirtualnych (VMT)**. Runtime używa VMT do znalezienia właściwej metody:
+Wewnętrzny mechanizm CLR przechowuje informacje potrzebne do dispatchu metod wirtualnych. Często opisuje się go uproszczonym terminem **VMT** (virtual method table), ale jest to szczegół implementacyjny runtime, a nie publiczny kontrakt C#. Runtime używa tych informacji do znalezienia właściwej metody:
 
 ```
 Animal (VMT):
@@ -326,6 +326,12 @@ dotnet test
 
 ---
 
-## 🎯 Następny Krok
+## 🧭 Nawigacja
 
-Przejdź do Tematu 2: **Przykład: Funkcje Wirtualne** - konkretny przykład e-commerce payment system.
+| Przejdź do | Link |
+|---|---|
+| Poprzedni moduł | [05-dziedziczenie](../../05-dziedziczenie/README.md) |
+| Moduł | [06-polimorfizm](../README.md) |
+| Następny temat | [Temat 2: Przykład funkcji wirtualnych](../_02_virtual_methods_example/README.md) |
+
+Przejdź dalej, aby zobaczyć, jak wspólny kod procesora może obsługiwać wiele metod płatności.

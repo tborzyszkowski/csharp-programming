@@ -263,11 +263,11 @@ decimal finalPrice = strategy.ApplyDiscount(100m);  // Virtual!
 
 | Aspekt | Wpływ |
 |--------|-------|
-| **Virtual Call Overhead** | ~10-30ns na x64 |
-| **Method Table Lookup** | Opłacalne dla setek transakcji |
-| **Inlining** | JIT optimizer może wciąż inlinować! |
+| **Wywołanie virtual** | Może mieć niewielki koszt względem wywołania bezpośredniego |
+| **Lookup metody** | Szczegół implementacyjny CLR, niewymagający ręcznej optymalizacji |
+| **Inlining** | JIT może devirtualizować i inline'ować znane wywołania |
 
-**Konkluzja**: Polimorfizm prawie nic nie kosztuje w nowoczesnym .NET
+**Konkluzja**: nie zakładaj konkretnej liczby nanosekund bez benchmarku. W kodzie biznesowym ważniejsza jest poprawna abstrakcja; optymalizuj dopiero po pomiarze.
 
 ---
 
@@ -303,6 +303,10 @@ dotnet test
 
 ---
 
-## 🚀 Następny Krok
+## 🧭 Nawigacja
 
-Przejdź do Tematu 3: **Virtual vs New** - co się stanie gdy coś pójdzie nie tak!
+| Przejdź do | Link |
+|---|---|
+| Poprzedni temat | [Temat 1: Funkcje wirtualne](../_01_virtual_methods_intro/README.md) |
+| Moduł | [06-polimorfizm](../README.md) |
+| Następny temat | [Temat 3: Virtual vs New](../_03_virtual_vs_new/README.md) |

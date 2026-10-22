@@ -109,7 +109,7 @@ Console.WriteLine(user1.Equals(user2));  // false!
 // Domyślnie: porównuje referencje, nie wartości!
 ```
 
-**Domyślnie**: Equals() porównuje **referencje** (czy to ten sam obiekt w pamięci)
+**Domyślnie dla typów referencyjnych**: `Equals()` z `object` porównuje tożsamość referencji. Typy wartościowe i niektóre typy frameworka mają własne implementacje równości.
 
 ### Przesłanianie Equals() i GetHashCode()
 
@@ -164,6 +164,11 @@ Console.WriteLine(users.Count);  // Bez GetHashCode: 2 (błąd!)
 3. Jeśli Equals() zwraca true - duplikat!
 
 **REGUŁA**: Jeśli przesłaniajesz `Equals()`, MUSISZ przesłonić `GetHashCode()`
+
+> **Uwaga na mutowalne klucze:** jeśli obiekt zmieni pole używane przez `Equals`
+> lub `GetHashCode` po dodaniu do `Dictionary`/`HashSet`, kolekcja może nie znaleźć
+> tego obiektu. Klucz powinien być niemutowalny albo nie należy zmieniać jego pól
+> tożsamości podczas przechowywania w kolekcji.
 
 ```csharp
 public class Product
@@ -295,3 +300,11 @@ dotnet run
 - [Object.Equals()](https://learn.microsoft.com/en-us/dotnet/api/system.object.equals)
 - [Object.GetHashCode()](https://learn.microsoft.com/en-us/dotnet/api/system.object.gethashcode)
 - [IEquatable<T>](https://learn.microsoft.com/en-us/dotnet/api/system.iequatable-1)
+
+## 🧭 Nawigacja
+
+| Przejdź do | Link |
+|---|---|
+| Poprzedni temat | [Temat 3: Virtual vs New](../_03_virtual_vs_new/README.md) |
+| Moduł | [06-polimorfizm](../README.md) |
+| Następny temat | [Temat 5: Adapter + Factory](../_05_adapter_factory/README.md) |

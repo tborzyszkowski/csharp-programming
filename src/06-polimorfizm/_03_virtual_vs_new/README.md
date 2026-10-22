@@ -290,8 +290,8 @@ public class DatabaseSpecificRepository<T> : Repository<T>
 ## 🎓 Reguły Kciuka
 
 1. **Zawsze używaj `override`**, jeśli metoda bazowa jest `virtual`
-2. **`new` to prawie zawsze bug** w design'ie
-3. Jeśli naprawdę potrzebujesz `new`, przespróbuj redesign
+2. **`new` nie jest błędem samym w sobie** - jawnie ukrywa członka bazowego i czasem jest świadomą decyzją API.
+3. Jeśli używasz `new`, udokumentuj powód i sprawdź zachowanie przez referencję bazową.
 4. **Przesłaniająca metoda powinna robić "więcej" lub "lepiej"**, a nie coś zupełnie innego
 
 ---
@@ -313,3 +313,11 @@ Uruchomienie:
 cd code
 dotnet run
 ```
+
+## 🧭 Nawigacja
+
+| Przejdź do | Link |
+|---|---|
+| Poprzedni temat | [Temat 2: Funkcje wirtualne w praktyce](../_02_virtual_methods_example/README.md) |
+| Moduł | [06-polimorfizm](../README.md) |
+| Następny temat | [Temat 4: Metody klasy Object](../_04_object_methods/README.md) |

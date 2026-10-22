@@ -6,7 +6,7 @@ Zrozumienie **Default Interface Members** - nowa funcjonalność od C# 8.0 pozwa
 
 ## 🚀 Co Nowego w C# 8.0+?
 
-Tradycyjnie, interface zawiera TYLKO deklaracje:
+Tradycyjnie interfejsy służyły głównie do deklarowania kontraktu:
 
 ```csharp
 public interface IPaymentMethod
@@ -23,7 +23,7 @@ public interface IPaymentMethod
 {
     void Pay(decimal amount);
     
-    // ✅ NEW: Default implementation
+    // ✅ Domyślna implementacja od C# 8
     public string GetTransactionId()
     {
         return Guid.NewGuid().ToString();  // Kod w interface'ie!
@@ -80,8 +80,8 @@ public interface ILogger
     }
 }
 
-// ✅ Wszystkie 50 klas się KOMPILUJĄ bez zmian!
-// Mogą przesłonić LogError jeśli chcą, ale nie muszą
+// ✅ Istniejące klasy mogą pozostać bez zmian.
+// Klasa korzysta z metody przez referencję ILogger.
 ```
 
 ---
@@ -168,7 +168,7 @@ public interface IAdvanced
         Console.WriteLine("Helper");
     }
     
-    // Protected - dostęp w klasach implementujących
+    // Protected - dostępny dla rozszerzających interfejsów i jego implementacji
     protected void ProtectedMethod()
     {
         PrivateHelper();  // Może wołać private
@@ -279,6 +279,14 @@ dotnet run
 - [Interfaces (C# 11+ Features)](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/interface)
 - [Static Abstract Members](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-11#static-abstract-members-in-interfaces)
 
+## ⚠️ Ograniczenia
+
+Domyślna implementacja jest członkiem interfejsu, a nie zwykłą metodą klasy.
+Wywołanie `logger.LogInfo(...)` wymaga więc referencji typu `ILogger`, chyba że
+klasa sama zdefiniuje publiczną metodę o tej nazwie. Default interface members
+nie zastępują abstrakcyjnej klasy ani mechanizmu DI; powinny zawierać małe,
+stabilne zachowania domyślne i nie ukrywać istotnych zależności.
+
 ---
 
 ## 🚀 Wnioski
@@ -291,3 +299,11 @@ dotnet run
 ---
 
 *Nowoczesne C# daje nam nowe możliwości projektowania interfejsów!*
+
+## 🧭 Nawigacja
+
+| Przejdź do | Link |
+|---|---|
+| Poprzedni temat | [Temat 5: Adapter + Factory](../_05_adapter_factory/README.md) |
+| Moduł | [06-polimorfizm](../README.md) |
+| Następny moduł | [07-interfejsy_abstrakcje](../../07-interfejsy_abstrakcje/README.md) |

@@ -256,13 +256,13 @@ public class FallbackAdapter : PaymentGateway
                 gateway.Authorize(amount);
                 return;  // Success!
             }
-            catch
+            catch (InvalidOperationException)
             {
                 // Try next gateway
             }
         }
         
-        throw new Exception("All payment gateways failed");
+        throw new InvalidOperationException("All payment gateways failed");
     }
 }
 
@@ -327,8 +327,10 @@ dotnet run
 - [Factory Pattern](https://refactoring.guru/design-patterns/factory-method)
 - [Payment Processing Architecture](https://martinfowler.com/articles/patterns-of-distributed-systems/)
 
----
+## 🧭 Nawigacja
 
-## 🚀 Następny Krok
-
-Przejdź do Tematu 6: **Default Interface Members** - nowoczesne C# 8+ features
+| Przejdź do | Link |
+|---|---|
+| Poprzedni temat | [Temat 4: Metody klasy Object](../_04_object_methods/README.md) |
+| Moduł | [06-polimorfizm](../README.md) |
+| Następny temat | [Temat 6: Default Interface Members](../_06_default_interface_members/README.md) |

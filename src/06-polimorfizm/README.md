@@ -12,12 +12,12 @@ Od podstaw wirtualnych metod, przez praktyczne przykłady e-commerce, aż po now
 
 | # | Temat | Opis | Status | Code | Testy | Zadania |
 |---|-------|------|--------|------|-------|---------|
-| 1 | [Funkcje Wirtualne: Wstęp](#temat-1-funkcje-wirtualne-wstęp) | Virtual methods, late binding, polimorfizm | ✅ | ✅ | ✅ | ✅ |
-| 2 | [Przykład: E-Commerce](#temat-2-przykład-funkcje-wirtualne-w-praktyce) | Payment gateway system, real-world | ✅ | ✅ | ✅ | - |
-| 3 | [Virtual vs New](#temat-3-virtual-vs-new) | Override vs new, LSP, anti-patterns | ✅ | ✅ | ✅ | ✅ |
-| 4 | [Metody Klasy Object](#temat-4-metody-klasy-object) | ToString, Equals, GetHashCode | ✅ | ✅ | ✅ | ✅ |
-| 5 | [Adapter + Factory](#temat-5-adapter--factory-pattern) | Design patterns, payment integration | ✅ | ✅ | ✅ | - |
-| 6 | [Default Interface Members](#temat-6-default-interface-members) | C# 8.0+, nowoczesne interfejsy | ✅ | ✅ | ✅ | ✅ |
+| 1 | [Funkcje Wirtualne: Wstęp](_01_virtual_methods_intro/README.md) | Virtual methods, late binding, polimorfizm | ✅ | ✅ | ✅ | ✅ |
+| 2 | [Przykład: E-Commerce](_02_virtual_methods_example/README.md) | Payment gateway system, real-world | ✅ | ✅ | ✅ | - |
+| 3 | [Virtual vs New](_03_virtual_vs_new/README.md) | Override vs new, LSP, hiding | ✅ | ✅ | ✅ | ✅ |
+| 4 | [Metody Klasy Object](_04_object_methods/README.md) | ToString, Equals, GetHashCode | ✅ | ✅ | ✅ | ✅ |
+| 5 | [Adapter + Factory](_05_adapter_factory/README.md) | Design patterns, payment integration | ✅ | ✅ | ✅ | - |
+| 6 | [Default Interface Members](_06_default_interface_members/README.md) | C# 8.0+, nowoczesne interfejsy | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -36,6 +36,21 @@ Temat 5: Adapter + Factory (design patterns)
     ↓
 Temat 6: Nowoczesne C# (evolucja interfejsów)
 ```
+
+### Nawigacja po module
+
+| Przejdź do | Link |
+|---|---|
+| Temat 1 | [_01_virtual_methods_intro](_01_virtual_methods_intro/README.md) |
+| Temat 2 | [_02_virtual_methods_example](_02_virtual_methods_example/README.md) |
+| Temat 3 | [_03_virtual_vs_new](_03_virtual_vs_new/README.md) |
+| Temat 4 | [_04_object_methods](_04_object_methods/README.md) |
+| Temat 5 | [_05_adapter_factory](_05_adapter_factory/README.md) |
+| Temat 6 | [_06_default_interface_members](_06_default_interface_members/README.md) |
+| Poprzedni moduł | [05-dziedziczenie](../05-dziedziczenie/README.md) |
+| Następny moduł | [07-interfejsy_abstrakcje](../07-interfejsy_abstrakcje/README.md) |
+
+Każdy podrozdział zawiera w stopce link do tej strony oraz odnośniki do poprzedniego i następnego tematu.
 
 ---
 
