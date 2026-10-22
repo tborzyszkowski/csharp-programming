@@ -14,7 +14,7 @@ public class StrictPerson
         set
         {
             if (value < 0 || value > 150)
-                throw new ArgumentException("Age must be 0-150");
+                throw new ArgumentOutOfRangeException(nameof(value), value, "Age must be 0-150");
             _age = value;
         }
     }
@@ -81,10 +81,14 @@ public class Person
         get { return _name; }
         set
         {
-            if (value != _name)
+            if (string.Equals(value, _name, StringComparison.Ordinal))
+                return;
+
+            var oldValue = _name;
+            _name = value;
+            if (!string.Equals(oldValue, _name, StringComparison.Ordinal))
             {
-                PropertyChanged?.Invoke("Name", value);
-                _name = value;
+                PropertyChanged?.Invoke(nameof(Name), _name);
             }
         }
     }
@@ -175,7 +179,7 @@ public class PropertyValidationTests
     {
         var person = new StrictPerson();
         
-        Assert.Throws<ArgumentException>(() => person.Age = -5);
+        Assert.Throws<ArgumentOutOfRangeException>(() => person.Age = -5);
     }
     
     [Fact]
@@ -219,6 +223,18 @@ public class PropertyValidationTests
         person.Name = "John";
         
         Assert.Equal("Name", changedProp);
+    }
+
+    [Fact]
+    public void PropertyChanged_DoesNotFireForSameValue()
+    {
+        var person = new Person { Name = "John" };
+        var eventCount = 0;
+        person.PropertyChanged += (_, _) => eventCount++;
+
+        person.Name = "John";
+
+        Assert.Equal(0, eventCount);
     }
     
     [Fact]

@@ -7,7 +7,7 @@ namespace Indexers;
 // ============ SIMPLE INDEXER ============
 public class SimpleCollection
 {
-    private string[] items = new string[3];
+    private readonly string[] items = new string[3];
     
     public string this[int index]
     {
@@ -56,7 +56,7 @@ public class Person
             "name" => _name,
             "age" => _age,
             "email" => _email,
-            _ => null
+            _ => throw new KeyNotFoundException($"Unknown property: {propertyName}")
         };
         set
         {
@@ -71,6 +71,8 @@ public class Person
                 case "email":
                     _email = (string?)value ?? string.Empty;
                     break;
+                default:
+                    throw new KeyNotFoundException($"Unknown property: {propertyName}");
             }
         }
     }
@@ -140,6 +142,14 @@ public class Program
         person["email"] = "john@example.com";
         Console.WriteLine($"name: {person["name"]}");
         Console.WriteLine($"age: {person["age"]}");
+        try
+        {
+            Console.WriteLine(person["unknown"]);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
         Console.WriteLine();
         
         Console.WriteLine("4. INDEKSATOR WIELOWYMIAROWY:");
@@ -190,6 +200,14 @@ public class IndexersTests
         
         Assert.Equal("John", person["name"]);
         Assert.Equal(30, person["age"]);
+    }
+
+    [Fact]
+    public void StringIndexer_RejectsUnknownName()
+    {
+        var person = new Person();
+
+        Assert.Throws<KeyNotFoundException>(() => _ = person["unknown"]);
     }
     
     [Fact]

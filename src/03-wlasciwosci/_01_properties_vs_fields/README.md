@@ -65,6 +65,19 @@ var name = person.Name;  // Używa get accessor
 - ✅ Obliczenia dynamiczne
 - ✅ Enkapsulacja
 
+Właściwość nie musi przechowywać wartości w polu. Może ją obliczać, delegować do innego obiektu albo udostępniać różne poziomy dostępu:
+
+```csharp
+public class Rectangle
+{
+    public double Width { get; init; }
+    public double Height { get; init; }
+    public double Area => Width * Height; // właściwość obliczana
+}
+```
+
+Kod korzystający z `Area` nie musi wiedzieć, czy wartość jest zapisana, czy wyliczana. To właśnie odróżnia stabilny interfejs właściwości od bezpośredniego publicznego pola.
+
 ---
 
 ## Encapsulation
@@ -162,6 +175,8 @@ pwd.PasswordHash = "tajne123";  // OK
 
 ✅ **Asymetryczne accessory** (np. `public get; private set;`)
 
+> **Uwaga:** właściwość nie jest automatycznie lepsza od pola w każdej sytuacji. Pola zwykle pozostają prywatne, a publiczne właściwości tworzą część API klasy. Zmiana publicznego pola na właściwość może wpływać na serializację, refleksję i kompatybilność binarną, dlatego warto zdecydować o publicznym API świadomie.
+
 ---
 
 ## 🚀 Jak pracować
@@ -173,3 +188,7 @@ dotnet test
 ```
 
 **Przejdź do**: [Zadania do samodzielnego wykonania](tasks/README.md)
+
+## 🧭 Nawigacja
+
+[← Moduł 03: właściwości i indeksatory](../README.md) · Następny: [Auto Properties →](../_02_auto_properties/README.md)

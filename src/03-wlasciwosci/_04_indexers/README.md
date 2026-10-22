@@ -38,6 +38,8 @@ var list = new MyList();
 list[0] = 10;  // To samo co tablica!
 ```
 
+Indeksator jest składniowym odpowiednikiem właściwości z parametrem. Klasa może mieć więcej niż jeden indeksator, jeśli różnią się typem lub liczbą parametrów, ale dla czytelności warto używać go tylko wtedy, gdy dostęp `obj[key]` jest naturalny dla modelu.
+
 ---
 
 ## Składnia
@@ -130,6 +132,8 @@ person["age"] = 30;
 Console.WriteLine(person["name"]);  // John
 ```
 
+Stringowy indeksator nie powinien być ukrytą, luźno typowaną wersją refleksji. W przykładzie `object?` pozwala przekazać dowolny typ, więc odpowiedzialność za sprawdzenie typu spada na implementację. Dla znanego zestawu nazw lepsze mogą być zwykłe właściwości albo `Dictionary<string, string>`.
+
 ---
 
 ## Wielowymiarowe Indeksatory
@@ -164,6 +168,10 @@ Console.WriteLine(matrix[0, 0]);  // 1
 
 ✅ **Dokumentuj** - jakie indeksy są akceptowane
 
+✅ Zwracaj `T?`, gdy brak elementu jest prawidłowym wynikiem, albo zgłaszaj wyjątek, gdy brak elementu oznacza błąd.
+
+❌ Nie maskuj nieznanego klucza wartością domyślną bez udokumentowania tego zachowania.
+
 ---
 
 ## 🚀 Jak pracować
@@ -175,3 +183,7 @@ dotnet test
 ```
 
 **Przejdź do**: [Zadania do samodzielnego wykonania](tasks/README.md)
+
+## 🧭 Nawigacja
+
+[← Walidacja właściwości](../_03_property_validation/README.md) · [Moduł 03](../README.md) · [Readonly vs Const →](../_05_readonly_const/README.md)

@@ -120,6 +120,25 @@ public string Name { get; set; }
 - Nie ma logiki w getterze/setterze
 - Kod musi być zwięzły
 
+Kompilator tworzy ukryte pole dla auto property, ale nie udostępnia go bezpośrednio. Dlatego auto property nie pozwala na walidację przy przypisaniu. Gdy wymagania się zmienią, można przejść na jawne pole bez zmiany sposobu użycia właściwości przez kod klienta:
+
+```csharp
+public class Product
+{
+    private decimal _price;
+
+    public decimal Price
+    {
+        get => _price;
+        set => _price = value >= 0
+            ? value
+            : throw new ArgumentOutOfRangeException(nameof(value));
+    }
+}
+```
+
+Inicjalizacja po `=` jest wykonywana podczas tworzenia obiektu, przed użyciem inicjalizatora obiektu. Nie zastępuje walidacji - wartość domyślna powinna sama być poprawna.
+
 ---
 
 ## Wady i Zalety
@@ -155,3 +174,7 @@ dotnet test
 ```
 
 **Przejdź do**: [Zadania do samodzielnego wykonania](tasks/README.md)
+
+## 🧭 Nawigacja
+
+[← Właściwości vs pola](../_01_properties_vs_fields/README.md) · [Moduł 03](../README.md) · [Walidacja właściwości →](../_03_property_validation/README.md)

@@ -52,9 +52,11 @@ public class Product
 // ============ OBJECT INITIALIZER Z AUTO PROPERTIES ============
 public class Employee
 {
-    public string Name { get; set; } = string.Empty;
-    public string Department { get; set; } = string.Empty;
+    public required string Name { get; init; }
+    public required string Department { get; init; }
     public decimal Salary { get; set; }
+
+    public string Summary => $"{Name} ({Department})";
 }
 
 public class Program
@@ -95,7 +97,7 @@ public class Program
             Department = "IT",
             Salary = 6000
         };
-        Console.WriteLine($"{emp.Name} ({emp.Department}) - ${emp.Salary}");
+        Console.WriteLine($"{emp.Summary} - ${emp.Salary}");
     }
 }
 
@@ -146,7 +148,8 @@ public class AutoPropertiesTests
             Department = "IT",
             Salary = 5000
         };
-        
+
+        // emp.Name = "Bob"; // Błąd: właściwość init-only.
         Assert.Equal("Alice", emp.Name);
         Assert.Equal("IT", emp.Department);
         Assert.Equal(5000, emp.Salary);

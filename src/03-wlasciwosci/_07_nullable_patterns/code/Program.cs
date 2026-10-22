@@ -23,7 +23,7 @@ public class User
     
     public string GetDisplayName()
     {
-        return Email ?? Username;
+        return string.IsNullOrWhiteSpace(Email) ? Username : Email;
     }
 }
 
@@ -39,7 +39,7 @@ public class Config
 // ============ DEFENSIVE PROGRAMMING ============
 public class Order
 {
-    public string OrderId { get; init; } = string.Empty;
+    public required string OrderId { get; init; }
     public string? CustomerName { get; init; }
     public string? ShippingAddress { get; init; }
     
@@ -49,6 +49,8 @@ public class Order
         var address = ShippingAddress ?? "N/A";
         return $"{customer} -> {address}";
     }
+
+    public string? GetCustomerEmail(User? user) => user?.Email;
 }
 
 // ============ NULLABLE VALUE TYPES ============
@@ -105,6 +107,7 @@ public class Program
         
         var order2 = new Order { OrderId = "ORD-002" };
         Console.WriteLine($"Order2: {order2.GetDisplayInfo()}");
+        Console.WriteLine($"Order2 customer email: {order2.GetCustomerEmail(user) ?? "N/A"}");
         Console.WriteLine();
         
         Console.WriteLine("5. NULLABLE VALUE TYPES:");
@@ -158,6 +161,14 @@ public class NullablePatternsTests
         var displayName = user.GetDisplayName();
         Assert.Equal("john_doe", displayName);
     }
+
+    [Fact]
+    public void EmptyEmail_FallsBackToUsername()
+    {
+        var user = new User { Username = "john_doe", Email = " " };
+
+        Assert.Equal("john_doe", user.GetDisplayName());
+    }
     
     [Fact]
     public void OptionalProperties_AreNull()
@@ -179,6 +190,14 @@ public class NullablePatternsTests
         
         Assert.Contains("Anonymous", display);
         Assert.Contains("N/A", display);
+    }
+
+    [Fact]
+    public void NullConditional_ReturnsNullForMissingUser()
+    {
+        var order = new Order { OrderId = "ORD-001" };
+
+        Assert.Null(order.GetCustomerEmail(null));
     }
     
     [Fact]

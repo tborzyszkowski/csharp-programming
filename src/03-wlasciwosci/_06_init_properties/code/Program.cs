@@ -9,6 +9,8 @@ public class Person
     public string Name { get; init; } = string.Empty;
     public int Age { get; init; }
     public string Email { get; init; } = string.Empty;
+
+    public string DisplayName => $"{Name} ({Age})";
 }
 
 // ============ REQUIRED KEYWORD (C# 11+) ============
@@ -46,6 +48,8 @@ public class AppSettings
     public int MaxConnections { get; init; } = 100;
     public bool EnableLogging { get; init; } = true;
 }
+
+public record ProductSnapshot(int Id, string Name, decimal Price);
 
 public class Program
 {
@@ -102,6 +106,11 @@ public class Program
         Console.WriteLine($"AppName: {settings.AppName}");
         Console.WriteLine($"Theme: {settings.Theme}");
         Console.WriteLine($"EnableLogging: {settings.EnableLogging}");
+
+        var snapshot = new ProductSnapshot(1, "Laptop", 999.99m);
+        var discounted = snapshot with { Price = 899.99m };
+        Console.WriteLine($"Snapshot: {snapshot.Name} ${snapshot.Price}");
+        Console.WriteLine($"Discounted: {discounted.Name} ${discounted.Price}");
     }
 }
 
@@ -176,5 +185,15 @@ public class InitPropertiesTests
         
         Assert.Equal(1, product.Id);
         Assert.Null(product.Description);
+    }
+
+    [Fact]
+    public void RecordWith_CreatesIndependentValue()
+    {
+        var original = new ProductSnapshot(1, "Laptop", 999.99m);
+        var changed = original with { Price = 899.99m };
+
+        Assert.Equal(999.99m, original.Price);
+        Assert.Equal(899.99m, changed.Price);
     }
 }

@@ -1,24 +1,26 @@
-# MODUŁ 03-WŁAŚCIWOŚCI: Właściwości i Indeksatory w C#
+# MODUŁ 03-WŁAŚCIWOŚCI: Właściwości i indeksatory w C#
 
 ## 📚 Wprowadzenie
 
-Moduł kompleksowo omawia **właściwości (properties)** i **indeksatory (indexers)** w C# - kluczowe koncepcje dla nowoczesnego programowania obiektowego.
+Moduł kompleksowo omawia **właściwości (properties)** i **indeksatory (indexers)** w C# - kluczowe koncepcje enkapsulacji, walidacji i bezpiecznego modelowania danych.
 
-Od podstawowych pól i właściwości, przez walidację i enkapsulację, aż po nowoczesne cechy C# 8+ i 11+ (nullable reference types, init properties, required keyword).
+Od podstawowych pól i właściwości, przez walidację i enkapsulację, aż po nowoczesne cechy C# 8+ i 11+ (`nullable reference types`, `init` properties, `required`).
+
+> **Jak korzystać z modułu:** każdy podrozdział jest samodzielnym projektem .NET. Najpierw przeczytaj README, potem uruchom `dotnet run`, eksperymentuj z `Program.cs`, a na końcu uruchom `dotnet test`.
 
 ---
 
 ## 📋 Tematy (7 wykładów)
 
-| # | Temat | Opis | Chwilowo | Code | Testy | Zadania |
+| # | Temat | Opis | Status | Code | Testy | Zadania |
 |---|-------|------|----------|------|-------|---------|
-| 1 | [Właściwości vs Pola](#temat-1-właściwości-vs-pola) | Encapsulation, gettery/settery | ✅ | ✅ | ✅ | ✅ |
-| 2 | [Auto Properties](#temat-2-auto-properties) | `{ get; set; }` - składnia (C# 3+) | ✅ | ✅ | ✅ | ✅ |
-| 3 | [Walidacja Właściwości](#temat-3-walidacja-właściwości) | Logika w setterze, exceptions, events | ✅ | ✅ | ✅ | ✅ |
-| 4 | [Indeksatory](#temat-4-indeksatory) | `this[...]` - dostęp jak tablica/słownik | ✅ | ✅ | ✅ | ✅ |
-| 5 | [Readonly vs Const](#temat-5-readonly-vs-const) | Stałe kompilacji vs runtime | ✅ | ✅ | ✅ | ✅ |
-| 6 | [Init Properties (C# 9+)](#temat-6-init-properties-c-9) | `{ get; init; }`, `required` keyword (C# 11+) | ✅ | ✅ | ✅ | ✅ |
-| 7 | [Nullable Reference Types (C# 8+)](#temat-7-nullable-reference-types-c-8) | `string?`, null-safety, null-checks | ✅ | ✅ | ✅ | ✅ |
+| 1 | [Właściwości vs Pola](_01_properties_vs_fields/README.md) | Enkapsulacja, gettery i settery | ✅ | ✅ | ✅ | ✅ |
+| 2 | [Auto Properties](_02_auto_properties/README.md) | `{ get; set; }` i backing field | ✅ | ✅ | ✅ | ✅ |
+| 3 | [Walidacja właściwości](_03_property_validation/README.md) | Walidacja, wyjątki i zdarzenia | ✅ | ✅ | ✅ | ✅ |
+| 4 | [Indeksatory](_04_indexers/README.md) | `this[...]` - dostęp jak do tablicy lub słownika | ✅ | ✅ | ✅ | ✅ |
+| 5 | [Readonly vs Const](_05_readonly_const/README.md) | Stałe kompilacji i wartości runtime | ✅ | ✅ | ✅ | ✅ |
+| 6 | [Init Properties](_06_init_properties/README.md) | `init` i `required` | ✅ | ✅ | ✅ | ✅ |
+| 7 | [Nullable Reference Types](_07_nullable_patterns/README.md) | `string?`, null-safety i sprawdzanie kompilatora | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -39,6 +41,22 @@ Temat 6: Init Properties (C# 9+ modern)
     ↓
 Temat 7: Nullable Reference Types (C# 8+ safety)
 ```
+
+### Nawigacja po module
+
+| Przejdź do | Link |
+|---|---|
+| Temat 1 | [_01_properties_vs_fields](_01_properties_vs_fields/README.md) |
+| Temat 2 | [_02_auto_properties](_02_auto_properties/README.md) |
+| Temat 3 | [_03_property_validation](_03_property_validation/README.md) |
+| Temat 4 | [_04_indexers](_04_indexers/README.md) |
+| Temat 5 | [_05_readonly_const](_05_readonly_const/README.md) |
+| Temat 6 | [_06_init_properties](_06_init_properties/README.md) |
+| Temat 7 | [_07_nullable_patterns](_07_nullable_patterns/README.md) |
+| Poprzedni moduł | [02-konstruktory](../02-konstruktory/README.md) |
+| Następny moduł | [04-statyczne](../04-statyczne/README.md) |
+
+Każdy podrozdział zawiera w stopce link powrotny do tej strony oraz odnośniki do poprzedniego i następnego tematu.
 
 ---
 
@@ -448,5 +466,3 @@ Masz pytania? Sprawdź:
 - ✅ **45+ testów** xUnit
 - ✅ **7 diagramów** Mermaid
 - ✅ **Gotowy do użycia** w nauczaniu
-
-

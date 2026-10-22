@@ -59,6 +59,8 @@ if (person.Phone != null)
 }
 ```
 
+Adnotacje nullable nie zmieniają reprezentacji obiektu ani nie dodają automatycznego sprawdzania w runtime. Są informacją dla kompilatora i narzędzi, która opisuje kontrakt API. Wartość z zewnętrznego źródła (JSON, baza, użytkownik) nadal trzeba sprawdzić podczas działania programu.
+
 ---
 
 ## Non-nullable by Default
@@ -78,6 +80,17 @@ public class Config
 // Compiler warns:
 var config = new Config();  // ConnectionString = null (warning!)
 ```
+
+Właściwość typu `string` powinna zostać zainicjalizowana w deklaracji, konstruktorze albo oznaczona jako `required`. `string?` komunikuje, że brak wartości jest przewidzianym przypadkiem i wymusza obsłużenie go przed użyciem.
+
+```csharp
+string? input = GetInput();
+string normalized = input?.Trim() ?? "brak danych";
+
+static string? GetInput() => null;
+```
+
+Operator `?.` zatrzymuje wywołanie przy `null`, a `??` dostarcza wartość zastępczą. Nie używaj operatora `!` jako sposobu na usunięcie problemu bez dowodu, że wartość rzeczywiście nie jest pusta - wyłącza on tylko ostrzeżenie kompilatora.
 
 ---
 
@@ -118,3 +131,7 @@ dotnet test
 ```
 
 **Przejdź do**: [Zadania do samodzielnego wykonania](tasks/README.md)
+
+## 🧭 Nawigacja
+
+[← Init Properties](../_06_init_properties/README.md) · [Moduł 03](../README.md) · [Następny moduł: 04-statyczne →](../../04-statyczne/README.md)

@@ -121,6 +121,18 @@ obj.Age = -5;  // Brak wyjątku, wartość się nie zmienia
 - **Exception**: Gdy bład jest krytyczny
 - **Ignore**: Gdy chcesz "soft fail"
 
+Milczące ignorowanie jest bezpieczne tylko wtedy, gdy odbiorca ma inny sposób wykrycia odrzuconej wartości. W przeciwnym razie program może kontynuować pracę ze starą wartością, a błąd będzie trudny do znalezienia. W publicznym API częściej stosuje się `ArgumentOutOfRangeException` lub `ArgumentException`:
+
+```csharp
+set
+{
+    ArgumentOutOfRangeException.ThrowIfNegative(value);
+    _age = value;
+}
+```
+
+Setter powinien utrzymywać niezmiennik obiektu. Jeśli poprawna wartość zależy od kilku pól, lepiej udostępnić metodę domenową, np. `TransferTo(account, amount)`, niż pozwolić na niezależne ustawianie właściwości.
+
 ---
 
 ## Property Changed Events
@@ -153,6 +165,8 @@ person.PropertyChanged += (prop, newValue) =>
 person.Name = "John";  // Event fires
 ```
 
+W praktycznych aplikacjach UI częściej używa się `INotifyPropertyChanged`, ponieważ frameworki rozpoznają jego standardowy event i nazwę właściwości. Event należy wywoływać dopiero po udanej zmianie; przy przypisaniu tej samej wartości zwykle nie ma potrzeby wysyłania powiadomienia.
+
 ---
 
 ## Best Practices
@@ -176,3 +190,7 @@ dotnet test
 ```
 
 **Przejdź do**: [Zadania do samodzielnego wykonania](tasks/README.md)
+
+## 🧭 Nawigacja
+
+[← Auto Properties](../_02_auto_properties/README.md) · [Moduł 03](../README.md) · [Indeksatory →](../_04_indexers/README.md)

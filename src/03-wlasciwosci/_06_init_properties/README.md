@@ -35,6 +35,8 @@ Console.WriteLine(person.Name);  // John
 - ✅ Data integrity - kontrola co się zmienia
 - ✅ Krótszy kod niż backing fields
 
+`init` oznacza, że przypisanie jest dozwolone tylko w fazie inicjalizacji obiektu: w konstruktorze, inicjalizatorze obiektu lub wyrażeniu `with`. Nie jest to głęboka niezmienność - lista przechowywana we właściwości nadal może być modyfikowalna.
+
 ---
 
 ## Required Keyword (C# 11+)
@@ -65,6 +67,8 @@ var user = new User
 - ✅ Nie potrzebujesz konstruktora
 - ✅ Clear API - wiadomo co wymagane
 
+`required` jest kontrolą kompilatora, a nie walidacją runtime. Wymusza podanie właściwości w kodzie tworzącym obiekt, ale nie sprawdza, czy tekst jest niepusty ani czy adres URL jest poprawny. Takie reguły nadal powinny znajdować się w konstruktorze, setterze, metodzie fabrykującej lub osobnym walidatorze.
+
 ---
 
 ## Records vs Init Properties
@@ -88,6 +92,8 @@ public record PersonRecord(string Name, int Age);
 **Kiedy użyć?**
 - **Class + init**: Gdy chcesz kontrolę nad equals/toString
 - **Record**: Gdy chcesz szybko immutable data object
+
+`record` zapewnia także równość wartościową i `with`, natomiast zwykła klasa z `init` zachowuje domyślną równość referencyjną. Wybierz klasę, gdy obiekt ma tożsamość lub zmienny cykl życia; wybierz record, gdy najważniejsza jest jego wartość.
 
 ---
 
@@ -150,3 +156,7 @@ dotnet test
 ```
 
 **Przejdź do**: [Zadania do samodzielnego wykonania](tasks/README.md)
+
+## 🧭 Nawigacja
+
+[← Readonly vs Const](../_05_readonly_const/README.md) · [Moduł 03](../README.md) · [Nullable Reference Types →](../_07_nullable_patterns/README.md)

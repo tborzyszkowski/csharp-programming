@@ -47,17 +47,28 @@ public class Database
 // ============ READONLY COLLECTION ============
 public class AppSettings
 {
-    public readonly List<string> AllowedHosts;
-    public readonly Dictionary<string, string> AppConfig;
+    private readonly List<string> _allowedHosts;
+    private readonly Dictionary<string, string> _appConfig;
+
+    public IReadOnlyList<string> AllowedHosts => _allowedHosts;
+    public IReadOnlyDictionary<string, string> AppConfig => _appConfig;
     
     public AppSettings()
     {
-        AllowedHosts = new List<string> { "localhost", "127.0.0.1" };
-        AppConfig = new Dictionary<string, string>
+        _allowedHosts = new List<string> { "localhost", "127.0.0.1" };
+        _appConfig = new Dictionary<string, string>
         {
             { "theme", "dark" },
             { "language", "pl" }
         };
+    }
+
+    public void AddAllowedHost(string host)
+    {
+        if (string.IsNullOrWhiteSpace(host))
+            throw new ArgumentException("Host cannot be empty.", nameof(host));
+
+        _allowedHosts.Add(host);
     }
 }
 
@@ -106,9 +117,8 @@ public class Program
         var settings = new AppSettings();
         Console.WriteLine($"Hosts: {string.Join(", ", settings.AllowedHosts)}");
         Console.WriteLine($"Theme: {settings.AppConfig["theme"]}");
-        settings.AllowedHosts.Add("example.com");  // Można zmienić zawartość!
+        settings.AddAllowedHost("example.com");
         Console.WriteLine($"After adding: {string.Join(", ", settings.AllowedHosts)}");
-        // settings.AllowedHosts = new List<string>();  // BŁĄD - readonly
         Console.WriteLine();
         
         Console.WriteLine("5. PORÓWNANIE:");
@@ -119,6 +129,7 @@ public class Program
         Console.WriteLine($"example2.ReadonlyValue: {example2.ReadonlyValue}");
         Console.WriteLine("(Notice: ConstValue is static, so both instances have same value)");
     }
+
 }
 
 public class ReadonlyConstTests
@@ -163,7 +174,7 @@ public class ReadonlyConstTests
         var settings = new AppSettings();
         var initialCount = settings.AllowedHosts.Count;
         
-        settings.AllowedHosts.Add("newhost.com");
+        settings.AddAllowedHost("newhost.com");
         
         Assert.Equal(initialCount + 1, settings.AllowedHosts.Count);
     }

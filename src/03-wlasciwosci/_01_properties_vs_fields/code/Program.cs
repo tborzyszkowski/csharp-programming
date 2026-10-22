@@ -27,10 +27,14 @@ public class Person
         get { return _age; }
         set
         {
-            if (value >= 0 && value <= 150)
-                _age = value;
+            if (value < 0 || value > 150)
+                throw new ArgumentOutOfRangeException(nameof(value), "Age must be between 0 and 150.");
+
+            _age = value;
         }
     }
+
+    public string DisplayName => $"{Name}, age {Age}";
 }
 
 // ============ ENKAPSULACJA ============
@@ -114,8 +118,15 @@ public class Program
         var person = new Person();
         person.Age = 30;
         Console.WriteLine($"Name: {person.Name}, Age: {person.Age}");
-        person.Age = -5;  // Setter zignaruje!
-        Console.WriteLine($"Age (after invalid set): {person.Age}");
+        try
+        {
+            person.Age = -5;
+        }
+        catch (ArgumentOutOfRangeException ex)
+        {
+            Console.WriteLine($"Invalid value: {ex.Message}");
+        }
+        Console.WriteLine($"Display name: {person.DisplayName}");
         Console.WriteLine();
         
         Console.WriteLine("3. ENKAPSULACJA:");
@@ -153,13 +164,13 @@ public class PropertiesVsFieldsTests
     }
     
     [Fact]
-    public void Property_IgnoresInvalidValue()
+    public void Property_RejectsInvalidValue()
     {
         var person = new Person();
         person.Age = 30;
-        person.Age = -5;  // Invalid
-        
-        Assert.Equal(30, person.Age);  // Unchanged
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => person.Age = -5);
+        Assert.Equal(30, person.Age);
     }
     
     [Fact]

@@ -65,6 +65,17 @@ var config = new Configuration("C:\\app.json", 3);
 - Ustawianie tylko w konstruktorze (lub inicjalizatorze)
 - Nie można modyfikować po konstrukcji
 
+`readonly` blokuje przypisanie referencji/pola, ale nie zamraża obiektu wskazywanego przez tę referencję:
+
+```csharp
+public readonly List<string> Names = new();
+
+// Names = new List<string>(); // Błąd: zmiana referencji
+Names.Add("Anna");             // Dozwolone: zmiana zawartości listy
+```
+
+Jeśli kolekcja ma być tylko do odczytu także dla kodu klienta, udostępnij np. `IReadOnlyList<T>` lub kopię, a nie samą `List<T>`.
+
 ---
 
 ## Porównanie
@@ -93,6 +104,8 @@ var config = new Configuration("C:\\app.json", 3);
 - Obiekty (listy, słowniki, obiekty biznesowe)
 - Trzeba ustawić w konstruktorze
 
+Nie używaj `const` dla wartości, które mogą zmienić się między wersjami biblioteki. Wartości `const` są wstawiane do kodu wywołującego podczas jego kompilacji, więc po zmianie biblioteki klient może nadal używać starej wartości aż do ponownej kompilacji. Dla publicznej konfiguracji biblioteki często lepsze jest `static readonly`.
+
 ---
 
 ## Best Practices
@@ -116,3 +129,7 @@ dotnet test
 ```
 
 **Przejdź do**: [Zadania do samodzielnego wykonania](tasks/README.md)
+
+## 🧭 Nawigacja
+
+[← Indeksatory](../_04_indexers/README.md) · [Moduł 03](../README.md) · [Init Properties →](../_06_init_properties/README.md)
