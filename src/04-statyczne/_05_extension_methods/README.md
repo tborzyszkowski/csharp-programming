@@ -31,6 +31,8 @@ public static <return-type> <method-name>(this <type> <parameter>, <other-params
 
 **Kluczowe**: Słowo kluczowe `this` jako pierwszy parametr!
 
+Kompilator traktuje wywołanie `text.CountWords()` jako skrót dla `StringExtensions.CountWords(text)`. Metoda rozszerzająca nie zmienia typu i nie ma uprzywilejowanego dostępu do jego prywatnych pól. Jeśli typ ma już metodę o pasującej sygnaturze, zwykły członek typu ma pierwszeństwo przed rozszerzeniem.
+
 ## Zastosowania
 
 ### 1. Rozszerzanie String
@@ -88,6 +90,8 @@ var result = numbers.Where(x => x > 2)
 ❌ Nie mają dostępu do private pól
 ❌ Muszą być w statycznej klasie
 
+Argument oznaczony `this` może być `null` tylko wtedy, gdy metoda jawnie to obsługuje. Dla typów referencyjnych warto użyć `string?` i określić zachowanie dla braku wartości, zamiast doprowadzać do `NullReferenceException`.
+
 ## Best Practices
 
 ✅ Umieszczaj w namespace pokrewnym typowi
@@ -102,3 +106,7 @@ cd code/
 dotnet run
 dotnet test
 ```
+
+## 🧭 Nawigacja
+
+[← Klasy statyczne](../_04_static_classes/README.md) · [Moduł 04](../README.md) · [Singleton →](../_06_singleton_pattern/README.md)

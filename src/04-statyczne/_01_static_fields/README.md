@@ -44,6 +44,8 @@ Console.WriteLine(Counter.TotalCount);  // 3 - WSZYSTKIE instancje dzielą tę w
 - ✅ Inicjalizowana raz przy pierwszym użyciu
 - ✅ Przechowuje się w **statycznym obszarze pamięci**
 
+`static` opisuje czas życia i współdzielenie stanu, a nie poziom dostępu. Pole może być `private`, `internal` lub `public`; w publicznym API zwykle lepiej udostępnić właściwość z kontrolowanym setterem. Każda zamiana `Count++` jest operacją odczyt-modyfikacja-zapis, więc nie jest atomowa.
+
 ---
 
 ## Pole statyczne vs Pole instancji
@@ -290,6 +292,13 @@ public class ThreadSafeCounter
 }
 ```
 
+Dla prostego licznika można użyć `Interlocked.Increment`, a dla bardziej złożonego stanu blokady lub kolekcji współbieżnej:
+
+```csharp
+private static int _count;
+public static int Increment() => Interlocked.Increment(ref _count);
+```
+
 ---
 
 ## 📚 Referencje
@@ -309,3 +318,7 @@ dotnet test
 ```
 
 **Przejdź do**: [Zadania do samodzielnego wykonania](tasks/README.md)
+
+## 🧭 Nawigacja
+
+[← Moduł 04: składowe statyczne](../README.md) · [Metody statyczne →](../_02_static_methods/README.md)

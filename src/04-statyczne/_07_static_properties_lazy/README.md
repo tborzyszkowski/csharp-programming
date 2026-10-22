@@ -19,6 +19,8 @@ AppConfig.ApiUrl = "http://api.example.com";
 Console.WriteLine(AppConfig.Timeout);
 ```
 
+Publiczna statyczna właściwość z `set` jest globalnym, mutowalnym stanem. Każdy fragment kodu może zmienić wartość, dlatego w konfiguracji często lepiej użyć `init`, prywatnego settera albo jawnej metody aktualizacji, która sprawdza poprawność danych.
+
 ## Lazy<T> - Inicjalizacja Leniwa
 
 ```csharp
@@ -39,6 +41,8 @@ public class ExpensiveResource
 var resource = ExpensiveResource.Instance;  // Inicjalizuje tylko teraz
 var resource2 = ExpensiveResource.Instance;  // Zwraca cached instance
 ```
+
+`Lazy<T>` przechowuje wartość po pierwszym wywołaniu `Value`. Domyślna strategia jest thread-safe, ale jeżeli fabryka rzuci wyjątek, informacja o błędzie jest zapamiętana i kolejne odczyty również go zgłoszą. To ważne przy ładowaniu konfiguracji lub połączeń.
 
 ## Statyczne Readonly Properties
 
@@ -69,6 +73,8 @@ public class Constants
 | Lazy<T> | Thread-safe, lazy | Bardziej skomplikowany |
 | Static readonly | Immutable | Nie można zmienić |
 
+`static readonly` chroni referencję lub wartość, ale nie zamraża mutowalnego obiektu. Dla cache'a warto udostępniać interfejs tylko do odczytu i kontrolować modyfikacje wewnątrz typu.
+
 ## Best Practices
 
 ✅ Używaj `Lazy<T>` dla kosztownych zasobów
@@ -87,3 +93,7 @@ cd code/
 dotnet run
 dotnet test
 ```
+
+## 🧭 Nawigacja
+
+[← Singleton](../_06_singleton_pattern/README.md) · [Moduł 04](../README.md) · [Następny moduł: 05-dziedziczenie →](../../05-dziedziczenie/README.md)

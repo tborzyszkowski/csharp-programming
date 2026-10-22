@@ -50,6 +50,10 @@ public sealed class Logger
 }
 ```
 
+`Lazy<T>` domyślnie zapewnia bezpieczną inicjalizację w środowisku wielowątkowym i tworzy obiekt dopiero przy pierwszym odczycie `Value`. Nie rozwiązuje jednak problemu globalnego stanu ani nie ułatwia testowania zależności.
+
+W aplikacjach korzystających z kontenera DI singleton zwykle konfiguruje się w kontenerze, np. jako `AddSingleton<T>`. Dzięki temu kod otrzymuje interfejs, można podmienić implementację w testach, a zakres życia obiektu jest jawny.
+
 ## Zastosowania
 
 - Database connections
@@ -68,6 +72,8 @@ public sealed class Logger
 ❌ Nie używaj for mutable state
 ❌ Unikaj w testach (hard to mock)
 
+❌ Nie używaj Singletona tylko po to, aby ukryć brak właściwego modelu zależności.
+
 ## Ograniczenia
 
 - Trudne do testowania
@@ -81,3 +87,7 @@ cd code/
 dotnet run
 dotnet test
 ```
+
+## 🧭 Nawigacja
+
+[← Metody rozszerzające](../_05_extension_methods/README.md) · [Moduł 04](../README.md) · [Static Properties i Lazy<T> →](../_07_static_properties_lazy/README.md)

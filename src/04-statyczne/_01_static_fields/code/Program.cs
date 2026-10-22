@@ -19,6 +19,17 @@ public class Counter
     }
 }
 
+public static class ThreadSafeCounter
+{
+    private static int _count;
+
+    public static int Count => _count;
+
+    public static int Increment() => System.Threading.Interlocked.Increment(ref _count);
+
+    public static void Reset() => System.Threading.Interlocked.Exchange(ref _count, 0);
+}
+
 /// <summary>
 /// 2. Konfiguracja aplikacji (statyczne pola)
 /// </summary>
@@ -234,5 +245,15 @@ public class StaticFieldsTests
         Logger.Log("Message 3");
         
         Assert.Equal(3, Logger.LogCount);
+    }
+
+    [Fact]
+    public void ThreadSafeCounter_AtomicallyIncrements()
+    {
+        ThreadSafeCounter.Reset();
+
+        Assert.Equal(1, ThreadSafeCounter.Increment());
+        Assert.Equal(2, ThreadSafeCounter.Increment());
+        Assert.Equal(2, ThreadSafeCounter.Count);
     }
 }

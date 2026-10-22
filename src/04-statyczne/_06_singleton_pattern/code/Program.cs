@@ -45,6 +45,18 @@ public sealed class Logger
     }
 }
 
+public sealed class LazyDatabase
+{
+    private static readonly Lazy<LazyDatabase> _instance =
+        new(() => new LazyDatabase());
+
+    private LazyDatabase() { }
+
+    public static LazyDatabase Instance => _instance.Value;
+
+    public string Status => "Ready";
+}
+
 // Static constructor pattern
 public sealed class ConfigManager
 {
@@ -103,6 +115,7 @@ public class Program
         Console.WriteLine("4. Cache (Property pattern):");
         var cache = Cache.Instance;
         cache.Set("user_1", "John");
+        Console.WriteLine($"   LazyDatabase status: {LazyDatabase.Instance.Status}");
     }
 }
 
@@ -149,5 +162,12 @@ public class SingletonPatternTests
     {
         // new Database();  // Private constructor - cannot compile
         Assert.NotNull(Database.GetInstance());
+    }
+
+    [Fact]
+    public void LazyDatabase_ReturnsSameInstance()
+    {
+        Assert.Same(LazyDatabase.Instance, LazyDatabase.Instance);
+        Assert.Equal("Ready", LazyDatabase.Instance.Status);
     }
 }

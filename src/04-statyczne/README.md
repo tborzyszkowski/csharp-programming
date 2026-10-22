@@ -1,10 +1,12 @@
-# MODUŁ 04-STATYCZNE: Składowe Statyczne w C#
+# MODUŁ 04-STATYCZNE: Składowe statyczne w C#
 
 ## 📚 Wprowadzenie
 
 Moduł kompleksowo omawia **składowe statyczne (static members)** w C# - pola, metody, konstruktory, klasy statyczne, metody rozszerzające i wzorce projektowe.
 
-Od podstawowych pól statycznych, przez utility funkcje, aż po nowoczesne metody rozszerzające i lazy initialization.
+Od podstawowych pól statycznych, przez funkcje narzędziowe i konstruktory statyczne, aż po metody rozszerzające, `Lazy<T>` i ograniczenia wzorca Singleton.
+
+> **Jak korzystać z modułu:** każdy podrozdział jest samodzielnym projektem .NET. Przeczytaj README, uruchom `dotnet run`, zmień przykład w `Program.cs`, a następnie uruchom `dotnet test`.
 
 ---
 
@@ -12,13 +14,13 @@ Od podstawowych pól statycznych, przez utility funkcje, aż po nowoczesne metod
 
 | # | Temat | Opis | Status | Code | Testy | Zadania |
 |---|-------|------|--------|------|-------|---------|
-| 1 | [Pole statyczne](#temat-1-pole-statyczne) | Zmienne dzielane między instancje | ✅ | ✅ | ✅ | ✅ |
-| 2 | [Metody statyczne](#temat-2-metody-statyczne) | Funkcje utility, factory methods | ✅ | ✅ | ✅ | ✅ |
-| 3 | [Konstruktor statyczny](#temat-3-konstruktor-statyczny) | Inicjalizacja statycznych pól | ✅ | ✅ | ✅ | ✅ |
-| 4 | [Klasy statyczne](#temat-4-klasy-statyczne) | Tylko statyczne członkowie | ✅ | ✅ | ✅ | ✅ |
-| 5 | [Metody rozszerzające](#temat-5-metody-rozszerzające) | Extension Methods - dodawanie metod do typów | ✅ | ✅ | ✅ | ✅ |
-| 6 | [Wzorzec Singleton](#temat-6-wzorzec-singleton) | Gwarantowanie jednej instancji | ✅ | ✅ | ✅ | ✅ |
-| 7 | [Static Properties & Lazy<T>](#temat-7-static-properties--lazyt) | Nowoczesna inicjalizacja (C# 9+) | ✅ | ✅ | ✅ | ✅ |
+| 1 | [Pole statyczne](_01_static_fields/README.md) | Stan współdzielony między instancjami | ✅ | ✅ | ✅ | ✅ |
+| 2 | [Metody statyczne](_02_static_methods/README.md) | Utility functions i factory methods | ✅ | ✅ | ✅ | ✅ |
+| 3 | [Konstruktor statyczny](_03_static_constructor/README.md) | Jednorazowa inicjalizacja typu | ✅ | ✅ | ✅ | ✅ |
+| 4 | [Klasy statyczne](_04_static_classes/README.md) | Organizacja funkcji bez instancji | ✅ | ✅ | ✅ | ✅ |
+| 5 | [Metody rozszerzające](_05_extension_methods/README.md) | Rozszerzanie istniejących typów | ✅ | ✅ | ✅ | ✅ |
+| 6 | [Wzorzec Singleton](_06_singleton_pattern/README.md) | Jedna współdzielona instancja | ✅ | ✅ | ✅ | ✅ |
+| 7 | [Static Properties i Lazy<T>](_07_static_properties_lazy/README.md) | Kontrolowany dostęp i leniwa inicjalizacja | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -39,6 +41,22 @@ Temat 6: Singleton (pattern)
     ↓
 Temat 7: Static Properties & Lazy<T> (modern)
 ```
+
+### Nawigacja po module
+
+| Przejdź do | Link |
+|---|---|
+| Temat 1 | [_01_static_fields](_01_static_fields/README.md) |
+| Temat 2 | [_02_static_methods](_02_static_methods/README.md) |
+| Temat 3 | [_03_static_constructor](_03_static_constructor/README.md) |
+| Temat 4 | [_04_static_classes](_04_static_classes/README.md) |
+| Temat 5 | [_05_extension_methods](_05_extension_methods/README.md) |
+| Temat 6 | [_06_singleton_pattern](_06_singleton_pattern/README.md) |
+| Temat 7 | [_07_static_properties_lazy](_07_static_properties_lazy/README.md) |
+| Poprzedni moduł | [03-wlasciwosci](../03-wlasciwosci/README.md) |
+| Następny moduł | [05-dziedziczenie](../05-dziedziczenie/README.md) |
+
+Każdy podrozdział zawiera w stopce link do tej strony oraz odnośniki do poprzedniego i następnego tematu.
 
 ---
 

@@ -21,6 +21,9 @@ public static class StringExtensions
     {
         return string.IsNullOrEmpty(str) ? 0 : str.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
     }
+
+    public static string? ToNullIfWhiteSpace(this string? str) =>
+        string.IsNullOrWhiteSpace(str) ? null : str.Trim();
 }
 
 public static class IntExtensions
@@ -52,6 +55,7 @@ public class Program
         Console.WriteLine($"   \"{text}\".Capitalize(): \"{text.Capitalize()}\"");
         Console.WriteLine($"   \"{text}\".IsValidEmail(): {text.IsValidEmail()}");
         Console.WriteLine($"   \"{text}\".CountWords(): {text.CountWords()}");
+        Console.WriteLine($"   \"   \".ToNullIfWhiteSpace(): {"   ".ToNullIfWhiteSpace() ?? "null"}");
         Console.WriteLine();
         
         Console.WriteLine("2. Int Extensions:");
@@ -90,6 +94,13 @@ public class ExtensionMethodsTests
     {
         Assert.Equal(2, "hello world".CountWords());
         Assert.Equal(3, "one two three".CountWords());
+    }
+
+    [Fact]
+    public void StringExtension_ToNullIfWhiteSpace_NormalizesOptionalText()
+    {
+        Assert.Null("   ".ToNullIfWhiteSpace());
+        Assert.Equal("hello", " hello ".ToNullIfWhiteSpace());
     }
     
     [Fact]

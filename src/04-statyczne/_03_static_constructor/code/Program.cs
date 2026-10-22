@@ -6,25 +6,31 @@ namespace StaticConstructor;
 
 public class Database
 {
-    public static string ConnectionString;
-    public static int Timeout;
+    public static string ConnectionString { get; }
+    public static int Timeout { get; }
     
     static Database()
     {
         ConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION") ?? "localhost";
-        Timeout = int.Parse(Environment.GetEnvironmentVariable("DB_TIMEOUT") ?? "30");
+        var timeoutText = Environment.GetEnvironmentVariable("DB_TIMEOUT");
+        Timeout = int.TryParse(timeoutText, out var timeout) && timeout > 0
+            ? timeout
+            : 30;
     }
 }
 
 public class AppSettings
 {
-    public static Dictionary<string, string> Values = new();
+    public static IReadOnlyDictionary<string, string> Values { get; }
     
     static AppSettings()
     {
-        Values["app_name"] = "MyApp";
-        Values["version"] = "1.0.0";
-        Values["debug"] = "true";
+        Values = new Dictionary<string, string>
+        {
+            ["app_name"] = "MyApp",
+            ["version"] = "1.0.0",
+            ["debug"] = "true"
+        };
     }
 }
 

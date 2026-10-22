@@ -30,6 +30,8 @@ double area = MathHelper.CircleArea(5);
 - ✅ Niejawnie sealed
 - ✅ Brak konstruktora instancji
 
+Klasa statyczna jest dobrym miejscem dla bezstanowych funkcji, ale nie jest zamiennikiem każdej usługi. Nie może implementować interfejsu ani być przekazana jako zależność przez konstruktor. Jeśli kod ma posiadać konfigurację, zależności lub stan per instancja, zwykła klasa będzie bardziej elastyczna.
+
 ## Zastosowania
 
 1. **Utility funkcje** - Math, String, File operations
@@ -44,8 +46,10 @@ double area = MathHelper.CircleArea(5);
 
 ## Best Practices
 
-✅ Używaj dla kolekacji utility funkcji
+✅ Używaj dla kolekcji bezstanowych funkcji utility
 ✅ Jasne nazwy (Helper, Service, Util)
+
+✅ Przyjmuj dane przez parametry i zwracaj wynik zamiast modyfikować globalny stan.
 
 ❌ Nie przechowuj stanu mutable
 ❌ Unikaj przesady - grupy logiczne
@@ -57,3 +61,7 @@ cd code/
 dotnet run
 dotnet test
 ```
+
+## 🧭 Nawigacja
+
+[← Konstruktor statyczny](../_03_static_constructor/README.md) · [Moduł 04](../README.md) · [Metody rozszerzające →](../_05_extension_methods/README.md)

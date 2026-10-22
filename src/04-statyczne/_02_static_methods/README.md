@@ -38,6 +38,8 @@ Console.WriteLine(area);  // 78.54975
 - ✅ Wywoływana przez **nazwę klasy**
 - ✅ Przydatna dla **utility functions** (Math, String, File itp)
 
+Metoda statyczna powinna otrzymywać wszystko, czego potrzebuje, przez parametry albo korzystać z jawnie zarządzanego stanu statycznego. Dzięki temu łatwiej ją testować: wynik zależy od argumentów, a nie od przypadkowego stanu globalnego.
+
 ---
 
 ## Metoda statyczna vs Metoda instancji
@@ -169,6 +171,18 @@ int num = DataConverter.StringToInt("42");
 double miles = DataConverter.KilometersToMiles(100);
 ```
 
+Warto rozróżnić metodę konwersji, która zwraca wartość zastępczą, od metody, która informuje o niepowodzeniu:
+
+```csharp
+public static bool TryParseInt(string? text, out int value) =>
+    int.TryParse(text, out value);
+
+if (DataConverter.TryParseInt("42", out var number))
+    Console.WriteLine(number);
+```
+
+Wzorzec `Try...` nie ukrywa błędnych danych jako `0`, co jest ważne, gdy zero jest poprawną wartością.
+
 ---
 
 ## Best Practices
@@ -272,3 +286,7 @@ dotnet test
 ```
 
 **Przejdź do**: [Zadania do samodzielnego wykonania](tasks/README.md)
+
+## 🧭 Nawigacja
+
+[← Pole statyczne](../_01_static_fields/README.md) · [Moduł 04](../README.md) · [Konstruktor statyczny →](../_03_static_constructor/README.md)

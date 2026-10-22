@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Xunit;
 
 namespace StaticClasses;
@@ -33,12 +34,17 @@ public static class ValidationHelper
 {
     public static bool IsEmail(string? email)
     {
-        return !string.IsNullOrEmpty(email) && email.Contains("@");
+        return !string.IsNullOrWhiteSpace(email)
+            && email.Contains('@')
+            && email.IndexOf('@') > 0
+            && email.IndexOf('@') < email.Length - 1;
     }
     
     public static bool IsPhoneNumber(string? phone)
     {
-        return !string.IsNullOrEmpty(phone) && phone.Length >= 9;
+        return !string.IsNullOrEmpty(phone)
+            && phone.Length >= 9
+            && phone.All(char.IsDigit);
     }
 }
 

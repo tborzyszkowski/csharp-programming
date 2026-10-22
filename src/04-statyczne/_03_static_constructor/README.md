@@ -28,6 +28,10 @@ public class Database
 - ✅ Inicjalizuje statyczne pola
 - ✅ Należy do klasy, nie do instancji
 
+CLR uruchamia konstruktor statyczny przed pierwszym użyciem typu wymagającym jego inicjalizacji, a dostęp do niego jest synchronizowany. Konstruktor nie jest wywoływany przy każdym utworzeniu instancji. Jeśli zgłosi wyjątek, typ jest oznaczony jako niezainicjalizowany i kolejne użycia zwykle kończą się `TypeInitializationException`.
+
+Nie należy umieszczać w nim długich operacji I/O ani logiki zależnej od kolejności startu aplikacji. Warto też pamiętać, że proste inicjalizatory pól często wystarczają i są czytelniejsze.
+
 ## Zastosowania
 
 ### 1. Inicjalizacja ze zmiennych środowiskowych
@@ -95,10 +99,12 @@ var x = InitOrder.Name;  // "StaticConstructor"
 
 ✅ Inicjalizuj statyczne pola w konstruktorze statycznym
 ✅ Czytaj konfigurację z environment variables
-✅ Zailizuj cache'i i kolekcje
+✅ Inicjalizuj cache'e i kolekcje
 
 ❌ Nie rób zbyt skomplikowanej logiki
 ❌ Nie rzucaj wyjątków bez obsługi
+
+❌ Nie zakładaj, że konstruktor statyczny wykona się dokładnie w momencie uruchomienia procesu.
 
 ## 🚀 Jak pracować
 
@@ -107,3 +113,7 @@ cd code/
 dotnet run
 dotnet test
 ```
+
+## 🧭 Nawigacja
+
+[← Metody statyczne](../_02_static_methods/README.md) · [Moduł 04](../README.md) · [Klasy statyczne →](../_04_static_classes/README.md)

@@ -63,6 +63,9 @@ public class DataConverter
     {
         return int.TryParse(str, out int result) ? result : 0;
     }
+
+    public static bool TryParseInt(string? str, out int result) =>
+        int.TryParse(str, out result);
     
     public static double CelsiusToFahrenheit(double celsius)
     {
@@ -133,6 +136,7 @@ public class Program
         // 4. Data Converter
         Console.WriteLine("4. DATA CONVERTER:");
         Console.WriteLine($"   StringToInt(\"42\"): {DataConverter.StringToInt("42")}");
+        Console.WriteLine($"   TryParseInt(\"not a number\"): {DataConverter.TryParseInt("not a number", out _)}");
         Console.WriteLine($"   CelsiusToFahrenheit(25): {DataConverter.CelsiusToFahrenheit(25)}");
         Console.WriteLine($"   KilometersToMiles(100): {DataConverter.KilometersToMiles(100):F2}");
         Console.WriteLine();
@@ -182,6 +186,14 @@ public class StaticMethodsTests
     {
         Assert.Equal(77, DataConverter.CelsiusToFahrenheit(25));
         Assert.Equal(32, DataConverter.CelsiusToFahrenheit(0));
+    }
+
+    [Fact]
+    public void DataConverter_TryParseIntReportsFailure()
+    {
+        Assert.True(DataConverter.TryParseInt("42", out var number));
+        Assert.Equal(42, number);
+        Assert.False(DataConverter.TryParseInt("invalid", out _));
     }
     
     [Fact]

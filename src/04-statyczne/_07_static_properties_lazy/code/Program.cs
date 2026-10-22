@@ -5,10 +5,22 @@ namespace StaticPropertiesLazy;
 
 public class AppConfig
 {
-    public static string ApiUrl { get; set; } = "http://localhost";
-    public static int Timeout { get; set; } = 30;
-    public static bool IsDebug { get; set; } = true;
+    public static string ApiUrl { get; private set; } = "http://localhost";
+    public static int Timeout { get; private set; } = 30;
+    public static bool IsDebug { get; private set; } = true;
     public static readonly string Version = "1.0.0";
+
+    public static void Configure(string apiUrl, int timeout, bool isDebug)
+    {
+        if (string.IsNullOrWhiteSpace(apiUrl))
+            throw new ArgumentException("API URL cannot be empty.", nameof(apiUrl));
+        if (timeout <= 0)
+            throw new ArgumentOutOfRangeException(nameof(timeout));
+
+        ApiUrl = apiUrl;
+        Timeout = timeout;
+        IsDebug = isDebug;
+    }
 }
 
 public class ExpensiveResource
@@ -55,7 +67,7 @@ public class CachedData
             return dict;
         });
     
-    public static System.Collections.Generic.Dictionary<string, string> Cache => _cache.Value;
+    public static System.Collections.Generic.IReadOnlyDictionary<string, string> Cache => _cache.Value;
 }
 
 public static class Program
@@ -105,10 +117,10 @@ public class StaticPropertiesLazyTests
     {
         string original = AppConfig.ApiUrl;
         
-        AppConfig.ApiUrl = "http://newapi.com";
+        AppConfig.Configure("http://newapi.com", AppConfig.Timeout, AppConfig.IsDebug);
         Assert.Equal("http://newapi.com", AppConfig.ApiUrl);
         
-        AppConfig.ApiUrl = original;
+        AppConfig.Configure(original, AppConfig.Timeout, AppConfig.IsDebug);
     }
     
     [Fact]
