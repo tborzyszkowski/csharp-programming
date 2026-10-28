@@ -6,7 +6,9 @@ Stwórz klasę `CalcHelper` z metodami statycznymi do obliczeń:
 - `Add(a, b)` - dodawanie
 - `Subtract(a, b)` - odejmowanie
 - `Multiply(a, b)` - mnożenie
-- `Divide(a, b)` - dzielenie (zwraca 0 jeśli b == 0)
+- `TryDivide(a, b, out result)` - zwraca `false`, jeśli dzielnik wynosi zero
+
+Metoda `TryDivide` pozwala odróżnić poprawny wynik równy zero od dzielenia, którego nie można wykonać.
 
 ## Zadanie 2: Validation
 
@@ -36,7 +38,17 @@ public static class CalcHelper
     public static double Add(double a, double b) => a + b;
     public static double Subtract(double a, double b) => a - b;
     public static double Multiply(double a, double b) => a * b;
-    public static double Divide(double a, double b) => b != 0 ? a / b : 0;
+    public static bool TryDivide(double a, double b, out double result)
+    {
+        if (b == 0)
+        {
+            result = 0;
+            return false;
+        }
+
+        result = a / b;
+        return true;
+    }
 }
 ```
 

@@ -2,7 +2,7 @@
 
 ## 🎯 Cel
 
-**Metody rozszerzające** to statyczne metody które wyglądają jak metody instancji na istniejących typach.
+**Klasyczne metody rozszerzające** to statyczne metody, które można wywołać składnią przypominającą metodę instancji istniejącego typu.
 
 ## Definicja
 
@@ -11,7 +11,9 @@ public static class StringExtensions
 {
     public static int CountWords(this string str)
     {
-        return str.Split(' ').Length;
+        return string.IsNullOrEmpty(str)
+            ? 0
+            : str.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
     }
 }
 
@@ -31,7 +33,7 @@ public static <return-type> <method-name>(this <type> <parameter>, <other-params
 
 **Kluczowe**: Słowo kluczowe `this` jako pierwszy parametr!
 
-Kompilator traktuje wywołanie `text.CountWords()` jako skrót dla `StringExtensions.CountWords(text)`. Metoda rozszerzająca nie zmienia typu i nie ma uprzywilejowanego dostępu do jego prywatnych pól. Jeśli typ ma już metodę o pasującej sygnaturze, zwykły członek typu ma pierwszeństwo przed rozszerzeniem.
+Kompilator traktuje wywołanie `text.CountWords()` jako skrót dla `StringExtensions.CountWords(text)`. Metoda rozszerzająca nie zmienia typu i nie ma uprzywilejowanego dostępu do jego prywatnych pól. Jeśli typ ma już pasujący członek instancji, ma on pierwszeństwo przed metodą rozszerzającą. Klasyczna składnia metod rozszerzających wymaga statycznej metody w niegenerycznej, statycznej klasie najwyższego poziomu. C# 14 wprowadza również bloki rozszerzeń; nie są one częścią przykładów w tym module.
 
 ## Zastosowania
 
@@ -41,7 +43,11 @@ public static class StringExtensions
 {
     public static string Capitalize(this string str)
     {
-        return char.ToUpper(str[0]) + str.Substring(1);
+        ArgumentNullException.ThrowIfNull(str);
+        if (str.Length == 0)
+            return str;
+
+        return char.ToUpperInvariant(str[0]) + str[1..].ToLowerInvariant();
     }
     
     public static bool IsValidEmail(this string str)
@@ -54,6 +60,8 @@ string text = "hello";
 text.Capitalize();  // "Hello"
 text.IsValidEmail();  // false
 ```
+
+`IsValidEmail` jest tu tylko uproszczonym przykładem rozszerzenia, a nie pełną walidacją adresu e-mail.
 
 ### 2. Rozszerzanie Int
 ```csharp
@@ -85,8 +93,8 @@ var result = numbers.Where(x => x > 2)
 
 ## Ograniczenia
 
-❌ Nie można rozszerzać static members
-❌ Nie można nadpisywać istniejących metod
+❌ Klasyczna metoda rozszerzająca jest wywoływana na odbiorcy jako instancji; nie dodaje członków statycznych do typu
+❌ Nie przesłania ani nie zastępuje członków typu
 ❌ Nie mają dostępu do private pól
 ❌ Muszą być w statycznej klasie
 

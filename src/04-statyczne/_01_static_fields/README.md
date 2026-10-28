@@ -41,10 +41,12 @@ Console.WriteLine(Counter.TotalCount);  // 3 - WSZYSTKIE instancje dzielą tę w
 - ✅ Należy do **klasy**, nie do instancji
 - ✅ Dzielona między **wszystkie instancje**
 - ✅ Dostęp przez **nazwę klasy** `Counter.TotalCount`
-- ✅ Inicjalizowana raz przy pierwszym użyciu
-- ✅ Przechowuje się w **statycznym obszarze pamięci**
+- ✅ Wartość jest inicjalizowana podczas inicjalizacji typu
+- ✅ Istnieje jedna wartość pola dla typu deklarującego (osobna dla każdego skonstruowanego typu generycznego)
 
-`static` opisuje czas życia i współdzielenie stanu, a nie poziom dostępu. Pole może być `private`, `internal` lub `public`; w publicznym API zwykle lepiej udostępnić właściwość z kontrolowanym setterem. Każda zamiana `Count++` jest operacją odczyt-modyfikacja-zapis, więc nie jest atomowa.
+`static` oznacza przynależność do typu, a nie osobnej instancji. Nie określa poziomu dostępu ani konkretnego obszaru pamięci — to szczegóły implementacji runtime. Pole może być `private`, `internal` lub `public`; w publicznym API zwykle lepiej udostępnić właściwość z kontrolowanym setterem. Każda zamiana `Count++` jest operacją odczyt-modyfikacja-zapis, więc nie jest atomowa.
+
+Inicjalizacja odbywa się w ramach inicjalizacji typu. Gdy typ nie ma jawnego konstruktora statycznego, runtime może wykonać ją wcześniej niż tuż przed pierwszym odczytem pola.
 
 ---
 
@@ -55,9 +57,11 @@ Console.WriteLine(Counter.TotalCount);  // 3 - WSZYSTKIE instancje dzielą tę w
 | Należy do | Klasy | Instancji |
 | Deklaracja | `static int field;` | `int field;` |
 | Dostęp | `ClassName.field` | `instance.field` |
-| Pamięć | Jedna kopia dla całej klasy | Oddzielna kopia dla każdej instancji |
-| Inicjalizacja | Raz przy pierwszym użyciu | Za każdym razem w konstruktorze |
-| Dziedziczenie | Nie dziedziczone | Dziedziczone |
+| Wartość | Jedna dla typu deklarującego | Oddzielna kopia dla każdej instancji |
+| Inicjalizacja | W ramach inicjalizacji typu | Przy inicjalizacji każdej instancji |
+| Dziedziczenie | Dostępna także przez typ pochodny, ale nadal należy do typu deklarującego | Członkowie instancji są dziedziczeni |
+
+Wywołanie `Derived.SharedValue` nie tworzy osobnej kopii pola zadeklarowanego w `Base`; to nadal to samo pole `Base.SharedValue`.
 
 **Przykład porównania**:
 
@@ -117,7 +121,9 @@ public class Database
 **Kolejność inicjalizacji**:
 1. Inicjalizacja wartości na miejscu (jeśli istnieje)
 2. Konstruktor statyczny (jeśli istnieje)
-3. Pierwsze użycie klasy
+3. Użycie typu wymagające jego inicjalizacji
+
+Jeśli typ nie ma jawnego konstruktora statycznego, runtime może zoptymalizować moment inicjalizacji (`beforefieldinit`). Gdy dokładny moment ma znaczenie, jawny konstruktor statyczny zmienia te gwarancje.
 
 ```csharp
 public class InitOrder
@@ -130,7 +136,7 @@ public class InitOrder
     }
 }
 
-// Przy pierwszym użyciu:
+// Podczas inicjalizacji typu:
 var x = InitOrder.Name;  // "ConstructorName"
 ```
 
@@ -259,7 +265,7 @@ public class Person
 
 ## Thread Safety
 
-Pola statyczne mogą być niebezpieczne w wielowątkowych aplikacjach:
+Współdzielony stan statyczny wymaga rozważenia współbieżności. Sama obecność `static` nie oznacza, że każdy odczyt lub zapis jest niebezpieczny: inicjalizacja typu jest synchronizowana przez runtime, a proste odczyty i zapisy niektórych typów są atomowe. Operacje złożone, takie jak `Count++`, nie są atomowe, a mutowalne kolekcje nie są automatycznie bezpieczne wątkowo:
 
 ```csharp
 public class ThreadUnsafeCounter

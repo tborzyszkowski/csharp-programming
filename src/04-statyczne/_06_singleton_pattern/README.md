@@ -2,31 +2,34 @@
 
 ## 🎯 Cel
 
-**Singleton** - gwarantuje że klasa ma tylko jedną instancję.
+**Singleton** - zapewnia jeden dostępny obiekt danego typu w określonym kontekście aplikacji (zwykle w obrębie procesu lub kontenera DI).
 
 ## Klasyczna Implementacja
 
 ```csharp
 public class Database
 {
-    private static Database? _instance;
+    private static volatile Database? _instance;
     private static readonly object _lock = new();
     
     private Database() { }  // Prywatny konstruktor
     
     public static Database GetInstance()
     {
-        if (_instance == null)
+        Database? instance = _instance;
+        if (instance is null)
         {
             lock (_lock)
             {
-                if (_instance == null)
+                instance = _instance;
+                if (instance is null)
                 {
-                    _instance = new Database();
+                    instance = new Database();
+                    _instance = instance;
                 }
             }
         }
-        return _instance;
+        return instance;
     }
 }
 
@@ -50,13 +53,15 @@ public sealed class Logger
 }
 ```
 
-`Lazy<T>` domyślnie zapewnia bezpieczną inicjalizację w środowisku wielowątkowym i tworzy obiekt dopiero przy pierwszym odczycie `Value`. Nie rozwiązuje jednak problemu globalnego stanu ani nie ułatwia testowania zależności.
+Wersja z double-checked locking wymaga nie tylko blokady, ale także bezpiecznego odczytu referencji poza blokadą; dlatego pole jest `volatile`. W praktyce preferuj `Lazy<T>` lub mechanizm zarządzania czasem życia z kontenera DI.
+
+`Lazy<T>` z domyślną strategią zapewnia bezpieczną inicjalizację w środowisku wielowątkowym i tworzy obiekt dopiero przy pierwszym odczycie `Value`. Nie rozwiązuje jednak problemu globalnego stanu ani nie ułatwia testowania zależności. Singleton zarejestrowany w DI jest singletonem w ramach danej instancji kontenera.
 
 W aplikacjach korzystających z kontenera DI singleton zwykle konfiguruje się w kontenerze, np. jako `AddSingleton<T>`. Dzięki temu kod otrzymuje interfejs, można podmienić implementację w testach, a zakres życia obiektu jest jawny.
 
 ## Zastosowania
 
-- Database connections
+- Database connections (ostrożnie z zarządzaniem pulą i cyklem życia)
 - Logger
 - Cache
 - Configuration
@@ -69,7 +74,7 @@ W aplikacjach korzystających z kontenera DI singleton zwykle konfiguruje się w
 ✅ Lazy initialization
 ✅ Sealed class (prevent inheritance)
 
-❌ Nie używaj for mutable state
+❌ Nie używaj go jako globalnego pojemnika na współdzielony, mutowalny stan
 ❌ Unikaj w testach (hard to mock)
 
 ❌ Nie używaj Singletona tylko po to, aby ukryć brak właściwego modelu zależności.

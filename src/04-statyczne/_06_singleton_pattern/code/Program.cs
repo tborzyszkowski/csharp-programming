@@ -6,24 +6,27 @@ namespace SingletonPattern;
 // Klasyczne - Double-checked locking
 public class Database
 {
-    private static Database? _instance;
+    private static volatile Database? _instance;
     private static readonly object _lock = new();
     
     private Database() { }
     
     public static Database GetInstance()
     {
-        if (_instance == null)
+        Database? instance = _instance;
+        if (instance is null)
         {
             lock (_lock)
             {
-                if (_instance == null)
+                instance = _instance;
+                if (instance is null)
                 {
-                    _instance = new Database();
+                    instance = new Database();
+                    _instance = instance;
                 }
             }
         }
-        return _instance;
+        return instance;
     }
     
     public string Connect() => "Connected to Database";

@@ -54,7 +54,7 @@ public void Product_AssignsUniqueIds()
 - Klasa `Configuration` z polami statycznymi readonly
 - Pola: `DatabaseUrl`, `ApiTimeout`, `MaxConnections`, `LogLevel`
 - Inicjalizuj sensowne wartości domyślne
-- Metoda statyczna `ResetToDefaults()`
+- Wartości są stałe po inicjalizacji typu; skonfiguruj je jako `static readonly`
 
 **Starter code**:
 ```csharp
@@ -65,15 +65,10 @@ public class Configuration
     public static readonly int MaxConnections = 100;
     public static readonly string LogLevel = "INFO";
     
-    public static void ResetToDefaults()
-    {
-        // TODO: Jak zresetować readonly pola?
-        // (Wskazówka: Cannot modify readonly - to celowe!)
-    }
 }
 ```
 
-**Wskazówka**: Readonly pola statyczne nie mogą być zmieniane po inicjalizacji. To jest feature!
+Pola `static readonly` można przypisać podczas inicjalizacji typu, ale nie można ich później resetować. Jeśli aplikacja ma umożliwiać zmianę konfiguracji, użyj kontrolowanych właściwości zamiast `readonly`.
 
 **Testy**:
 ```csharp
@@ -85,12 +80,6 @@ public void Configuration_HasSensibleDefaults()
     Assert.Equal(100, Configuration.MaxConnections);
 }
 
-[Fact]
-public void Configuration_FieldsAreReadonly()
-{
-    // Configuration.DatabaseUrl = "newhost";  // Błąd kompilacji!
-    Assert.True(true);  // Test że readonly zapobiega modyfikacji
-}
 ```
 
 ---
@@ -212,20 +201,13 @@ public class Configuration
     public static readonly int ApiTimeout = 30;
     public static readonly int MaxConnections = 100;
     public static readonly string LogLevel = "INFO";
-    
-    public static void ResetToDefaults()
-    {
-        // Readonly pola nie mogą być zmieniane - to feature!
-        // Jeśli chcesz zmieniane pole, nie rób go readonly:
-        Console.WriteLine("Resetting to defaults (readonly fields cannot be modified)");
-    }
 }
 ```
 
 **Wyjaśnienie**:
-- Readonly oznacza że wartość nie zmienia się po inicjalizacji
-- To zabezpieczenie - config nie powinien być zmieniany w runtime
-- Jeśli potrzebujesz zmieniane pola, usuń `readonly`
+- `readonly` blokuje ponowne przypisanie pola poza inicjalizatorem lub konstruktorem statycznym.
+- Nie dodajemy `ResetToDefaults()`, bo taka metoda przeczyłaby wymaganiu niezmienności.
+- Jeśli konfiguracja ma zmieniać się w runtime, udostępnij kontrolowane właściwości lub metodę aktualizacji zamiast pól `readonly`.
 
 ---
 
@@ -281,4 +263,3 @@ public static void PrintStatistics()
 - Jak śledził byś statystyki per godzinę?
 - Jak automatycznie resetować liczniki o północy?
 - Jak bezpiecznie modyfikować pola statyczne w wielowątkowym środowisku?
-

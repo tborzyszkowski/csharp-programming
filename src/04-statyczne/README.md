@@ -16,11 +16,11 @@ Od podstawowych pól statycznych, przez funkcje narzędziowe i konstruktory stat
 |---|-------|------|--------|------|-------|---------|
 | 1 | [Pole statyczne](_01_static_fields/README.md) | Stan współdzielony między instancjami | ✅ | ✅ | ✅ | ✅ |
 | 2 | [Metody statyczne](_02_static_methods/README.md) | Utility functions i factory methods | ✅ | ✅ | ✅ | ✅ |
-| 3 | [Konstruktor statyczny](_03_static_constructor/README.md) | Jednorazowa inicjalizacja typu | ✅ | ✅ | ✅ | ✅ |
+| 3 | [Konstruktor statyczny](_03_static_constructor/README.md) | Inicjalizacja typu zarządzana przez runtime | ✅ | ✅ | ✅ | ✅ |
 | 4 | [Klasy statyczne](_04_static_classes/README.md) | Organizacja funkcji bez instancji | ✅ | ✅ | ✅ | ✅ |
 | 5 | [Metody rozszerzające](_05_extension_methods/README.md) | Rozszerzanie istniejących typów | ✅ | ✅ | ✅ | ✅ |
 | 6 | [Wzorzec Singleton](_06_singleton_pattern/README.md) | Jedna współdzielona instancja | ✅ | ✅ | ✅ | ✅ |
-| 7 | [Static Properties i Lazy<T>](_07_static_properties_lazy/README.md) | Kontrolowany dostęp i leniwa inicjalizacja | ✅ | ✅ | ✅ | ✅ |
+| 7 | [Właściwości statyczne i Lazy<T>](_07_static_properties_lazy/README.md) | Kontrolowany dostęp i leniwa inicjalizacja | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -124,7 +124,7 @@ StringHelper.Reverse("hello");  // "olleh"
 **Kategoria**: Inicjalizacja
 
 **Kluczowe Koncepty**:
-- Wywoływany raz przed pierwszym użyciem
+- Uruchamiany najwyżej raz podczas inicjalizacji typu
 - Inicjalizacja statycznych pól
 - Ładowanie konfiguracji
 - Singleton pattern foundation
@@ -151,7 +151,7 @@ public class Database
 **Kategoria**: Organizacja kodu
 
 **Kluczowe Koncepty**:
-- Zawierają tylko statyczne członkowie
+- Pola, właściwości, metody i zdarzenia są statyczne
 - Nie można instancjonować
 - Utility classes (Math, File, Path)
 - Organizacja helper funkcji
@@ -193,7 +193,11 @@ public static class StringExtensions
 {
     public static string Capitalize(this string str)
     {
-        return char.ToUpper(str[0]) + str.Substring(1);
+        ArgumentNullException.ThrowIfNull(str);
+        if (str.Length == 0)
+            return str;
+
+        return char.ToUpperInvariant(str[0]) + str[1..].ToLowerInvariant();
     }
 }
 
@@ -208,7 +212,7 @@ public static class StringExtensions
 **Kategoria**: Design Pattern
 
 **Kluczowe Koncepty**:
-- Gwarantowanie jednej instancji klasy
+- Jeden dostępny obiekt danego typu w określonym kontekście
 - Prywatny konstruktor
 - Double-checked locking
 - Thread-safe patterns
@@ -232,13 +236,13 @@ public sealed class Logger
 
 ### Temat 7: Static Properties & Lazy<T>
 
-**Kategoria**: Nowoczesny C# (C# 9+)
+**Kategoria**: Właściwości i leniwa inicjalizacja
 
 **Kluczowe Koncepty**:
 - Static properties - kontrola dostępu
 - Lazy<T> - inicjalizacja leniwa
-- Thread-safe initialization
-- Performance optimization
+- Thread-safe inicjalizacja wartości przez domyślną strategię `Lazy<T>`
+- Odroczenie tworzenia zasobu, jeśli może nie być potrzebny
 
 **Gdzie**: [`_07_static_properties_lazy/`](_07_static_properties_lazy/)
 
@@ -246,7 +250,7 @@ public sealed class Logger
 ```csharp
 public class AppConfig
 {
-    public static string ApiUrl { get; set; } = "http://localhost";
+    public static string ApiUrl { get; private set; } = "http://localhost";
 }
 
 public class ExpensiveResource
@@ -257,6 +261,8 @@ public class ExpensiveResource
     public static ExpensiveResource Instance => _instance.Value;
 }
 ```
+
+Właściwość statyczna sama w sobie nie zapewnia synchronizacji. `Lazy<T>` synchronizuje inicjalizację wartości, ale nie czyni automatycznie thread-safe operacji wykonywanych później na tym obiekcie.
 
 ---
 

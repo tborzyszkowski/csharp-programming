@@ -38,7 +38,7 @@ Console.WriteLine(area);  // 78.54975
 - ✅ Wywoływana przez **nazwę klasy**
 - ✅ Przydatna dla **utility functions** (Math, String, File itp)
 
-Metoda statyczna powinna otrzymywać wszystko, czego potrzebuje, przez parametry albo korzystać z jawnie zarządzanego stanu statycznego. Dzięki temu łatwiej ją testować: wynik zależy od argumentów, a nie od przypadkowego stanu globalnego.
+Metoda statyczna nie ma niejawnego `this` i nie może bezpośrednio odwołać się do składowych instancji. Może jednak pracować na przekazanej instancji, a także korzystać ze stanu statycznego. Sama deklaracja `static` nie gwarantuje bezstanowości, czystości ani łatwiejszego testowania.
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## 🎯 Cel
 
-**Klasa statyczna** zawiera tylko statyczne członkowie. Nie można tworzyć instancji.
+**Klasa statyczna** nie może być instancjonowana ani dziedziczona; jej zwykłe składowe są statyczne.
 
 ## Definicja
 
@@ -38,11 +38,12 @@ Klasa statyczna jest dobrym miejscem dla bezstanowych funkcji, ale nie jest zami
 2. **Globalna konfiguracja** - Settings, Config
 3. **Helper metody** - Converters, Validators
 
-## Przykłady Z .NET
+## Przykłady z .NET
 
 - `System.Math` - operacje matematyczne
-- `System.String` - operacje na stringach
+- `System.String` - typ instancji z metodami statycznymi, nie klasa statyczna
 - `System.IO.File` - operacje na plikach
+- `System.IO.Path` - operacje na ścieżkach
 
 ## Best Practices
 

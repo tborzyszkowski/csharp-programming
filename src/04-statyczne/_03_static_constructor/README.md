@@ -6,7 +6,7 @@ Zrozumienie **konstruktora statycznego** - specjalnej metody inicjalizacji dla s
 
 ## Definicja
 
-Konstruktor statyczny to metoda wywoływana **raz, przed pierwszym dostępem** do klasy:
+Konstruktor statyczny to inicjalizator typu uruchamiany przez runtime **najwyżej raz**, przed pierwszą operacją wymagającą inicjalizacji typu:
 
 ```csharp
 public class Database
@@ -22,13 +22,15 @@ public class Database
 
 ## Charakterystyka
 
-- ✅ Wywoływany raz przy pierwszym użyciu klasy
+- ✅ Uruchamiany najwyżej raz podczas inicjalizacji typu
 - ✅ Bez parametrów
-- ✅ Bez modyfikatora dostępu (zawsze private)
+- ✅ Nie ma modyfikatora dostępu i nie można wywołać go bezpośrednio
 - ✅ Inicjalizuje statyczne pola
 - ✅ Należy do klasy, nie do instancji
 
-CLR uruchamia konstruktor statyczny przed pierwszym użyciem typu wymagającym jego inicjalizacji, a dostęp do niego jest synchronizowany. Konstruktor nie jest wywoływany przy każdym utworzeniu instancji. Jeśli zgłosi wyjątek, typ jest oznaczony jako niezainicjalizowany i kolejne użycia zwykle kończą się `TypeInitializationException`.
+CLR uruchamia konstruktor statyczny przed pierwszym użyciem typu wymagającym jego inicjalizacji, a inicjalizacja typu jest synchronizowana. Konstruktor nie jest wywoływany przy każdym utworzeniu instancji. Jeśli zgłosi wyjątek, typ jest oznaczony jako niezainicjalizowany i kolejne użycia kończą się `TypeInitializationException` (z wyjątkiem pierwotnym jako `InnerException`).
+
+Typ bez jawnego konstruktora statycznego może być oznaczony jako `beforefieldinit`; wtedy runtime może wykonać inicjalizację wcześniej niż bezpośrednio przed pierwszym odczytem pola statycznego.
 
 Nie należy umieszczać w nim długich operacji I/O ani logiki zależnej od kolejności startu aplikacji. Warto też pamiętać, że proste inicjalizatory pól często wystarczają i są czytelniejsze.
 
@@ -97,12 +99,12 @@ var x = InitOrder.Name;  // "StaticConstructor"
 
 ## Best Practices
 
-✅ Inicjalizuj statyczne pola w konstruktorze statycznym
+✅ Użyj inicjalizatora pola, jeśli wystarcza; konstruktor statyczny dodaj, gdy potrzebna jest bardziej złożona inicjalizacja
 ✅ Czytaj konfigurację z environment variables
 ✅ Inicjalizuj cache'e i kolekcje
 
 ❌ Nie rób zbyt skomplikowanej logiki
-❌ Nie rzucaj wyjątków bez obsługi
+❌ Unikaj ryzykownej inicjalizacji, która może rzucić wyjątek — runtime nie ponawia inicjalizacji tego typu w tym samym kontekście załadowania
 
 ❌ Nie zakładaj, że konstruktor statyczny wykona się dokładnie w momencie uruchomienia procesu.
 
