@@ -7,8 +7,8 @@ Stwórz hierarchię klas reprezentującą pojazdy:
 ### Wymagania:
 1. Stwórz klasę bazową `Pojazd` z:
    - Właściwościami: `Marka`, `Model`, `RokProdukcji`
-   - Wirtualną metodą `Wyswietl()` wypisującą informacje
-   - Wirtualną metodą `PotrzebnyPaliwoPO100km()` zwracającą double
+   - Metodą `Wyswietl()` (wirtualną) wypisującą informacje
+   - Metodą `PotrzebnyPaliwoPO100km()` (wirtualną lub abstrakcyjną) zwracającą double
 
 2. Stwórz klasy pochodne:
    - `Samochod` - pali 7L/100km
@@ -279,4 +279,4 @@ Po rozwiązaniu zadań powinieneś rozumieć:
 
 ---
 
-*Pamiętaj: Polimorfizm pozwala ci pisać kod, który działa z nieznanymiami Ci typami, o ile implementują właściwy interfejs!*
+*Pamiętaj: Polimorfizm pozwala ci pisać kod, który działa z nieznanymi Ci typami, o ile dziedziczą po wspólnym typie bazowym (lub implementują wspólny interfejs)!*

@@ -18,11 +18,13 @@ public class MyClass : object { }
 ```
 
 **Każda klasa w C# ma dostęp do:**
-- `ToString()` - zwraca string reprezentację
-- `Equals()` - porównuje dwie instancje
-- `GetHashCode()` - zwraca int hash
-- `GetType()` - zwraca typ obiektu
-- `MemberwiseClone()` - tworzy płytką kopię
+- `ToString()` - zwraca string reprezentację (wirtualna)
+- `Equals(object)` - porównuje dwie instancje (wirtualna)
+- `GetHashCode()` - zwraca int hash (wirtualna)
+- `GetType()` - zwraca typ obiektu w czasie działania (**niewirtualna**, nie można jej przesłonić)
+- `MemberwiseClone()` - tworzy płytką kopię (`protected`, dostępna tylko wewnątrz klasy i jej pochodnych)
+
+To właśnie `ToString`, `Equals` i `GetHashCode` są wirtualne - przesłaniasz je słowem `override`, tak jak każdą inną metodę wirtualną (temat 1).
 
 ---
 
@@ -153,17 +155,17 @@ var users = new HashSet<User>
     new() { Id = 1, Name = "John" }  // Duplikat?
 };
 
-Console.WriteLine(users.Count);  // Bez GetHashCode: 2 (błąd!)
-                                 // Z GetHashCode: 1 (prawidłowo!)
+Console.WriteLine(users.Count);  // Bez przesłonięcia Equals/GetHashCode: 2 (to różne referencje)
+                                 // Z poprawnymi Equals i GetHashCode: 1 (duplikat rozpoznany)
 ```
 
 ### Jak Działa HashSet
 
-1. Wołuje `GetHashCode()` - szybkie sprawdzenie
-2. Jeśli hash jest taki sam, wołuje `Equals()`
-3. Jeśli Equals() zwraca true - duplikat!
+1. Wołuje `GetHashCode()` - wybiera "kubełek" w tablicy mieszającej
+2. Dla elementów z tego samego kubełka wołuje `Equals()`
+3. Jeśli `Equals()` zwraca true - duplikat!
 
-**REGUŁA**: Jeśli przesłaniajesz `Equals()`, MUSISZ przesłonić `GetHashCode()`
+**REGUŁA**: Jeśli przesłaniasz `Equals()`, MUSISZ przesłonić `GetHashCode()` (kompilator zgłosi ostrzeżenie `CS0659`, jeśli o tym zapomnisz).
 
 > **Uwaga na mutowalne klucze:** jeśli obiekt zmieni pole używane przez `Equals`
 > lub `GetHashCode` po dodaniu do `Dictionary`/`HashSet`, kolekcja może nie znaleźć
@@ -274,10 +276,16 @@ foreach (var product in combined)
 
 ## ⚠️  Reguły
 
-1. **Jeśli przesłonisz Equals(), przesłoń GetHashCode()**
-2. **Jeśli a.Equals(b), to a.GetHashCode() == b.GetHashCode()**
-3. **ToString() to dla ludzi, nie dla maszyn**
-4. **Equality może być różne od "identyczności"**
+1. **Jeśli przesłonisz `Equals()`, przesłoń `GetHashCode()`**
+2. **Jeśli `a.Equals(b)`, to `a.GetHashCode() == b.GetHashCode()`.** Odwrotnie nie musi być prawdą: różne obiekty *mogą* mieć ten sam hash (kolizja), więc nie zakładaj, że różne wartości zawsze dają różne hashe.
+3. **`Equals` musi być zwrotne, symetryczne i przechodnie, a `x.Equals(null)` zwraca `false`**
+4. **`ToString()` to dla ludzi, nie dla maszyn**
+5. **Równość wartości to nie to samo co tożsamość** (`ReferenceEquals`)
+6. **`==` nie jest automatycznie powiązany z `Equals`**: dla klas bez przeciążonego operatora `==` porównuje referencje (wyjątek: `string`, który ma własne `==`). Jeśli przeciążasz `==`, przeciąż też `!=` i zachowaj spójność z `Equals`
+7. **Nie utrwalaj wartości `GetHashCode()`** (w plikach, bazie): w .NET `HashCode.Combine` i `string.GetHashCode()` są losowane per proces, więc ta sama wartość może mieć inny hash po restarcie aplikacji
+8. **Dla `IEquatable<T>` zaimplementuj oba:** `Equals(T)` i `Equals(object)`, żeby kolekcje generyczne nie musiały pakować typów wartościowych (boxing)
+
+> **Typy `record`** generują `Equals`, `GetHashCode`, `ToString` i `==` automatycznie (równość wartości po wszystkich polach). W tym temacie implementujemy je ręcznie, żeby zrozumieć mechanizm.
 
 ---
 

@@ -227,7 +227,7 @@ public class Derived : Base { public override void Do() { } }
 
 Uzasadnione użycie `new` to np. ukrycie członka z biblioteki, której nie kontrolujesz, albo konflikt nazw przy ewolucji API. Zmiana typu zwracanego przy przesłanianiu nie wymaga `new` - od C# 9 `override` obsługuje kowariantne typy zwracane. W pozostałych przypadkach zastanów się, czy nie potrzebujesz `virtual`.
 
-Kompilator ostrzega (CS0108), gdy członek klasy pochodnej ukrywa członka bazowego bez jawnego `new`. Użycie `new` powinno być świadomą decyzją, najlepiej opisaną komentarzem lub dokumentacją API.
+Kompilator ostrzega (`CS0108` dla ukrywanej metody niewirtualnej, `CS0114` dla wirtualnej), gdy członek klasy pochodnej ukrywa członka bazowego bez jawnego `new`. Użycie `new` powinno być świadomą decyzją, najlepiej opisaną komentarzem lub dokumentacją API.
 
 ## Abstract Methods
 

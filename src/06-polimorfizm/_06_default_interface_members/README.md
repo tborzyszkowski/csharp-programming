@@ -2,7 +2,7 @@
 
 ## 📌 Cel Tematu
 
-Zrozumienie **Default Interface Members** - nowa funcjonalność od C# 8.0 pozwalająca na **implementację kodu w interface'ach**.
+Zrozumienie **Default Interface Members** - funkcjonalności dostępnej od C# 8.0, która pozwala na **implementację kodu w interfejsach**.
 
 ## 🚀 Co Nowego w C# 8.0+?
 
@@ -107,7 +107,7 @@ public interface IDataRepository<T>
 // Nowe klasy mogą przesłonić GetAll
 ```
 
-### 2. Extension Methods as Defaults
+### 2. Metody oparte na innych członkach interfejsu
 
 ```csharp
 public interface ICalculator
@@ -154,42 +154,50 @@ service.DoWorkWithLogging("test");  // Dodane logowanie bez zmiany klasy!
 
 ---
 
-## 🔐 Access Modifiers w Interface'ach (C# 11+)
+## 🔐 Modyfikatory dostępu w interfejsach (C# 8+)
+
+Od C# 8 składowe interfejsu mogą mieć modyfikatory dostępu (`public`, `private`, `protected`, `internal` i ich kombinacje). Składowe bez modyfikatora są publiczne.
 
 ```csharp
-public interface IAdvanced
+public interface IAdvancedLogging
 {
-    // Public - dostęp wszędzie
-    public void PublicMethod() { }
-    
-    // Private - dostęp tylko w interface'ie
-    private void PrivateHelper()
+    // Public - dostępny przez referencję interfejsu
+    public void PublicLog(string message)
     {
-        Console.WriteLine("Helper");
+        Console.WriteLine($"[PUBLIC] {FormatMessage(message)}");
     }
     
-    // Protected - dostępny dla rozszerzających interfejsów i jego implementacji
-    protected void ProtectedMethod()
+    // Private - pomocnik dostępny tylko wewnątrz tego interfejsu
+    private string FormatMessage(string message) => $"Formatted: {message}";
+
+    // Protected - dostępny dla interfejsów pochodnych
+    protected void ProtectedLog(string message)
     {
-        PrivateHelper();  // Może wołać private
+        Console.WriteLine($"[PROTECTED] {message}");
     }
     
     // Internal - dostęp w assembly
     internal void InternalMethod() { }
 }
 
-public class Implementation : IAdvanced
+public interface IExtendedLogging : IAdvancedLogging
 {
-    public void PublicMethod() { }
-    
-    public void CallerMethod()
+    // ✅ interfejs pochodny może wołać składową protected interfejsu bazowego
+    public void LogViaDerivedInterface(string message) => ProtectedLog(message);
+}
+
+public class AdvancedLogger : IExtendedLogging
+{
+    public void Use()
     {
-        // PublicMethod();        // ✅ OK
-        // PrivateHelper();       // ❌ Private, niedostępny
-        // ProtectedMethod();     // ✅ OK (protected)
+        // ProtectedLog("...");   // ❌ klasa NIE widzi składowej protected interfejsu
+        // FormatMessage("...");  // ❌ private - niedostępne poza interfejsem
+        ((IAdvancedLogging)this).PublicLog("ok");   // ✅ przez referencję interfejsu
     }
 }
 ```
+
+> Składowa `protected` interfejsu jest przeznaczona dla **interfejsów pochodnych**, a nie dla klas, które go implementują. Klasa może taką składową zaimplementować (przesłonić), ale nie może jej bezpośrednio wywołać.
 
 ---
 
@@ -217,13 +225,13 @@ graph LR
 
 ---
 
-## ⚡ Static Members w Interface'ach (C# 11+)
+## ⚡ Składowe statyczne w interfejsach (C# 8+) i `static abstract` (C# 11+)
 
 ```csharp
 public interface IConverter
 {
-    // Static members - dostęp bez instancji!
-    static int ConversionFactor = 1000;
+    // C# 8+: składowe statyczne - dostęp bez instancji
+    static int ConversionFactor = 1000;   // uwaga: publiczne pole statyczne to współdzielony stan globalny
     
     static string Format(int value)
     {
@@ -243,20 +251,79 @@ public class MyConverter : IConverter
 }
 
 // Użycie
-Console.WriteLine(IConverter.Format(5000));  // Bezpośrednio z interface'u!
+Console.WriteLine(IConverter.Format(5000));  // Bezpośrednio z interfejsu: "5"
 ```
+
+Składowe statyczne **nie są dziedziczone** przez implementujące klasy - odwołujesz się do nich przez nazwę interfejsu (`IConverter.Format`).
+
+### `static abstract` (C# 11+)
+
+Od C# 11 interfejs może wymagać, by implementujący typ miał określoną składową **statyczną** (m.in. operatory). Dzięki temu metody generyczne mogą wołać statyczne składowe `T`:
+
+```csharp
+public interface IParsableValue<TSelf> where TSelf : IParsableValue<TSelf>
+{
+    static abstract TSelf Parse(string text);
+}
+
+public readonly record struct Meters(double Value) : IParsableValue<Meters>
+{
+    public static Meters Parse(string text) =>
+        new(double.Parse(text, CultureInfo.InvariantCulture));
+}
+
+public static T Read<T>(string text) where T : IParsableValue<T> => T.Parse(text);
+
+var distance = Read<Meters>("42.5");   // T.Parse rozwiązane statycznie, bez refleksji
+```
+
+To fundament mechanizmu *generic math* w .NET 7+ (np. `INumber<T>`, `IParsable<T>`).
 
 ---
 
-## 🎓 Zasady
+## ⚔️ Dwie domyślne implementacje tej samej metody
 
-| Feature | C# 7.0 | C# 8.0+ | C# 11+ |
-|---------|--------|---------|--------|
-| Deklaracje metod | ✅ | ✅ | ✅ |
-| Domyślne implementacje | ❌ | ✅ | ✅ |
-| Access modifiers (private) | ❌ | ❌ | ✅ |
-| Static members | ❌ | ❌ | ✅ |
-| Properties z backingiem | ❌ | ✅ | ✅ |
+```csharp
+public interface IGreeterA { string Hello() => "A"; }
+public interface IGreeterB { string Hello() => "B"; }
+
+// ❌ Bez własnej implementacji kompilator zgłosi błąd - brak "najbardziej szczegółowej" implementacji
+// public class Broken : IGreeterA, IGreeterB { }
+
+// ✅ Klasa wskazuje własną implementację
+public class BothGreeter : IGreeterA, IGreeterB
+{
+    public string Hello() => "Both";
+}
+
+// ✅ Interfejs pochodny może zastąpić domyślną implementację interfejsu bazowego
+public interface ILoudGreeter : IGreeterA
+{
+    string IGreeterA.Hello() => "LOUD";   // jawna implementacja interfejsu
+}
+
+public class LoudGreeter : ILoudGreeter { }
+
+IGreeterA g = new LoudGreeter();
+Console.WriteLine(g.Hello());   // "LOUD"
+```
+
+Zasada: wywoływana jest **najbardziej szczegółowa** implementacja. Jeśli nie da się jej jednoznacznie wskazać (jak w `Broken`), musisz rozstrzygnąć konflikt sam.
+
+---
+
+## 🎓 Zasady - która wersja języka wprowadziła co
+
+| Funkcja | C# 7.3 i wcześniej | C# 8 | C# 11 |
+|---------|:---:|:---:|:---:|
+| Deklaracje metod/właściwości w interfejsie | ✅ | ✅ | ✅ |
+| Domyślne implementacje (metody, właściwości, indeksatory, zdarzenia) | ❌ | ✅ | ✅ |
+| Modyfikatory dostępu (`private`, `protected`, `internal`…) w interfejsie | ❌ | ✅ | ✅ |
+| Składowe statyczne z implementacją (metody, pola) | ❌ | ✅ | ✅ |
+| `static abstract` / `static virtual` | ❌ | ❌ | ✅ |
+| Pola instancji (stan) w interfejsie | ❌ | ❌ | ❌ |
+
+Interfejsy **nadal nie mogą przechowywać stanu instancji** (pola, auto-właściwości z polem pomocniczym). Domyślne implementacje mogą wyłącznie korzystać z pozostałych składowych interfejsu.
 
 ---
 
@@ -276,25 +343,30 @@ dotnet run
 ## 🔗 Referencje
 
 - [Default Interface Members (C# 8.0)](https://learn.microsoft.com/en-us/dotnet/csharp/tutorials/default-interface-members-versions)
-- [Interfaces (C# 11+ Features)](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/interface)
-- [Static Abstract Members](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-11#static-abstract-members-in-interfaces)
+- [Interfaces - Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/types/interfaces)
+- [Static Abstract Members in Interfaces (C# 11)](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-11#static-abstract-members-in-interfaces)
 
 ## ⚠️ Ograniczenia
 
 Domyślna implementacja jest członkiem interfejsu, a nie zwykłą metodą klasy.
 Wywołanie `logger.LogInfo(...)` wymaga więc referencji typu `ILogger`, chyba że
 klasa sama zdefiniuje publiczną metodę o tej nazwie. Default interface members
-nie zastępują abstrakcyjnej klasy ani mechanizmu DI; powinny zawierać małe,
+nie zastępują klasy abstrakcyjnej ani mechanizmu DI; powinny zawierać małe,
 stabilne zachowania domyślne i nie ukrywać istotnych zależności.
+
+Dodatkowo:
+- **Wymagają wsparcia runtime**: działają w .NET Core 3.0+ / .NET 5+, ale nie na .NET Framework ani w bibliotekach kierowanych na `netstandard2.0`.
+- **Dodanie domyślnej implementacji nie jest w pełni "darmowe"**: zmienia kontrakt typu i może zmienić wynik wyszukiwania "najbardziej szczegółowej" implementacji dla istniejących klas.
+- **Nie ma stanu instancji** - domyślna implementacja nie może mieć własnych pól.
 
 ---
 
 ## 🚀 Wnioski
 
-- **Default implementations** = łatwa ewolucja interfejsów
-- **Access modifiers** = lepsze enkapsulacja
-- **Static members** = helper methods bez instancji
-- **Backward compatibility** = nie łamiesz istniejącego kodu
+- **Default implementations** = bezpieczniejsza ewolucja interfejsów
+- **Modyfikatory dostępu** = prywatne metody pomocnicze i składowe `protected` dla interfejsów pochodnych
+- **Składowe statyczne** = funkcje pomocnicze związane z interfejsem; `static abstract` = kontrakt na składowe statyczne typu
+- **Backward compatibility** = zwykle nie łamiesz istniejącego kodu, ale zachowaj ostrożność
 
 ---
 

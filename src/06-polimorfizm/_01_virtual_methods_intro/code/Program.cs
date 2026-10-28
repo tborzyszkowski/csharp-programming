@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace VirtualMethodsIntro;
@@ -82,8 +84,8 @@ public class Vehicle
 
 public class Car : Vehicle
 {
-    // BEZ 'override' - tylko przesłaniamy
-    public void Start()
+    // 'new' - świadome ukrycie; bez niego kompilator zgłosi ostrzeżenie CS0108
+    public new void Start()
     {
         Console.WriteLine($"{Model} is starting (car engine roaring)");
     }
@@ -318,25 +320,65 @@ public class VirtualMethodsIntroTests
     public void EarlyBinding_WithoutVirtual_UsesVariableType()
     {
         Vehicle vehicle = new Car { Model = "Toyota" };
-        
-        // Bez virtual - wczesne wiązanie
-        var method = vehicle.GetType().GetMethod("Start");
-        
-        // Method na Vehicle, nie na Car (bo nie virtual)
-        Assert.NotNull(method);
+
+        var output = CaptureOutput(() => vehicle.Start());
+
+        Assert.Contains("generic way", output);
+        Assert.DoesNotContain("roaring", output);
     }
-    
+
     [Fact]
     public void LateBinding_WithVirtual_UsesActualType()
     {
         Transport transport = new Truck { Model = "Volvo" };
-        
-        // Z virtual - późne wiązanie
-        var method = transport.GetType().GetMethod("Start");
-        
-        // Method powinno być z Truck (virtual override)
-        Assert.Equal("Truck", transport.GetType().Name);
-        Assert.NotNull(method);
+
+        var output = CaptureOutput(() => transport.Start());
+
+        Assert.Contains("truck engine roaring", output);
+    }
+
+    [Fact]
+    public void VirtualMethod_SameCallSite_DifferentImplementations()
+    {
+        Animal[] animals =
+        {
+            new Dog { Name = "Rex" },
+            new Cat { Name = "Tom" },
+            new Bird { Name = "Tweety" }
+        };
+
+        var outputs = animals.Select(a => CaptureOutput(() => a.Speak())).ToArray();
+
+        Assert.Contains("Woof", outputs[0]);
+        Assert.Contains("Meow", outputs[1]);
+        Assert.Contains("Tweet", outputs[2]);
+    }
+
+    [Fact]
+    public void NonVirtualMethod_IsNotPolymorphic()
+    {
+        Animal dog = new Dog { Name = "Rex" };
+
+        var output = CaptureOutput(() => dog.Eat());
+
+        Assert.Equal("Rex is eating.", output);
+    }
+
+    private static string CaptureOutput(Action action)
+    {
+        var original = Console.Out;
+        using var writer = new StringWriter();
+        Console.SetOut(writer);
+        try
+        {
+            action();
+        }
+        finally
+        {
+            Console.SetOut(original);
+        }
+
+        return writer.ToString().Trim();
     }
     
     [Fact]

@@ -45,12 +45,12 @@ public class ConsoleLogger : ILogger
 
 public class FileLogger : ILogger
 {
-    private readonly string _filePath = "log.txt";
+    // Plik tymczasowy - demonstracja nie zostawia śmieci w katalogu projektu
+    private readonly string _filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "dim-demo-log.txt");
     
     public void Log(string message)
     {
-        // Write to file
-        System.IO.File.AppendAllText(_filePath, message + "\n");
+        System.IO.File.AppendAllText(_filePath, message + Environment.NewLine);
     }
     
     // LogInfo i LogWarning korzystają z default implementation
@@ -101,7 +101,7 @@ public class UserRepository : IRepository<User>
 public class User
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = "";
 }
 
 // ============================================================================
@@ -144,15 +144,16 @@ public class CreditCardProcessor : IPaymentProcessor
 }
 
 // ============================================================================
-// CZĘŚĆ 4: Static Members (C# 11+)
+// CZĘŚĆ 4: Składowe statyczne w interfejsach (C# 8+) i static abstract (C# 11+)
 // ============================================================================
 
 public interface IConverter
 {
-    // ✅ C# 11+: Static member - dostęp bez instancji!
-    static double ConversionFactor = 1.60934;  // KM to miles
+    // ✅ C# 8+: składowa statyczna interfejsu - dostęp bez instancji.
+    // Uwaga: publiczne, modyfikowalne pole statyczne to współdzielony stan globalny.
+    static double ConversionFactor = 1.60934;  // mile -> km
     
-    // ✅ Static method
+    // ✅ Metoda statyczna
     static string GetConversionInfo()
     {
         return $"1 mile = {ConversionFactor} km";
@@ -170,25 +171,45 @@ public class DistanceConverter : IConverter
     }
 }
 
+// ✅ C# 11+: static abstract - kontrakt na składowe STATYCZNE implementującego typu.
+// Wzorzec "self-referencing generic" (TSelf : IParsableValue<TSelf>) umożliwia wywołanie T.Parse(...).
+public interface IParsableValue<TSelf> where TSelf : IParsableValue<TSelf>
+{
+    static abstract TSelf Parse(string text);
+}
+
+public readonly record struct Meters(double Value) : IParsableValue<Meters>
+{
+    public static Meters Parse(string text) =>
+        new(double.Parse(text, System.Globalization.CultureInfo.InvariantCulture));
+}
+
+public static class ValueReader
+{
+    // Metoda generyczna wywołuje statyczną metodę typu T - bez instancji i bez refleksji
+    public static T Read<T>(string text) where T : IParsableValue<T> => T.Parse(text);
+}
+
 // ============================================================================
-// CZĘŚĆ 5: Access Modifiers (C# 11+)
+// CZĘŚĆ 5: Modyfikatory dostępu w interfejsach (C# 8+)
 // ============================================================================
 
 public interface IAdvancedLogging
 {
-    // Public - dostęp wszędzie
+    // Public - dostępny przez referencję interfejsu
     public void PublicLog(string message)
     {
-        Console.WriteLine($"[PUBLIC] {message}");
+        Console.WriteLine($"[PUBLIC] {FormatMessage(message)}");
     }
     
-    // Private - dostęp tylko w interface'ie
+    // Private - dostępny tylko wewnątrz tego interfejsu (pomocnik dla domyślnych implementacji)
     private string FormatMessage(string message)
     {
         return $"Formatted: {message}";
     }
     
-    // Protected - dostęp w klasach implementujących
+    // Protected - dostępny dla interfejsów pochodnych. Klasa implementująca może taką
+    // składową zaimplementować, ale nie może jej bezpośrednio wywołać.
     protected void ProtectedLog(string message)
     {
         Console.WriteLine($"[PROTECTED] {message}");
@@ -200,13 +221,50 @@ public interface IAdvancedLogging
     }
 }
 
-public class AdvancedLogger : IAdvancedLogging
+public interface IExtendedLogging : IAdvancedLogging
+{
+    // Interfejs pochodny ma dostęp do składowej protected interfejsu bazowego
+    public void LogViaDerivedInterface(string message) => ProtectedLog(message);
+}
+
+public class AdvancedLogger : IExtendedLogging
 {
     public void UseProtected()
     {
+        // ProtectedLog("...");   // ❌ błąd kompilacji: klasa nie widzi protected składowej interfejsu
         ((IAdvancedLogging)this).LogFromImplementation();
     }
 }
+
+// ============================================================================
+// CZĘŚĆ 5b: Dwie domyślne implementacje tej samej metody ("problem diamentu")
+// ============================================================================
+
+public interface IGreeterA
+{
+    string Hello() => "A";
+}
+
+public interface IGreeterB
+{
+    string Hello() => "B";
+}
+
+// Klasa implementująca oba interfejsy MUSI wskazać własną implementację -
+// inaczej kompilator zgłosi błąd (brak "najbardziej szczegółowej" implementacji).
+public class BothGreeter : IGreeterA, IGreeterB
+{
+    public string Hello() => "Both";
+}
+
+// Interfejs pochodny może zastąpić domyślną implementację interfejsu bazowego
+// (składnia jawnej implementacji interfejsu).
+public interface ILoudGreeter : IGreeterA
+{
+    string IGreeterA.Hello() => "LOUD";
+}
+
+public class LoudGreeter : ILoudGreeter { }
 
 // ============================================================================
 // CZĘŚĆ 6: Real-World: Versioning Pattern
@@ -303,13 +361,26 @@ public class Program
         processor.ProcessWithValidation(-50m);
         
         // ====================================================================
-        Console.WriteLine("\n\nSCENARIUSZ 4: Static Members (C# 11+)\n");
+        Console.WriteLine("\n\nSCENARIUSZ 4: Składowe statyczne (C# 8+) i static abstract (C# 11+)\n");
         
         Console.WriteLine($"Conversion Info: {IConverter.GetConversionInfo()}");
         Console.WriteLine($"Conversion Factor: {IConverter.ConversionFactor}");
         
         var converter = new DistanceConverter();
         Console.WriteLine($"100 miles = {converter.Convert(100)} km");
+
+        var distance = ValueReader.Read<Meters>("42.5");
+        Console.WriteLine($"ValueReader.Read<Meters>(\"42.5\") = {distance.Value} m  (T.Parse przez static abstract)");
+
+        // ====================================================================
+        Console.WriteLine("\n\nSCENARIUSZ 4b: Dwie domyślne implementacje tej samej metody\n");
+
+        IGreeterA viaA = new BothGreeter();
+        IGreeterB viaB = new BothGreeter();
+        IGreeterA loud = new LoudGreeter();
+        Console.WriteLine($"BothGreeter przez IGreeterA: {viaA.Hello()}");
+        Console.WriteLine($"BothGreeter przez IGreeterB: {viaB.Hello()}");
+        Console.WriteLine($"LoudGreeter przez IGreeterA: {loud.Hello()}  (ILoudGreeter zastępuje domyślną implementację)");
         
         // ====================================================================
         Console.WriteLine("\n\nSCENARIUSZ 5: Versioning Pattern\n");
@@ -336,24 +407,93 @@ public class DefaultInterfaceMembersTests
     public void Logger_DefaultImplementation_Works()
     {
         ILogger logger = new ConsoleLogger();
-        
-        // Default implementation should work
-        logger.LogInfo("test");
-        logger.LogWarning("warning");
-        
-        Assert.NotNull(logger);
+
+        var output = CaptureOutput(() => logger.LogInfo("test"));
+
+        Assert.Equal("[INFO] test", output);
     }
     
     [Fact]
-    public void Logger_CanOverrideDefault()
+    public void Logger_ClassImplementation_ReplacesDefault()
     {
-        var logger = new ConsoleLogger();
-        
-        // This should use the overridden version (with emoji)
-        // We can't test console output easily, but we verify it works
-        logger.LogWarning("critical");
-        
-        Assert.NotNull(logger);
+        ILogger logger = new ConsoleLogger();
+
+        var output = CaptureOutput(() => logger.LogWarning("critical"));
+
+        Assert.Contains("CRITICAL WARNING", output);
+        Assert.DoesNotContain("[WARNING]", output);
+    }
+
+    [Fact]
+    public void Logger_ClassWithoutOverride_UsesInterfaceDefault()
+    {
+        ILogger logger = new FileLogger();
+
+        var output = CaptureOutput(() => logger.LogWarning("careful"));
+
+        Assert.Equal("[WARNING] careful", output);
+    }
+
+    [Fact]
+    public void StaticAbstract_GenericMethod_CallsTypeMember()
+    {
+        var meters = ValueReader.Read<Meters>("12.5");
+
+        Assert.Equal(12.5, meters.Value);
+    }
+
+    [Fact]
+    public void TwoDefaults_ClassImplementation_IsUsedThroughBothInterfaces()
+    {
+        var greeter = new BothGreeter();
+
+        Assert.Equal("Both", ((IGreeterA)greeter).Hello());
+        Assert.Equal("Both", ((IGreeterB)greeter).Hello());
+    }
+
+    [Fact]
+    public void DerivedInterface_CanReplaceBaseInterfaceDefault()
+    {
+        IGreeterA greeter = new LoudGreeter();
+
+        Assert.Equal("LOUD", greeter.Hello());
+    }
+
+    [Fact]
+    public void ProtectedInterfaceMember_IsReachableFromDerivedInterface()
+    {
+        IExtendedLogging logger = new AdvancedLogger();
+
+        var output = CaptureOutput(() => logger.LogViaDerivedInterface("hi"));
+
+        Assert.Equal("[PROTECTED] hi", output);
+    }
+
+    [Fact]
+    public void PrivateInterfaceHelper_IsUsedByPublicDefault()
+    {
+        IAdvancedLogging logger = new AdvancedLogger();
+
+        var output = CaptureOutput(() => logger.PublicLog("msg"));
+
+        Assert.Equal("[PUBLIC] Formatted: msg", output);
+    }
+
+    private static string CaptureOutput(Action action)
+    {
+        var original = Console.Out;
+        using var writer = new System.IO.StringWriter();
+        Console.SetOut(writer);
+        try
+        {
+            action();
+        }
+        finally
+        {
+            Console.SetOut(original);
+        }
+
+        return writer.ToString().Trim();
     }
     
     [Fact]

@@ -87,7 +87,7 @@ public class Vehicle
 
 public class Car : Vehicle
 {
-    public void Start()  // Brak 'override' - tylko przesłaniamy
+    public new void Start()  // 'new' - świadome ukrycie (bez niego: ostrzeżenie CS0108)
     {
         Console.WriteLine("Car starting...");
     }
@@ -97,7 +97,7 @@ Vehicle vehicle = new Car();
 vehicle.Start();  // Wywoła: Vehicle.Start() - decyzja na compile-time!
 ```
 
-**Wczesne wiązanie** = compiler patrzy na typ zmiennej (`Vehicle`) i wola metodę z Vehicle.
+**Wczesne wiązanie** = kompilator patrzy na typ zmiennej (`Vehicle`) i wiąże wywołanie z metodą `Vehicle.Start`. Metoda `Car.Start` tylko *ukrywa* bazową - szczegóły w [temacie 3](../_03_virtual_vs_new/README.md).
 
 ### Późne Wiązanie (Late Binding) - Z Virtual
 
@@ -128,23 +128,22 @@ vehicle.Start();  // Wywoła: Car.Start() - decyzja w runtime!
 
 ## 🔍 Dlaczego to Działa? - Virtual Method Table (VMT)
 
-Wewnętrzny mechanizm CLR przechowuje informacje potrzebne do dispatchu metod wirtualnych. Często opisuje się go uproszczonym terminem **VMT** (virtual method table), ale jest to szczegół implementacyjny runtime, a nie publiczny kontrakt C#. Runtime używa tych informacji do znalezienia właściwej metody:
+Dla klas z metodami wirtualnymi CLR przechowuje informacje potrzebne do wyboru implementacji w czasie działania. Często opisuje się to uproszczonym modelem **VMT** (virtual method table), ale jest to szczegół implementacyjny runtime, a nie publiczny kontrakt C#. Tablica obejmuje tylko metody **wirtualne** - zwykłe metody (`Eat`) są wiązane już przez kompilator:
 
 ```
-Animal (VMT):
-  ├─ Speak() → Animal.Speak
-  ├─ Eat() → Animal.Eat
-  └─ Sleep() → Animal.Sleep
+Animal:
+  └─ Speak() → Animal.Speak           (virtual)
 
-Dog (VMT) - dziedziczy z Animal:
-  ├─ Speak() → Dog.Speak    [OVERRIDE]
-  ├─ Eat() → Animal.Eat     [DZIEDZICZONE]
-  └─ Sleep() → Animal.Sleep [DZIEDZICZONE]
+Dog : Animal
+  └─ Speak() → Dog.Speak              [OVERRIDE]
 
-Cat (VMT) - dziedziczy z Animal:
-  ├─ Speak() → Cat.Speak    [OVERRIDE]
-  ├─ Eat() → Animal.Eat     [DZIEDZICZONE]
-  └─ Sleep() → Animal.Sleep [DZIEDZICZONE]
+Cat : Animal
+  └─ Speak() → Cat.Speak              [OVERRIDE]
+
+Bird : Animal   (bez własnego override)
+  └─ Speak() → Animal.Speak           [DZIEDZICZONE]
+
+Eat() jest niewirtualna - wywołanie animal.Eat() zawsze trafia do Animal.Eat
 ```
 
 ---
@@ -196,21 +195,19 @@ public abstract class Plugin
 }
 ```
 
-### 3. Kololekcje Różnych Typów
+### 3. Kolekcje Różnych Typów
 
 ```csharp
 List<PaymentMethod> methods = new()
 {
-    new CreditCard(),
-    new PayPal(),
-    new Bitcoin(),
-    new BankTransfer()
+    new CreditCard(50m),
+    new PayPal(75m),
+    new Bitcoin(100m)
 };
 
-decimal total = 1000m;
 foreach (var method in methods)
 {
-    method.ProcessPayment(total);  // Każdy płaci po swojemu!
+    method.ProcessPayment();  // Każdy płaci po swojemu!
 }
 ```
 
@@ -220,9 +217,10 @@ foreach (var method in methods)
 
 ### ✅ Wymagania dla Virtual
 
-1. **Klasa bazowa**: metoda musi mieć `virtual`
+1. **Klasa bazowa**: metoda musi mieć `virtual` (albo `abstract` lub być sama `override`)
 2. **Klasa pochodna**: metoda musi mieć `override`
-3. **Sygnatura**: musi być identyczna (nazwa, parametry, return type)
+3. **Sygnatura**: ta sama nazwa i parametry; modyfikator dostępu musi być identyczny; typ zwracany taki sam lub (od C# 9) kowariantny
+4. Metody `static` i `private` nie mogą być wirtualne
 
 ```csharp
 public class Base
@@ -282,8 +280,8 @@ public class Derived : Base
 
 ```mermaid
 graph TD
-    A["Animal animal = new Dog();"] -->|Runtime sprawdza<br/>rzeczywisty typ| B["Wygląda w VMT<br/>Dog.Speak"]
-    B -->|Znaleziona w Dog| C["Wykonuje Dog.Speak()"]
+    A["Animal animal = new Dog();<br/>animal.Speak()"] -->|Runtime bierze pod uwagę<br/>rzeczywisty typ obiektu| B["Wybór implementacji:<br/>Dog.Speak"]
+    B --> C["Wykonuje Dog.Speak()"]
     C --> D["Output: Woof!"]
     
     style B fill:#ffcccc
@@ -294,9 +292,10 @@ graph TD
 
 ## 🔗 Referencje
 
-- [Microsoft Learn: Virtual Methods](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/object-oriented/polymorphism)
-- [C# Player's Guide - Chapt. 15: Polymorphism](https://csharpplayersguide.com)
-- [CLR via C# - Jeffrey Richter: Chapt. 7-8](https://www.microsoftonline.com/clr-via-csharp)
+- [Microsoft Learn: Polymorphism](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/object-oriented/polymorphism)
+- [Microsoft Learn: virtual](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/virtual)
+- [Microsoft Learn: override](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/override)
+- Porównanie z Javą: [Temat 3](../_03_virtual_vs_new/README.md#-porównanie-z-polimorfizmem-w-javie)
 
 ---
 
@@ -308,7 +307,7 @@ graph TD
 | **override** | Przesłaniam metodę wirtualną |
 | **Late Binding** | Decyzja o metodzie w runtime |
 | **Polimorfizm** | Ten sam kod, różne wykonania |
-| **VMT** | Tablica do szukania metod |
+| **VMT** | Uproszczony model wyboru metody wirtualnej (szczegół CLR) |
 
 ---
 

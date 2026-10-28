@@ -14,10 +14,12 @@ Od podstaw wirtualnych metod, przez praktyczne przykłady e-commerce, aż po now
 |---|-------|------|--------|------|-------|---------|
 | 1 | [Funkcje Wirtualne: Wstęp](_01_virtual_methods_intro/README.md) | Virtual methods, late binding, polimorfizm | ✅ | ✅ | ✅ | ✅ |
 | 2 | [Przykład: E-Commerce](_02_virtual_methods_example/README.md) | Payment gateway system, real-world | ✅ | ✅ | ✅ | - |
-| 3 | [Virtual vs New](_03_virtual_vs_new/README.md) | Override vs new, LSP, hiding | ✅ | ✅ | ✅ | ✅ |
-| 4 | [Metody Klasy Object](_04_object_methods/README.md) | ToString, Equals, GetHashCode | ✅ | ✅ | ✅ | ✅ |
+| 3 | [Virtual vs New](_03_virtual_vs_new/README.md) | Override vs new, LSP, **porównanie z Javą** | ✅ | ✅ | ✅ | - |
+| 4 | [Metody Klasy Object](_04_object_methods/README.md) | ToString, Equals, GetHashCode | ✅ | ✅ | ✅ | - |
 | 5 | [Adapter + Factory](_05_adapter_factory/README.md) | Design patterns, payment integration | ✅ | ✅ | ✅ | - |
-| 6 | [Default Interface Members](_06_default_interface_members/README.md) | C# 8.0+, nowoczesne interfejsy | ✅ | ✅ | ✅ | ✅ |
+| 6 | [Default Interface Members](_06_default_interface_members/README.md) | C# 8.0+, nowoczesne interfejsy | ✅ | ✅ | ✅ | - |
+
+Zadania do samodzielnego wykonania: obecnie w [temacie 1](_01_virtual_methods_intro/tasks/README.md); pozostałe tematy mają testy i działający kod, który można modyfikować.
 
 ---
 
@@ -63,7 +65,7 @@ Każdy podrozdział zawiera w stopce link do tej strony oraz odnośniki do poprz
 **Kluczowe Koncepty**:
 - Słowo kluczowe `virtual` i `override`
 - Late binding vs early binding
-- Virtual Method Table (VMT)
+- Virtual Method Table (VMT) jako uproszczony model działania
 - Polimorfizm - wiele form tego samego interfejsu
 
 **Gdzie**: [`_01_virtual_methods_intro/`](_01_virtual_methods_intro/)
@@ -124,9 +126,10 @@ foreach (var payment in payments)
 
 **Kluczowe Koncepty**:
 - `override` = polimorfizm (virtual dispatch)
-- `new` = ukrycie (early binding) - ANTI-PATTERN!
+- `new` = ukrycie (wiązanie według typu zmiennej) - rzadko potrzebne, zwykle sygnał problemu z designem
 - Liskov Substitution Principle
 - Kiedy co używać
+- **Porównanie z polimorfizmem w Javie** (metody domyślnie wirtualne, `@Override`, `final`)
 
 **Gdzie**: [`_03_virtual_vs_new/`](_03_virtual_vs_new/)
 
@@ -138,10 +141,10 @@ public class Dog : Animal
     public override void Speak() { }  // Wołuje Dog.Speak
 }
 
-// ❌ ZŁY - New (nie polimorfizm!)
+// ⚠️ RZADKO POTRZEBNY - New (ukrycie, nie polimorfizm!)
 public class Cat : Animal
 {
-    public new void Speak() { }  // Wołuje Animal.Speak!
+    public new void Speak() { }  // Przez zmienną Animal wywoła Animal.Speak!
 }
 
 Animal animal = new Cat();
@@ -177,7 +180,9 @@ public class User : IEquatable<User>
     }
 }
 
-var users = new HashSet<User> { user1, user1 };  // Duplikat usunięty!
+var user1 = new User { Id = 1 };
+var user2 = new User { Id = 1 };   // inna referencja, ale równa wartość
+var users = new HashSet<User> { user1, user2 };  // Count == 1 - duplikat rozpoznany dzięki Equals/GetHashCode
 ```
 
 ---
@@ -189,8 +194,8 @@ var users = new HashSet<User> { user1, user1 };  // Duplikat usunięty!
 **Kluczowe Koncepty**:
 - Adapter - konwersja interfejsów
 - Factory - centralne tworzenie
-- Unified interface dla różnych providery
-- Dependency Injection
+- Jednolity interfejs dla różnych dostawców
+- Dependency Injection (wymaga niestatycznej fabryki)
 
 **Gdzie**: [`_05_adapter_factory/`](_05_adapter_factory/)
 
@@ -211,10 +216,10 @@ gateway.Capture();
 **Kategoria**: Nowoczesne C#
 
 **Kluczowe Koncepty**:
-- Implementacja w interface'ach (C# 8.0+)
+- Implementacja w interfejsach (C# 8.0+)
 - Backward compatibility
-- Static members (C# 11+)
-- Access modifiers (C# 11+)
+- Składowe statyczne w interfejsach (C# 8+) i `static abstract` (C# 11+)
+- Modyfikatory dostępu w interfejsach (C# 8+)
 
 **Gdzie**: [`_06_default_interface_members/`](_06_default_interface_members/)
 
@@ -257,7 +262,7 @@ dotnet test
 # 4. Otwórz kod w VS Code
 code Program.cs
 
-# 5. Popatrz diagram
+# 5. Diagram Mermaid (tylko temat 1; w pozostałych diagramy są w README tematu)
 cat ../diagrams/*.mermaid  # Otwórz w markdown preview
 ```
 
@@ -274,10 +279,11 @@ cat ../diagrams/*.mermaid  # Otwórz w markdown preview
 │   ├── diagrams/
 │   │   └── 01-virtual-methods-intro.mermaid
 │   └── tasks/
-│       └── README.md           # Zadania dla studentów
+│       └── README.md           # Zadania dla studentów (tylko temat 1)
 ├── _02_virtual_methods_example/
-│   └── [identyczna struktura]
-├── ... (tematy 3-6)
+│   ├── README.md
+│   └── code/                   # Program.cs + .csproj (demo + testy)
+├── ... (tematy 3-6: README.md + code/)
 └── [główny README.md]
 ```
 
@@ -302,9 +308,9 @@ cat ../diagrams/*.mermaid  # Otwórz w markdown preview
 | README.md | 7 (6 + 1 główny) |
 | Program.cs | 6 (każdy z testami xUnit) |
 | .csproj | 6 (wszystkie .NET 9.0) |
-| Diagramy Mermaid | 6+ |
-| Zadania | 15+ ćwiczeń |
-| Testy xUnit | 50+ testów |
+| Diagramy Mermaid | 1 plik `.mermaid` + diagramy osadzone w README tematów |
+| Zadania | 3 zadania (temat 1) |
+| Testy xUnit | 60+ testów |
 | Linii kodu C# | 2000+ |
 | Dokumentacja | 12000+ słów (PL) |
 
@@ -316,6 +322,7 @@ Po ukończeniu tego modułu student powinien:
 
 - [ ] Rozumieć `virtual` methods i `override`
 - [ ] Znać różnicę między `override` i `new`
+- [ ] Porównać mechanizm polimorfizmu w C# i Javie (`virtual` vs metody domyślnie wirtualne, `override` vs `@Override`, `sealed` vs `final`)
 - [ ] Stosować polimorfizm w praktyce
 - [ ] Implementować `ToString()`, `Equals()`, `GetHashCode()`
 - [ ] Używać `HashSet` i `Dictionary` z custom objects
@@ -354,7 +361,7 @@ Przed pierwszym wykładem:
 
 - [ ] Przeczytaj README każdego tematu
 - [ ] Uruchom `dotnet run` w każdym temacie
-- [ ] Przejrzyj diagramy (Mermaid)
+- [ ] Przejrzyj diagramy (Mermaid w README tematów)
 - [ ] Przygotuj pytania do studentów
 - [ ] Test projektor/HDMI połączenie
 - [ ] Przygotuj live-coding examples
@@ -405,7 +412,7 @@ dotnet test
 | 03-Właściwości | 7 | 2500+ | 45+ | 20+ | ✅ 100% |
 | 04-Statyczne | 7 | 1500+ | 35+ | 15+ | ✅ 100% |
 | 05-Dziedziczenie | 7 | 1500+ | 35+ | 20+ | ✅ 100% |
-| 06-Polimorfizm | 6 | 2000+ | 50+ | 15+ | ✅ 100% |
+| 06-Polimorfizm | 6 | 2000+ | 60+ | 3 | ✅ kod i testy |
 
 ---
 
@@ -421,9 +428,10 @@ dotnet test
 
 - ✅ **6 tematów** od podstaw do zaawansowanych koncepcji
 - ✅ **2000+ linii kodu** działającego i przetestowanego
-- ✅ **15+ ćwiczeń** dla studentów
-- ✅ **50+ testów** xUnit
-- ✅ **6+ diagramów** UML/Mermaid
+- ✅ **3 ćwiczenia** dla studentów (temat 1)
+- ✅ **60+ testów** xUnit
+- ✅ **Diagramy Mermaid** w README tematów
+- ✅ **Porównanie z polimorfizmem w Javie** (temat 3)
 - ✅ **Real-world example**: E-commerce payment system
 - ✅ **Nowoczesne C# 8.0+** features
 - ✅ **Design patterns**: Adapter, Factory

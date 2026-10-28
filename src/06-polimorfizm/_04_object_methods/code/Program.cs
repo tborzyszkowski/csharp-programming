@@ -334,12 +334,25 @@ public class ObjectMethodsTests
     }
     
     [Fact]
-    public void GetHashCode_DifferentValues_DifferentHash()
+    public void Equals_DifferentValues_AreNotEqual()
     {
         var user1 = new User { Id = 1, Name = "John", Email = "john@test.com" };
         var user2 = new User { Id = 2, Name = "Jane", Email = "jane@test.com" };
-        
-        Assert.NotEqual(user1.GetHashCode(), user2.GetHashCode());
+
+        Assert.False(user1.Equals(user2));
+        Assert.False(user1.Equals(null));
+    }
+
+    [Fact]
+    public void Dictionary_MutatedKey_IsNoLongerFoundByOriginalValues()
+    {
+        var key = new User { Id = 1, Name = "John", Email = "john@test.com" };
+        var dict = new Dictionary<User, string> { { key, "Status1" } };
+
+        key.Name = "Changed";   // zmiana pola użytego w Equals/GetHashCode
+
+        var original = new User { Id = 1, Name = "John", Email = "john@test.com" };
+        Assert.False(dict.TryGetValue(original, out _));
     }
     
     [Fact]

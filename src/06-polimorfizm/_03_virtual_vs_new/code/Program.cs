@@ -163,6 +163,40 @@ public class BuggyPaymentProcessor : PaymentProcessor
 }
 
 // ============================================================================
+// CZĘŚĆ 5: Weryfikowalne porównanie override / new / brak słowa kluczowego
+// ============================================================================
+
+public class Greeter
+{
+    public virtual string Greet() => "Base";
+}
+
+public class OverridingGreeter : Greeter
+{
+    public override string Greet() => "Override";
+}
+
+public class HidingGreeter : Greeter
+{
+    public new string Greet() => "New";
+}
+
+// Brak 'override' i 'new' - dla programisty znającego Javę to najbardziej zaskakujący przypadek.
+// Kompilator zgłasza ostrzeżenie CS0114, a metoda ukrywa bazową (nie przesłania jej).
+#pragma warning disable CS0114
+public class ForgetfulGreeter : Greeter
+{
+    public string Greet() => "Forgot override";
+}
+#pragma warning restore CS0114
+
+// Naruszenie LSP przez override: pochodna odrzuca kontrakt bazy.
+public class FlightlessBird : Bird
+{
+    public override void Fly() => throw new NotSupportedException("Cannot fly");
+}
+
+// ============================================================================
 // PROGRAM GŁÓWNY I TESTY
 // ============================================================================
 
@@ -241,6 +275,16 @@ public class Program
         Console.WriteLine("   Uses 'new' instead of 'override'");
         Console.WriteLine("   Result: Wrong payment logic executed\n");
         
+        // ====================================================================
+        Console.WriteLine("\nSCENARIUSZ 5: Brak override i brak new (pułapka dla programistów Javy)\n");
+
+        var forgetful = new ForgetfulGreeter();
+        Greeter forgetfulAsBase = forgetful;
+        Console.WriteLine($"   Przez zmienną Greeter:         {forgetfulAsBase.Greet()}");
+        Console.WriteLine($"   Przez zmienną ForgetfulGreeter: {forgetful.Greet()}");
+        Console.WriteLine("   W Javie metoda bez @Override nadal przesłania metodę bazową;");
+        Console.WriteLine("   w C# bez 'override' następuje ukrycie (ostrzeżenie CS0114).\n");
+
         Console.WriteLine("✅ Demonstration completed");
     }
 }
@@ -338,5 +382,54 @@ public class VirtualVsNewTests
         
         // BuggyPaymentProcessor.Process() is never called
         Assert.Equal("BuggyPaymentProcessor", processor.GetType().Name);
+    }
+
+    [Fact]
+    public void Override_UsesRuntimeType()
+    {
+        Greeter greeter = new OverridingGreeter();
+
+        Assert.Equal("Override", greeter.Greet());
+    }
+
+    [Fact]
+    public void New_UsesVariableType()
+    {
+        var hiding = new HidingGreeter();
+        Greeter asBase = hiding;
+
+        Assert.Equal("Base", asBase.Greet());
+        Assert.Equal("New", hiding.Greet());
+    }
+
+    [Fact]
+    public void MissingOverride_HidesInsteadOfOverriding()
+    {
+        var forgetful = new ForgetfulGreeter();
+        Greeter asBase = forgetful;
+
+        Assert.Equal("Base", asBase.Greet());
+        Assert.Equal("Forgot override", forgetful.Greet());
+    }
+
+    [Fact]
+    public void OverrideThatRejectsContract_ViolatesLsp()
+    {
+        Bird bird = new FlightlessBird();
+
+        Assert.Throws<NotSupportedException>(() => bird.Fly());
+    }
+
+    [Fact]
+    public void PenguinWithNew_BehavesDifferentlyDependingOnVariableType()
+    {
+        var penguin = new Penguin();
+        Bird bird = penguin;
+
+        var viaBase = Record.Exception(() => bird.Fly());
+        var viaDerived = Record.Exception(() => penguin.Fly());
+
+        Assert.Null(viaBase);
+        Assert.IsType<NotImplementedException>(viaDerived);
     }
 }

@@ -67,17 +67,30 @@ payment.GenerateReceipt();
 
 ### Klasa Bazowa
 
+W kodzie demonstracyjnym klasa bazowa używa metod `virtual` z **domyślną implementacją** (każda płatność może ją rozszerzyć lub zastąpić). Klasa jest `abstract`, więc nie można utworzyć "gołej" płatności:
+
 ```csharp
 public abstract class PaymentMethod
 {
-    public string Name { get; set; }
-    public string TransactionId { get; set; }
-    
-    public abstract void Authorize();
-    public abstract void ProcessPayment();
-    public abstract void GenerateReceipt();
+    public string Name { get; set; } = "";
+    public string TransactionId { get; set; } = "";
+    public PaymentStatus Status { get; set; }
+
+    public virtual void Authorize() { /* domyślna autoryzacja */ }
+
+    public virtual void ProcessPayment()
+    {
+        Authorize();                       // wywołanie wirtualne - zadziała wersja potomka
+        // ...
+        Status = PaymentStatus.Completed;
+    }
+
+    public virtual void GenerateReceipt() { /* domyślny paragon */ }
+    public virtual void Refund() { /* domyślny zwrot */ }
 }
 ```
+
+Gdyby każdy typ płatności *musiał* dostarczyć własną logikę (brak sensownego zachowania domyślnego), użylibyśmy `abstract` zamiast `virtual` - patrz moduł 05, temat 6.
 
 ### Konkretne Implementacje
 
@@ -114,9 +127,9 @@ public class CreditCardPayment : PaymentMethod
 ```csharp
 public class Order
 {
-    public string OrderId { get; set; }
-    public List<Item> Items { get; set; }
-    public decimal Total { get; set; }
+    public string OrderId { get; set; } = "";
+    public List<Item> Items { get; set; } = new();
+    public decimal Total => Items.Sum(i => i.Total);   // wyliczane z pozycji
 }
 
 public class OrderProcessor
@@ -142,6 +155,8 @@ public class OrderProcessor
     }
 }
 ```
+
+> **Uwaga:** `catch (Exception)` z wypisaniem komunikatu to uproszczenie na potrzeby demonstracji. W kodzie produkcyjnym łap konkretne wyjątki domenowe, loguj je i nie ukrywaj błędów płatności - błąd "połknięty" w tym miejscu oznaczałby, że klient nie dowie się, czy został obciążony.
 
 ---
 
@@ -177,21 +192,24 @@ graph LR
 
 ---
 
-## 🔐 Bezpieczeństwo: Chained Authorization
+## 🔐 Bezpieczeństwo: Chained Authorization (szkic, nie ma go w kodzie demonstracyjnym)
 
 ```csharp
+public interface IValidator
+{
+    bool IsValid(PaymentMethod payment, Order order);
+}
+
 public class SecurePaymentProcessor
 {
-    private List<IValidator> validators = new()
-    {
-        new FraudDetector(),
-        new LocationValidator(),
-        new RateLimiter()
-    };
+    private readonly IReadOnlyList<IValidator> validators;
+
+    public SecurePaymentProcessor(IReadOnlyList<IValidator> validators)
+        => this.validators = validators;
     
     public bool Process(PaymentMethod payment, Order order)
     {
-        // Każdy validator może weto (virtual dispatch!)
+        // Każdy walidator może zawetować płatność (polimorfizm przez interfejs)
         foreach (var validator in validators)
         {
             if (!validator.IsValid(payment, order))
@@ -208,7 +226,7 @@ public class SecurePaymentProcessor
 
 ## 📦 Real-World: E-Commerce Platforms
 
-### Shopify-like Architecture
+### Architektura w stylu platform e-commerce
 
 ```
 User → Order → PaymentGateway
@@ -219,11 +237,11 @@ User → Order → PaymentGateway
                     └─ Custom Integration
 ```
 
-Każdy gateway implementuje `IPaymentGateway`:
-- Inna walidacja
-- Inna komunikacja z API
-- Inne fees
-- Inna szybkość
+Wspólnym kontraktem jest typ abstrakcyjny lub interfejs (w tym temacie rolę kontraktu pełni klasa bazowa `PaymentMethod`, w [temacie 5](../_05_adapter_factory/README.md) - `PaymentGateway`). Każda implementacja ma:
+- Inną walidację
+- Inną komunikację z API
+- Inne opłaty
+- Inną szybkość
 
 Ale dla kodu e-commerce - nie ma różnicy!
 
@@ -249,13 +267,15 @@ public class PayPalPrice : PricingStrategy
 {
     public override decimal ApplyDiscount(decimal amount)
     {
-        return amount * 0.97m;  // 3% discount
+        return amount * 0.95m;  // 5% discount (jak w kodzie demonstracyjnym)
     }
 }
 
 // Użycie:
-decimal finalPrice = strategy.ApplyDiscount(100m);  // Virtual!
+decimal finalPrice = strategy.ApplyDiscount(100m);  // wywołanie wirtualne
 ```
+
+To drugi, niezależny przykład polimorfizmu: strategia rabatu jest osobną hierarchią (wzorzec Strategy), wybieraną np. według metody płatności.
 
 ---
 
@@ -271,19 +291,19 @@ decimal finalPrice = strategy.ApplyDiscount(100m);  // Virtual!
 
 ---
 
-## 🎓 Uczenia
+## 🎓 Cele uczenia
 
 Po tym temacie powinieneś:
 - [ ] Zrozumieć praktyczne zastosowanie polimorfizmu
 - [ ] Wiedzieć, jak projektować hierarchie klas
 - [ ] Umieć pracować z wirtualnymi metodami
-- [ ] Znać `try-catch` w kontekście polimorfizmu
+- [ ] Rozumieć, dlaczego uniwersalny kod (np. procesor zamówień) nie musi znać konkretnych typów płatności
 
 ---
 
 ## 📚 Referencje
 
-- [Payment Processing Design Patterns](https://martinfowler.com/eaaCatalog/)
+- [Patterns of Enterprise Application Architecture (Fowler)](https://martinfowler.com/eaaCatalog/)
 - [Stripe API Design](https://stripe.com/docs/api)
 - [Strategy Pattern](https://refactoring.guru/design-patterns/strategy)
 

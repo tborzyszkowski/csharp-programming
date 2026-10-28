@@ -35,7 +35,7 @@ legacyPay.ProcessTransaction(id, amount, method);
 
 ## 🏗️ Adapter Pattern
 
-### Klasa Bazowa (Target Interface)
+### Klasa Bazowa (Target)
 
 ```csharp
 public abstract class PaymentGateway
@@ -45,6 +45,8 @@ public abstract class PaymentGateway
     public abstract void Refund();
 }
 ```
+
+W literaturze "Target" to zwykle interfejs; tutaj pełni go klasa abstrakcyjna, dzięki czemu polimorfizm działa przez wywołania metod wirtualnych/abstrakcyjnych (temat 1). Adaptery mogłyby równie dobrze implementować interfejs `IPaymentGateway`.
 
 ### Adaptory (Adapters)
 
@@ -72,6 +74,8 @@ public class PayPalAdapter : PaymentGateway
 }
 ```
 
+> **Uproszczenie:** to szkic (pominięto m.in. konstruktor i definicję `token`). W kodzie demonstracyjnym operacja `Authorize` jest mapowana na pojedyncze wywołanie zewnętrznego klienta. Prawdziwe bramki płatnicze zwykle rozróżniają autoryzację i przechwycenie środków (capture) i wymagają osobnych wywołań.
+
 ---
 
 ## 🏭 Factory Pattern
@@ -87,8 +91,8 @@ public class PaymentGatewayFactory
         {
             "Stripe" => new StripeAdapter(),
             "PayPal" => new PayPalAdapter(),
-            "Authorize" => new AuthorizeNetAdapter(),
-            "Legacy" => new LegacyPaymentAdapter(),
+            "Authorize" => new AuthorizeNetAdapter(),   // przykład rozszerzenia - nie ma go w kodzie demonstracyjnym
+            "Legacy" => new LegacyAdapter(),
             _ => throw new ArgumentException($"Unknown provider: {providerName}")
         };
     }
@@ -194,23 +198,28 @@ public class FakePaymentGateway : PaymentGateway
     {
         Console.WriteLine("[FAKE] Captured");
     }
-}
 
-// W Factory:
-public static PaymentGateway Create(string providerName)
-{
-    if (providerName == "Fake" || providerName == "Test")
-        return new FakePaymentGateway();
-    
-    // ... real providers
+    public override void Refund()
+    {
+        Console.WriteLine("[FAKE] Refunded");
+    }
 }
 ```
+
+W kodzie demonstracyjnym fabryka potrafi utworzyć `FakeGateway` (`"fake"`/`"test"`), co jest wygodne w nauce. W prawdziwej aplikacji **nie umieszczaj ścieżek testowych w fabryce produkcyjnej** - lepiej w testach przekazać atrapę przez wstrzykiwanie zależności albo osobną konfigurację środowiska.
 
 ---
 
 ## 💾 Dependency Injection Integration
 
+W kodzie demonstracyjnym `PaymentGatewayFactory` ma **statyczną** metodę `Create`, więc nie da się jej wstrzyknąć ani podmienić w testach. Wersja przyjazna DI wymaga interfejsu i klasy niestatycznej:
+
 ```csharp
+public interface IPaymentGatewayFactory
+{
+    PaymentGateway Create(string providerName);
+}
+
 public class OrderService
 {
     private readonly IPaymentGatewayFactory _factory;
@@ -228,8 +237,8 @@ public class OrderService
     }
 }
 
-// Rejestracja w DI:
-services.AddScoped<IPaymentGatewayFactory, PaymentGatewayFactory>();
+// Rejestracja w DI (fabryka jest bezstanowa, więc wystarczy jedna instancja):
+services.AddSingleton<IPaymentGatewayFactory, PaymentGatewayFactory>();
 services.AddScoped<OrderService>();
 ```
 
@@ -270,11 +279,13 @@ public class FallbackAdapter : PaymentGateway
 var fallback = new FallbackAdapter(
     new StripeAdapter(),
     new PayPalAdapter(),
-    new LegacyPaymentAdapter()
+    new LegacyAdapter()
 );
 
 fallback.Authorize(100m);  // Spróbuj Stripe, potem PayPal, potem Legacy
 ```
+
+> ⚠️ **Uwaga przy płatnościach:** automatyczne przechodzenie do kolejnego dostawcy po błędzie może **obciążyć klienta dwa razy**, jeśli pierwszy dostawca zdążył przetworzyć żądanie, ale odpowiedź zaginęła (timeout). W realnych systemach stosuje się klucze idempotencji i sprawdzanie stanu transakcji przed ponowieniem; przechwytuj też wyłącznie wyjątki oznaczające "dostawca niedostępny" (najlepiej własny typ wyjątku), a nie ogólne błędy. Przykład ma charakter dydaktyczny - pokazuje kompozycję adapterów, nie gotowy mechanizm produkcyjny.
 
 ---
 
@@ -292,7 +303,7 @@ public class PaymentProcessor
     
     public PaymentResult ProcessOrder(Order order)
     {
-        var gateway = _factory.Create(order.PaymentMethod);
+        var gateway = _factory.Create(order.PaymentProvider);
         
         gateway.Authorize(order.Total);
         gateway.Capture();
@@ -305,6 +316,8 @@ public class PaymentProcessor
     }
 }
 ```
+
+`PaymentResult` i `PaymentStatus` są tu typami ilustracyjnymi - kod demonstracyjny w tym temacie zwraca po prostu `bool` z `OrderProcessor.ProcessOrder`.
 
 ---
 
@@ -325,7 +338,7 @@ dotnet run
 
 - [Adapter Pattern](https://refactoring.guru/design-patterns/adapter)
 - [Factory Pattern](https://refactoring.guru/design-patterns/factory-method)
-- [Payment Processing Architecture](https://martinfowler.com/articles/patterns-of-distributed-systems/)
+- [Dependency injection in .NET](https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection)
 
 ## 🧭 Nawigacja
 
