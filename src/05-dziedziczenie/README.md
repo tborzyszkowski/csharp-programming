@@ -134,9 +134,10 @@ public class Car : Vehicle
 | Modyfikator | C# | Java |
 |-------------|-----|------|
 | public | Wszędzie | Wszędzie |
-| protected | Tylko pochodne | Pochodne + same package |
+| protected | Klasa i jej pochodne | Pochodne + ten sam pakiet |
 | private | Tylko klasa | Tylko klasa |
-| (default) | internal | package (default) |
+| internal | Całe assembly | brak odpowiednika (najbliższy: package-private) |
+| brak modyfikatora | `internal` dla typu najwyższego poziomu, `private` dla składowych | package-private |
 
 ---
 
@@ -146,8 +147,8 @@ public class Car : Vehicle
 
 **Kluczowe Koncepty**:
 - Słowo kluczowe `base` - wywoływanie konstruktora klasy bazowej
-- Kolejność inicjalizacji
-- Brak domyślnego konstruktora - wymuszenie `base()`
+- Kolejność inicjalizacji (pola pochodne → pola bazowe → konstruktor bazowy → konstruktor pochodny)
+- Brak domyślnego konstruktora w bazie - wymuszenie `base(...)`
 - Łańcuch konstruktorów
 
 **Gdzie**: [`_03_derived_constructors/`](_03_derived_constructors/)
@@ -168,7 +169,7 @@ public class Dog : Animal
 }
 
 var dog = new Dog("Rex", "Labrador");
-// Inicjalizacja: Animal constructor → Dog constructor
+// Inicjalizacja: ciało konstruktora Animal → ciało konstruktora Dog
 ```
 
 ---
@@ -232,12 +233,12 @@ List<Payment> payments = new()
 foreach (var payment in payments)
 {
     payment.Process();  // Virtual dispatch - każdy robi swoje
-}
 
-// Type checking
-if (payment is CreditCard card)
-{
-    card.ValidateCard();
+    // Type checking
+    if (payment is CreditCard card)
+    {
+        card.ValidateCard();
+    }
 }
 ```
 
@@ -282,7 +283,7 @@ var sqlDb = new SqlDatabase();  // ✅ OK
 **Kluczowe Koncepty**:
 - `sealed class` - koniec hierarchii
 - `sealed override` - koniec przesłaniania
-- Kiedy używać sealed (performance, security)
+- Kiedy używać sealed (zamknięcie projektu, ochrona niezmienników, możliwe optymalizacje JIT)
 - Sealed vs Abstract
 
 **Gdzie**: [`_07_sealed_classes/`](_07_sealed_classes/)
@@ -366,7 +367,7 @@ cat ../diagrams/*.mermaid  # Otwórz w markdown preview
 | .csproj | 7 (wszystkie .NET 9.0) |
 | Diagramy Mermaid | 7+ |
 | Zadania | 20+ ćwiczeń |
-| Testy xUnit | 35+ testów |
+| Testy xUnit | 40+ testów |
 | Linii kodu C# | 1500+ |
 | Dokumentacja | 10000+ słów (PL) |
 
@@ -472,7 +473,7 @@ dotnet test
 | 02-Konstruktory | 10 | 3000+ | 50+ | 30+ | ✅ 100% |
 | 03-Właściwości | 7 | 2500+ | 45+ | 20+ | ✅ 100% |
 | 04-Statyczne | 7 | 1500+ | 35+ | 15+ | ✅ 100% |
-| 05-Dziedziczenie | 7 | 1500+ | 35+ | 20+ | ✅ 100% |
+| 05-Dziedziczenie | 7 | 1500+ | 40+ | 20+ | ✅ 100% |
 
 ---
 
@@ -489,7 +490,7 @@ dotnet test
 - ✅ **7 tematów** od podstaw do zaawansowanych koncepcji
 - ✅ **1500+ linii kodu** działającego i przetestowanego
 - ✅ **20+ ćwiczeń** dla studentów
-- ✅ **35+ testów** xUnit
+- ✅ **40+ testów** xUnit
 - ✅ **7 diagramów** UML/Mermaid
 - ✅ **Porównanie C# vs Java** dla tych co znają Javę
 - ✅ **Real-world examples** (Payment systems, Databases, itp.)

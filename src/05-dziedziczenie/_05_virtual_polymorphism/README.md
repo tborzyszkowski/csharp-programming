@@ -115,22 +115,23 @@ if (animal is Dog)
     dog.Bark();
 }
 
-// as - Safe casting (zwraca null jeśli fail)
-if (animal is Dog dog)  // Pattern matching (C# 7+)
-{
-    dog.Bark();
-}
-
-Dog? dog2 = animal as Dog;  // null jeśli nie Dog
+// as - bezpieczne rzutowanie (zwraca null, jeśli typ się nie zgadza)
+Dog? dog2 = animal as Dog;
 if (dog2 != null)
 {
     dog2.Bark();
 }
+
+// Pattern matching (C# 7+) - sprawdzenie i rzutowanie w jednej operacji
+if (animal is Dog dog)
+{
+    dog.Bark();
+}
 ```
 
-Preferuj pattern matching `animal is Dog dog` nad osobnym `is` i rzutowaniem, bo sprawdzenie i uzyskanie typowanej zmiennej odbywa się w jednej operacji. `as` zwraca `null` przy niezgodnym typie i działa tylko dla typów, które mogą przyjąć `null`.
+Rzutowanie jawne `(Dog)animal` zgłosi `InvalidCastException`, gdy obiekt nie jest `Dog`. Preferuj pattern matching `animal is Dog dog` nad osobnym `is` i rzutowaniem, bo sprawdzenie i uzyskanie typowanej zmiennej odbywa się w jednej operacji. `as` zwraca `null` przy niezgodnym typie i działa tylko dla typów, które mogą przyjąć `null`.
 
-## Prakticzny Przykład: Payment System
+## Praktyczny Przykład: Payment System
 
 ```csharp
 public abstract class Payment
@@ -204,20 +205,19 @@ dog.Eat();
 // Animal eats
 ```
 
-## Performance: Virtual vs Non-Virtual
+## Koszt Wywołań Wirtualnych
 
 ```csharp
-// Virtual - runtime lookup (nieco wolniej)
+// Wywołanie wirtualne wymaga wyboru implementacji w czasie działania
 public virtual void Method() { }
 
-// Non-virtual - compile-time (szybciej)
+// Wywołanie niewirtualne może być rozstrzygnięte wcześniej i łatwiej inline'owane
 public void Method() { }
-
-// W praktyce: różnica nieznaczna (~nanosekunda)
-// Używaj virtual gdy logika tego wymaga!
 ```
 
-Nie wybieraj `virtual` wyłącznie na podstawie mikrooptymalizacji. Ważniejsze są kontrakt klasy i możliwość rozszerzania. Z kolei publiczne metody wirtualne są częścią API, więc ich zachowanie i kompatybilność trzeba utrzymywać.
+Wywołanie wirtualne może być nieco droższe niż niewirtualne, ale JIT potrafi je optymalizować (np. devirtualizacja, gdy znany jest dokładny typ). Skala różnicy zależy od platformy i scenariusza - jeśli ma znaczenie, zmierz ją benchmarkiem (np. BenchmarkDotNet), zamiast zakładać konkretną liczbę nanosekund.
+
+Nie wybieraj `virtual` ani jego braku wyłącznie na podstawie mikrooptymalizacji. Ważniejsze są kontrakt klasy i możliwość rozszerzania. Z kolei publiczne metody wirtualne są częścią API, więc ich zachowanie i kompatybilność trzeba utrzymywać.
 
 ## Best Practices
 
@@ -225,10 +225,12 @@ Nie wybieraj `virtual` wyłącznie na podstawie mikrooptymalizacji. Ważniejsze 
 ```csharp
 public abstract class Shape
 {
-    public abstract double CalculateArea();  // Force override
-    public virtual string GetType() => "Shape";  // Optional override
+    public abstract double CalculateArea();  // Wymuś implementację
+    public virtual string Describe() => "Shape";  // Opcjonalne przesłonięcie
 }
 ```
+
+> Nie nazywaj własnej metody `GetType()` - ukryłaby niewirtualne `object.GetType()`.
 
 ✅ **Type checking przed casting**:
 ```csharp
@@ -238,18 +240,18 @@ if (animal is Dog dog)
 }
 ```
 
-❌ **Nie mieszaj virtual i new**:
+❌ **Unikaj mieszania `virtual` w bazie z `new` w pochodnej**:
 ```csharp
-// ZŁO - mylące!
+// Mylące - metoda bazowa jest wirtualna, a pochodna ją tylko ukrywa
 public class Base { public virtual void Method() { } }
 public class Derived : Base { public new void Method() { } }
 
-// DOBRZE - jasne zamiaru
+// Jasny zamiar
 public class Base { public virtual void Method() { } }
 public class Derived : Base { public override void Method() { } }
 ```
 
-## C# 9+: Records z Polimorfizmem
+## Records z Polimorfizmem (C# 9+)
 
 ```csharp
 public abstract record Shape(string Name)
@@ -259,7 +261,7 @@ public abstract record Shape(string Name)
 
 public record Circle(string Name, double Radius) : Shape(Name)
 {
-    public override double Area() => 3.14 * Radius * Radius;
+    public override double Area() => Math.PI * Radius * Radius;
 }
 ```
 

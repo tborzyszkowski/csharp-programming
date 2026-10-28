@@ -25,9 +25,9 @@ Pokaż różnicę - gdy wołasz metodę przez zmienną bazową, override daje in
 
 ### Zadanie 1
 ```csharp
-public abstract class Shape
+public class Shape
 {
-    public abstract void Draw();
+    public virtual void Draw() => Console.WriteLine("Drawing Shape");
 }
 
 public class Triangle : Shape

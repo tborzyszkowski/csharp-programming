@@ -86,7 +86,7 @@ polymorphic.Speak();  // "Animal sound" - nie "Woof!"!
 ├─────────────────────────────────────┤
 │ - Nie wymaga virtual                │
 │ - Wywoływana wersja typu zmiennej   │
-│ - Ukrywает metodę bazową            │
+│ - Ukrywa metodę bazową              │
 │                                     │
 │ public void Speak() { }             │
 │ public new void Speak() { }         │
@@ -154,21 +154,23 @@ Base b = d;
 b.Method();  // "Base.Method" - nie polimorfizm!
 ```
 
-## Ważna Zasada: Base Musi Być Virtual
+## Ważna Zasada: `override` Wymaga Przesłanianego Członka
+
+`override` można zastosować tylko wtedy, gdy członek w klasie bazowej jest `virtual`, `abstract` albo sam jest `override` (i nie jest `sealed`). Sygnatura musi być zgodna, a modyfikator dostępu - identyczny.
 
 ```csharp
 public class Animal
 {
-    // ❌ Błąd - nie można override bez virtual!
+    // Brak virtual
     public void Speak() { }
 }
 
 public class Dog : Animal
 {
-    // ❌ BŁĄD: cannot override non-virtual method
+    // ❌ BŁĄD: nie można przesłonić metody niewirtualnej
     // public override void Speak() { }
     
-    // ✅ OK - nowe ukrycie
+    // ✅ Można ją co najwyżej ukryć (ostrzeżenie CS0108 bez 'new')
     public new void Speak() { }
 }
 ```
@@ -212,25 +214,27 @@ foreach (var payment in payments)
     payment.Process();  // Każda wykonuje swoją implementację
 ```
 
-❌ **Unikaj new** (zwykle oznacza złą hierarchię):
+⚠️ **Używaj `new` rzadko i świadomie** (najczęściej sygnalizuje problem z designem):
 ```csharp
-// ZŁO - new wskazuje na problem designu
+// Ryzykowne - zachowanie zależy od typu referencji
 public class Base { public void Do() { } }
 public class Derived : Base { public new void Do() { } }
 
-// DOBRZE - używaj virtual+override
+// Zwykle lepiej - virtual + override
 public class Base { public virtual void Do() { } }
 public class Derived : Base { public override void Do() { } }
 ```
 
-Kompilator ostrzega, gdy członek klasy pochodnej ukrywa członka bazowego bez jawnego `new`. Użycie `new` powinno być świadomą decyzją, najlepiej opisaną komentarzem lub dokumentacją API.
+Uzasadnione użycie `new` to np. ukrycie członka z biblioteki, której nie kontrolujesz, albo konflikt nazw przy ewolucji API. Zmiana typu zwracanego przy przesłanianiu nie wymaga `new` - od C# 9 `override` obsługuje kowariantne typy zwracane. W pozostałych przypadkach zastanów się, czy nie potrzebujesz `virtual`.
+
+Kompilator ostrzega (CS0108), gdy członek klasy pochodnej ukrywa członka bazowego bez jawnego `new`. Użycie `new` powinno być świadomą decyzją, najlepiej opisaną komentarzem lub dokumentacją API.
 
 ## Abstract Methods
 
 ```csharp
 public abstract class Animal
 {
-    // Pochodne MUSZĄ implementować
+    // Każda konkretna (nieabstrakcyjna) klasa pochodna MUSI to zaimplementować
     public abstract void Speak();
 }
 

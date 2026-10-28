@@ -6,16 +6,16 @@ Zrozumienie jak **modyfikatory dostępu** (`public`, `private`, `protected`, `in
 
 ## Modyfikatory Dostępu
 
-| Modyfikator | Klasa | Assembly | Pochodna | Inne |
-|-------------|-------|----------|----------|------|
-| `public` | ✅ | ✅ | ✅ | ✅ |
-| `protected` | ✅ | ❌ | ✅ | ❌ |
-| `internal` | ✅ | ✅ | ❌* | ❌ |
-| `private` | ✅ | ❌ | ❌ | ❌ |
-| `protected internal` | ✅ | ✅ | ✅ | ❌ |
-| `private protected` | ✅ | ❌ | ✅* | ❌ |
+| Modyfikator | Ta sama klasa | Pochodna (to samo assembly) | Inny kod (to samo assembly) | Pochodna (inne assembly) | Inny kod (inne assembly) |
+|-------------|:---:|:---:|:---:|:---:|:---:|
+| `public` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `protected` | ✅ | ✅ | ❌ | ✅ | ❌ |
+| `internal` | ✅ | ✅ | ✅ | ❌ | ❌ |
+| `protected internal` | ✅ | ✅ | ✅ | ✅ | ❌ |
+| `private protected` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `private` | ✅ | ❌ | ❌ | ❌ | ❌ |
 
-*Tylko w ramach tego assembly
+Dostęp „pochodna” w przypadku `protected` dotyczy odwołań przez `this` lub przez referencję typu klasy pochodnej (patrz niżej).
 
 ## Przykład: Czym Różni Się protected w C# i Java?
 
@@ -56,7 +56,12 @@ public class Dog : Animal
     void CallEat() { this.Eat(); }  // OK
     void CallOther(Animal other) 
     { 
-        other.Eat();  // ❌ BŁĄD! Nawet na Animal
+        // other.Eat();  // ❌ BŁĄD (CS1540): dostęp przez referencję typu bazowego
+    }
+
+    void CallDog(Dog other)
+    {
+        other.Eat();  // ✅ OK - referencja typu Dog (lub jego pochodnej)
     }
 }
 
@@ -64,7 +69,7 @@ public class OtherClass
 {
     void Method()
     {
-        new Dog().Eat();  // ❌ BŁĄD! Nie do dostępu z zewnątrz
+        // new Dog().Eat();  // ❌ BŁĄD! Brak dostępu z zewnątrz hierarchii
     }
 }
 ```
@@ -131,12 +136,20 @@ public class Other
 ## Domyślny Modyfikator
 
 ```csharp
-class MyClass { }                    // private (jeśli wewnątrz innej klasy)
-public class MyClass { }             // public
+class TopLevel { }                   // internal (typ najwyższego poziomu)
 
-void Method() { }                    // private
-public void Method() { }             // public
+class Outer
+{
+    class Nested { }                 // private (typ zagnieżdżony)
+    void Method() { }                // private (składowa klasy)
+    int field;                       // private
+}
+
+public class Explicit { }            // jawnie public
+public void Method() { }             // jawnie public (jako składowa)
 ```
+
+Gdy nie podasz modyfikatora, typ najwyższego poziomu jest `internal`, a składowe klasy i typy zagnieżdżone są `private`. W kodzie dydaktycznym i bibliotecznym warto pisać modyfikator jawnie.
 
 `protected` jest częścią kontraktu dla klas pochodnych. Zbyt duża liczba protected pól wiąże klasę bazową z implementacją pochodnych, dlatego często lepiej udostępnić protected metodę lub właściwość z kontrolą niezmienników. `internal` dotyczy całego assembly, a `private protected` łączy ograniczenie do tego samego assembly z dostępem z klas pochodnych.
 
@@ -174,9 +187,10 @@ public void Method() { }             // public
 |----|------|------|
 | `public` | `public` | Dostęp wszędzie |
 | `private` | `private` | Dostęp tylko w klasie |
-| `protected` | `protected` | Dostęp w klasach pochodnych + same package |
-| `internal` | `(default)` | Dostęp w assembly/package |
-| `protected internal` | N/A | Dostęp w pochodnych ORAZ w assembly |
+| `protected` | `protected` | C#: tylko klasa i jej pochodne. Java: pochodne **oraz** ten sam pakiet |
+| `internal` | brak modyfikatora (package-private) | C#: całe assembly. Java: ten sam pakiet |
+| `protected internal` | brak odpowiednika | Pochodne **lub** kod w tym assembly |
+| `private protected` | brak odpowiednika | Pochodne **i** kod w tym assembly |
 
 ```csharp
 // C#: protected - TYLKO klasy pochodne
@@ -188,7 +202,7 @@ public class Derived : Base {
 }
 public class Other {
     public void Call() {
-        new Derived().Method();  // ❌ BŁĄD - protected, nawet w derived
+        // new Derived().Method();  // ❌ BŁĄD - protected nie jest dostępny z zewnątrz
     }
 }
 ```
@@ -228,19 +242,29 @@ public class BankAccount
 }
 ```
 
-✅ **Protected dla Interface'ów**:
+✅ **Protected jako kontrakt dla klas pochodnych** (preferuj metody/właściwości zamiast pól):
 ```csharp
 public abstract class Shape
 {
-    protected double width;
-    protected double height;
-    
-    // Protected - dla klas pochodnych
-    protected double CalculateArea() => width * height;
+    protected Shape(double width, double height)
+    {
+        if (width <= 0) throw new ArgumentOutOfRangeException(nameof(width));
+        if (height <= 0) throw new ArgumentOutOfRangeException(nameof(height));
+        Width = width;
+        Height = height;
+    }
+
+    protected double Width { get; }
+    protected double Height { get; }
+
+    // Protected - tylko dla klas pochodnych
+    protected double CalculateArea() => Width * Height;
 }
 
 public class Rectangle : Shape
 {
+    public Rectangle(double width, double height) : base(width, height) { }
+
     public double GetArea() => CalculateArea();  // OK
 }
 ```
@@ -259,13 +283,17 @@ public class Person
     private int age;
     public int Age
     {
-        get { return age; }
-        set { if (value > 0) age = value; }
+        get => age;
+        set
+        {
+            if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value));
+            age = value;
+        }
     }
 }
 ```
 
-Przy bibliotekach można użyć `protected internal`, gdy członek ma być dostępny klasom pochodnym także poza assembly oraz kodowi w bieżącym assembly. Te modyfikatory powinny być dobierane do API, a nie do wygody pojedynczej klasy pochodnej.
+Przy bibliotekach można użyć `protected internal`, gdy członek ma być dostępny klasom pochodnym także poza assembly oraz kodowi w bieżącym assembly; `private protected` ogranicza dostęp do klas pochodnych w tym samym assembly. Te modyfikatory powinny być dobierane do API, a nie do wygody pojedynczej klasy pochodnej.
 
 ## 🚀 Jak pracować
 

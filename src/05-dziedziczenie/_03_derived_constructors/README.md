@@ -38,19 +38,68 @@ var dog = new Dog("Rex", "Labrador");
 
 ## Kolejność Inicjalizacji
 
-```
+Przy `new Dog("Rex", "Labrador")` konstruktory są *wywoływane* od klasy pochodnej do bazowej, ale ich *ciała* wykonują się od bazowej do pochodnej:
 
-W praktyce przed wejściem do konstruktora klasy pochodnej wykonywane są także inicjalizatory pól i właściwości bazowych. Następnie inicjalizowany jest stan pochodny. Klasa pochodna może korzystać z chronionych członków bazowych, ale nie powinna omijać reguł walidacji z konstruktora bazowego.
+```
 new Dog("Rex", "Labrador")
     ↓
-Dog constructor code: base(name)
+Dog constructor: wywołanie base(name)
     ↓
-Animal constructor code
+Animal constructor - ciało
     ↓
-Powrót do Dog constructor
-    ↓
-Dog constructor - pozostały kod
+Powrót do Dog constructor - pozostały kod
 ```
+
+W C# pełna kolejność dla jednego obiektu wygląda tak:
+
+1. Inicjalizatory pól i właściwości **klasy pochodnej** (od najbardziej pochodnej)
+2. Inicjalizatory pól i właściwości **klasy bazowej**
+3. Ciało konstruktora **klasy bazowej**
+4. Ciało konstruktora **klasy pochodnej**
+
+```csharp
+public class BaseInit
+{
+    private readonly string _baseField = Log("Base field initializer");
+    public BaseInit() => Log("Base constructor");
+}
+
+public class DerivedInit : BaseInit
+{
+    private readonly string _derivedField = Log("Derived field initializer");
+    public DerivedInit() => Log("Derived constructor");
+}
+
+// new DerivedInit() zapisuje kolejno:
+// Derived field initializer
+// Base field initializer
+// Base constructor
+// Derived constructor
+```
+
+> **C# vs Java:** w Javie inicjalizatory pól klasy pochodnej wykonują się dopiero *po* konstruktorze bazowym. W C# są wykonywane przed nim, dlatego pola pochodne z inicjalizatorem są już ustawione, gdy działa kod klasy bazowej. Pola przypisywane dopiero w ciele konstruktora pochodnej jeszcze takie nie są.
+
+### ⚠️ Wywołanie metody wirtualnej w konstruktorze
+
+```csharp
+public class Base
+{
+    public Base() => Describe();         // wywołanie wirtualne w konstruktorze
+    public virtual void Describe() { }
+}
+
+public class Derived : Base
+{
+    private string? _name;
+
+    public Derived(string name) => _name = name;
+
+    public override void Describe()
+        => Console.WriteLine(_name ?? "(jeszcze null)");   // konstruktor Derived jeszcze się nie wykonał
+}
+```
+
+Gdy konstruktor bazowy wywołuje metodę wirtualną, uruchomi się wersja z klasy pochodnej, choć jej konstruktor jeszcze nie zakończył pracy. Obiekt może więc być w częściowo zainicjalizowanym stanie. Unikaj tego wzorca w konstruktorach.
 
 ## Brak jawnego `base` - Domyślny Konstruktor
 
@@ -121,9 +170,16 @@ public class Dog : Animal
     
     public void CallBothConstructors()
     {
-        // this() - inny konstruktor tej samej klasy
-        // base() - konstruktor klasy bazowej (tylko w initializer!)
+        // base(...) i this(...) są dozwolone TYLKO w inicjalizatorze konstruktora,
+        // nie w zwykłych metodach.
     }
+}
+
+public class Puppy : Dog
+{
+    public Puppy() : this(0) { }               // this(...) - inny konstruktor tej samej klasy
+
+    public Puppy(int age) : base(age) { }      // base(...) - konstruktor klasy bazowej
 }
 ```
 
@@ -168,15 +224,15 @@ public class Base
 
 public class Derived : Base
 {
-    // Wybiera jawnie (musi być jawne!)
-    public Derived() : base() { }
-    
-    public Derived(int x) : base(x) { }
+    public Derived() { }                  // niejawnie : base()
+    public Derived(int x) : base(x) { }   // jawny wybór przeciążenia
 }
 
 new Derived();    // Base()
 new Derived(5);   // Base(5)
 ```
+
+Jawny `base(...)` jest konieczny tylko wtedy, gdy chcesz wybrać inne przeciążenie niż bezparametrowe albo gdy klasa bazowa nie ma dostępnego konstruktora bezparametrowego.
 
 ## Best Practices
 
@@ -238,11 +294,11 @@ public class Dog : Animal
 }
 ```
 
-Konstruktor klasy pochodnej powinien przekazać do `base(...)` wszystkie dane niezbędne do utworzenia poprawnego obiektu bazowego. Dzięki temu po zakończeniu konstruktora bazowego obiekt spełnia swój kontrakt, niezależnie od tego, która klasa pochodna jest tworzona.
+Konstruktor klasy pochodnej powinien przekazać do `base(...)` wszystkie dane niezbędne do utworzenia poprawnego obiektu bazowego. Dzięki temu po zakończeniu konstruktora bazowego obiekt spełnia swój kontrakt, niezależnie od tego, która klasa pochodna jest tworzona. Klasa pochodna może korzystać z chronionych członków bazowych, ale nie powinna omijać reguł walidacji z konstruktora bazowego. Konstruktory nie są dziedziczone, więc każda klasa pochodna musi zdefiniować własne.
 
 ## Porównanie C# i Java
 
-Składnia jest prawie taka sama!
+Składnia jest podobna (`: base(...)` w C#, `super(...)` w Javie), ale kolejność inicjalizatorów pól różni się - patrz uwaga w sekcji „Kolejność Inicjalizacji”.
 
 ```csharp
 // C#

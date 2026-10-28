@@ -36,7 +36,7 @@ dog.Bark();  // Własna metoda Dog
 ├─────────────────────────┤
 │ + Name: string          │ ✅ DZIEDZICZY SIĘ
 │ + Eat(): void           │ ✅ DZIEDZICZY SIĘ
-│ - secretField: int      │ ❌ NIE (private)
+│ - secretField: int      │ ⚠️ istnieje w obiekcie, ale jest niedostępny
 └─────────────────────────┘
             ▲
             │ Dziedziczy
@@ -109,11 +109,12 @@ public class ClassName : BaseClass
 
 - Każda klasa może mieć **max jedną bezpośrednią klasę bazową** (single inheritance)
 - C# nie wspiera multiple inheritance (ale są interfejsy)
-- Wszystkie klasy dziedziczy z `object` (jawnie lub niejawnie)
+- Wszystkie klasy dziedziczą z `object` (jawnie lub niejawnie)
+- Konstruktory **nie są dziedziczone** - każda klasa pochodna definiuje własne (omówione w temacie 3)
 
 Dziedziczenie oznacza relację **is-a**, a nie tylko możliwość ponownego użycia kodu. `Dog` jest `Animal`, więc można przekazać go do metody przyjmującej `Animal`. Jeśli relacja brzmi raczej „ma” (`Car` ma `Engine`), kompozycja zwykle będzie lepszym rozwiązaniem niż kolejna klasa bazowa.
 
-Klasa pochodna nie otrzymuje osobnej kopii prywatnych pól klasy bazowej do bezpośredniego użycia. Stan bazowy istnieje w obiekcie, ale dostęp do niego odbywa się przez publiczne/protected API klasy bazowej.
+Prywatne pola klasy bazowej nie znikają: stan bazowy istnieje w obiekcie pochodnym, ale kod klasy pochodnej nie ma do niego bezpośredniego dostępu. Odwołuje się do niego przez publiczne/protected API klasy bazowej. Dlatego dokładniej mówimy, że prywatne składowe są *niedostępne* w klasie pochodnej, a nie że „nie istnieją”.
 
 ## C# vs Java - Porównanie
 
@@ -122,7 +123,7 @@ Klasa pochodna nie otrzymuje osobnej kopii prywatnych pól klasy bazowej do bezp
 | Słowo kluczowe | `:` | `extends` |
 | Interface | `:` | `implements` |
 | Baza wszystkiego | `object` | `Object` |
-| Access modifiers | `public`, `private`, `protected`, `internal` | `public`, `private`, `protected` |
+| Access modifiers | `public`, `private`, `protected`, `internal`, `protected internal`, `private protected` | `public`, `private`, `protected`, brak modyfikatora (package-private) |
 
 ```csharp
 // C#

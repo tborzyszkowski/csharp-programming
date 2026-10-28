@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace DerivedConstructors;
@@ -83,6 +84,59 @@ public class Car : Vehicle
     }
 }
 
+public static class InitLog
+{
+    // ThreadStatic: testy xUnit mogą działać równolegle
+    [ThreadStatic]
+    private static List<string>? _entries;
+
+    public static List<string> Entries => _entries ??= new List<string>();
+
+    public static string Record(string entry)
+    {
+        Entries.Add(entry);
+        return entry;
+    }
+}
+
+public class BaseInit
+{
+    private readonly string _baseField = InitLog.Record("Base field initializer");
+
+    public BaseInit() => InitLog.Record("Base constructor");
+
+    public string BaseField => _baseField;
+}
+
+public class DerivedInit : BaseInit
+{
+    private readonly string _derivedField = InitLog.Record("Derived field initializer");
+
+    public DerivedInit() => InitLog.Record("Derived constructor");
+
+    public string DerivedField => _derivedField;
+}
+
+public class VirtualCallBase
+{
+    public VirtualCallBase() => Describe();
+
+    public virtual void Describe() { }
+}
+
+public class VirtualCallDerived : VirtualCallBase
+{
+    private readonly string? _name;
+
+    public string? NameSeenInBaseConstructor { get; private set; }
+
+    public VirtualCallDerived(string name) => _name = name;
+
+    public string? Name => _name;
+
+    public override void Describe() => NameSeenInBaseConstructor = _name;
+}
+
 public class Program
 {
     public static void Main()
@@ -103,6 +157,21 @@ public class Program
         
         Console.WriteLine("4. Default base constructor (implicit):");
         var car = new Car("Toyota");
+        Console.WriteLine();
+
+        Console.WriteLine("5. Kolejność inicjalizacji pól i konstruktorów:");
+        InitLog.Entries.Clear();
+        _ = new DerivedInit();
+        foreach (var entry in InitLog.Entries)
+        {
+            Console.WriteLine($"   {entry}");
+        }
+        Console.WriteLine();
+
+        Console.WriteLine("6. Wywołanie metody wirtualnej w konstruktorze bazowym:");
+        var virtualCall = new VirtualCallDerived("Rex");
+        Console.WriteLine($"   Widziane w konstruktorze bazowym: {virtualCall.NameSeenInBaseConstructor ?? "null"}");
+        Console.WriteLine($"   Po zakończeniu konstruktora:      {virtualCall.Name}");
         Console.WriteLine();
     }
 }
@@ -151,5 +220,32 @@ public class DerivedConstructorsTests
         var car = new Car("Toyota");
         
         Assert.Equal("Toyota", car.Make);
+    }
+
+    [Fact]
+    public void InitializationOrder_DerivedFieldsFirst_ThenBaseFields_ThenConstructors()
+    {
+        InitLog.Entries.Clear();
+
+        _ = new DerivedInit();
+
+        Assert.Equal(
+            new[]
+            {
+                "Derived field initializer",
+                "Base field initializer",
+                "Base constructor",
+                "Derived constructor"
+            },
+            InitLog.Entries);
+    }
+
+    [Fact]
+    public void VirtualCallInBaseConstructor_SeesUninitializedDerivedState()
+    {
+        var obj = new VirtualCallDerived("Rex");
+
+        Assert.Null(obj.NameSeenInBaseConstructor);
+        Assert.Equal("Rex", obj.Name);
     }
 }

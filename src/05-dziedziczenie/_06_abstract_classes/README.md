@@ -33,30 +33,32 @@ var dog = new Dog();  // ✅ OK
 
 | Abstract | Virtual |
 |----------|---------|
-| MUSI być implementowane w pochodnych | Może być zaimplementowane |
-| Klasa pochodna MUSI override | Klasa pochodna MOŻE override |
-| Nie może mieć ciała (zwykle) | Zwykle ma ciało |
-| Wymusza interface | Udostępnia default implementację |
+| Brak ciała (tylko deklaracja) | Zawiera domyślną implementację |
+| Każda konkretna klasa pochodna MUSI zrobić `override` | Klasa pochodna MOŻE zrobić `override` |
+| Może być tylko w klasie abstrakcyjnej | Może być w dowolnej niezapieczętowanej klasie |
+| Wymusza kontrakt | Udostępnia domyślne zachowanie |
 
 ```csharp
 public abstract class Shape
 {
-    // Abstract - MUSI override
+    // Abstract - MUSI override w konkretnej klasie pochodnej
     public abstract double CalculateArea();
     
     // Virtual - może override
-    public virtual string GetType() => "Shape";
+    public virtual string Describe() => "Shape";
 }
 
 public class Circle : Shape
 {
-    // ❌ BŁĄD jeśli nie implementujesz CalculateArea()
-    public override double CalculateArea() => 3.14;
+    // ❌ BŁĄD KOMPILACJI, jeśli konkretna klasa nie implementuje CalculateArea()
+    public override double CalculateArea() => Math.PI * 1 * 1;
     
     // ✅ OK - opcjonalne
-    // public override string GetType() { }
+    // public override string Describe() => "Circle";
 }
 ```
+
+Klasa pochodna od klasy abstrakcyjnej może sama pozostać abstrakcyjna i odłożyć implementację abstrakcyjnych członków do swoich potomków.
 
 ## Abstract Members
 
@@ -121,13 +123,13 @@ db.ExecuteQuery("SELECT * FROM Users");
 
 ## Abstract vs Interface
 
-| Abstract Class | Interface |
+| Klasa abstrakcyjna | Interfejs |
 |---|---|
-| Zawiera implementację | Tylko sygnatury |
-| Może mieć fields | Nie może (C# 8+ może) |
-| Może mieć constructors | Nie (z wyjątkiem C# 11+) |
-| Może być private/protected | Zwykle public |
-| Jedna bazowa klasa | Wiele interfejsów |
+| Może zawierać stan (pola instancji) | Nie ma pól instancji (mogą być składowe statyczne) |
+| Może mieć konstruktory (wywoływane przez klasy pochodne) | Nie ma konstruktorów instancji |
+| Może mieć składowe o dowolnym dostępie (`private`, `protected` itd.) | Składowe są domyślnie publiczne (od C# 8 możliwe też inne modyfikatory dla członków z implementacją) |
+| Może mieć metody abstrakcyjne i z implementacją | Od C# 8 może mieć domyślne implementacje, ale służy głównie jako kontrakt |
+| Klasa dziedziczy po jednej klasie bazowej | Klasa może implementować wiele interfejsów |
 
 Klasa abstrakcyjna jest właściwa, gdy typy mają wspólny stan lub implementację oraz silną relację bazową. Interfejs opisuje zdolność albo kontrakt, który może zostać dodany do klasy mającej już inną klasę bazową. C# pozwala dziedziczyć tylko po jednej klasie, ale implementować wiele interfejsów.
 
@@ -163,17 +165,17 @@ public class Bird : Animal, IFlying
 
 ## Best Practices
 
-✅ **Definiuj interface w abstract class**:
+✅ **Definiuj kontrakt w klasie abstrakcyjnej** (gdy typy mają też wspólny stan lub logikę):
 ```csharp
 public abstract class DataProvider
 {
     public abstract IEnumerable<T> GetAll<T>();
-    public abstract T GetById<T>(int id);
+    public abstract T? GetById<T>(int id);
     public abstract void Save<T>(T item);
 }
 ```
 
-✅ **Udostępniaj common implementation w virtual**:
+✅ **Udostępniaj wspólną implementację w metodach bazowych/virtual**:
 ```csharp
 public abstract class Entity
 {
@@ -185,6 +187,8 @@ public abstract class Entity
     }
 }
 ```
+
+> Klasa abstrakcyjna nie może być `sealed` ani `static` - te modyfikatory wykluczają się z `abstract`. Konstruktor klasy abstrakcyjnej zwykle jest `protected` (lub `public`, co nie ma znaczenia, bo i tak nie utworzysz instancji bezpośrednio).
 
 ❌ **Unikaj zbyt abstrakcyjnych abstrakcji**:
 ```csharp
@@ -199,22 +203,27 @@ Metoda abstrakcyjna wymusza implementację w każdej konkretnej klasie pochodnej
 
 ## Hierarchia Abstrakcji
 
+Płaska hierarchia - jedna abstrakcyjna baza:
+
 ```
         Animal (abstract)
         /              \
       Dog            Cat
     (concrete)     (concrete)
+```
 
-vs
+Wielopoziomowa hierarchia - klasy pośrednie mogą pozostać abstrakcyjne:
 
+```
+        Animal (abstract)
+             |
         Mammal (abstract)
         /              \
       Dog            Cat
-    (abstract)     (abstract)
-    /              /
-  Puppy        Kitten
-(concrete)    (concrete)
+    (concrete)     (concrete)
 ```
+
+Dodawaj poziomy pośrednie tylko wtedy, gdy mają realny wspólny stan lub zachowanie - głębokie hierarchie trudno utrzymać.
 
 ## 🚀 Jak pracować
 

@@ -9,7 +9,7 @@ Stwórz:
 
 ## Zadanie 2: Brak Domyślnego Konstruktora
 
-Stwórz klasę `Base` bez konstruktora bezparametrowego, następnie klasa pochodna MUSI używać `base()`.
+Stwórz klasę `Base` bez konstruktora bezparametrowego, następnie klasa pochodna MUSI jawnie wywołać `base(...)` z odpowiednimi argumentami.
 
 ## Zadanie 3: Multiple Constructors
 

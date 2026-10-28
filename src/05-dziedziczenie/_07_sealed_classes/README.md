@@ -47,27 +47,30 @@ public class FurtherDerived : Derived
 
 ## Kiedy Używać Sealed?
 
-### 1. Performance - Compiler Optimization
+### 1. Zamknięcie projektu i możliwość optymalizacji
 
 ```csharp
-// Compiler wie że nie będzie virtual dispatch
-public sealed class String
+// Kompilator i JIT wiedzą, że nie istnieją typy pochodne,
+// więc mogą łatwiej zdewirtualizować wywołania.
+public sealed class Parser
 {
-    // ...
+    public string Parse(string input) => input.Trim();
 }
 ```
 
-Najważniejszym powodem użycia `sealed` jest zwykle zamknięcie projektu klasy, a nie obietnica mierzalnego przyspieszenia. Klasa sealed nadal może implementować interfejsy i być używana polimorficznie przez typ bazowy lub interfejs.
+Najważniejszym powodem użycia `sealed` jest zwykle zamknięcie projektu klasy, a nie obietnica mierzalnego przyspieszenia. Klasa sealed nadal może implementować interfejsy i być używana polimorficznie przez typ bazowy lub interfejs. `System.String` jest przykładem typu zapieczętowanego z biblioteki standardowej.
 
-### 2. Security - Zapobieganie Nadużyciu
+### 2. Ochrona niezmienników
 
 ```csharp
 public sealed class EncryptionKey
 {
-    // Nie chcemy aby ktoś nadpisywał metodę bezpieczeństwa
-    public sealed void Encrypt(string data) { }
+    // Nikt nie może dziedziczyć i zmienić sposobu obsługi klucza
+    public byte[] GetBytes() => Array.Empty<byte>();
 }
 ```
+
+`sealed` ogranicza dziedziczenie, ale samo w sobie **nie jest mechanizmem bezpieczeństwa** - nie zastępuje kontroli dostępu, walidacji ani poprawnego projektu API. Modyfikator `sealed` bez `override` dotyczy tylko klas; na zwykłej metodzie jest błędem kompilacji.
 
 ### 3. Design - Zapobieganie Złemu Dziedziczeniu
 
@@ -184,16 +187,17 @@ public class Derived : Base
 }
 ```
 
-❌ **Nie overuse seal** (może ograniczyć testowanie):
+❌ **Nie nadużywaj `sealed`** - zamknięte klasy trudniej zastąpić atrapą w testach:
 ```csharp
-// ZŁO - zbyt restrykcyjne
-public sealed class IRepository { }
+// Trudne do podmiany w testach, jeśli kod zależy bezpośrednio od tej klasy
+public sealed class SqlRepository { }
 
-// DOBRZE - interface dla testów
+// Lepiej - zależ od abstrakcji; konkretną implementację możesz zapieczętować
 public interface IRepository { }
+public sealed class SqlRepository : IRepository { }
 ```
 
-`sealed override` zamyka tylko konkretny punkt rozszerzania, ale nie musi zamykać całej klasy. Jest przydatne, gdy klasa pochodna ustala krytyczny algorytm i dalsze override mogłoby złamać jej niezmienniki.
+`sealed override` zamyka tylko konkretny punkt rozszerzania, ale nie musi zamykać całej klasy. Jest przydatne, gdy klasa pochodna ustala krytyczny algorytm i dalsze override mogłoby złamać jej niezmienniki. Klasa pochodna nadal może jednak **ukryć** taką metodę przez `new`, więc `sealed override` nie gwarantuje, że przez referencję pochodną nie zostanie wywołana inna implementacja. Przez referencję bazową zawsze zostanie wywołana zapieczętowana wersja.
 
 ## Hierarchia Z Sealed
 
@@ -207,21 +211,26 @@ Dog nie może być
 dalej dziedziczona
 ```
 
-## Performance Impact
+## Wpływ na Wydajność
 
 ```csharp
-// Non-sealed - virtual dispatch (lookup w runtime)
 public class Base { public virtual void M() { } }
-var b = new Derived() as Base;
-b.M();  // Runtime lookup
 
-// Sealed - compile-time (szybciej)
-public sealed class Final : Base { public sealed override void M() { } }
+// Niezapieczętowana - wywołanie przez Base wymaga wyboru implementacji w czasie działania
+Base b = new Derived();
+b.M();
+
+// Zapieczętowana - JIT może zdewirtualizować wywołanie, bo zna dokładny typ
+public sealed class Final : Base { public override void M() { } }
 var f = new Final();
-f.M();  // Direct call
+f.M();
 ```
 
-W praktyce: różnica ~nanosekunda, ale ważna dla hot-path code.
+Zapieczętowanie klasy może pomóc JIT w optymalizacji, ale efekt zależy od kodu i środowiska. W typowej aplikacji biznesowej rzadko jest powodem do użycia `sealed` - jeśli wydajność ma znaczenie, zmierz ją (np. BenchmarkDotNet).
+
+## Typy wartościowe i `sealed`
+
+Struktury (`struct`) są niejawnie zapieczętowane i nie mogą być dziedziczone. `sealed` nie można łączyć z `abstract` ani `static`.
 
 ## Records i Sealed (C# 9+)
 
@@ -233,7 +242,7 @@ public abstract record Shape
 
 public sealed record Circle(double Radius) : Shape
 {
-    public override double Area() => 3.14 * Radius * Radius;
+    public override double Area() => Math.PI * Radius * Radius;
 }
 ```
 

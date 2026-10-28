@@ -26,10 +26,12 @@ public class Base { protected void Method() { } }
 public class Derived : Base { }
 public class Other { 
     void Test() { 
-        new Derived().Method();  // OK w Java, ❌ w C#
+        new Derived().Method();  // Java: OK, jeśli ten sam pakiet; C#: ❌ błąd
     } 
 }
 ```
+
+W Javie `protected` obejmuje także cały pakiet, w którym zadeklarowano klasę, więc `Other` w tym samym pakiecie ma dostęp. W C# `protected` nie daje dostępu spoza hierarchii dziedziczenia (niezależnie od assembly).
 
 ---
 
