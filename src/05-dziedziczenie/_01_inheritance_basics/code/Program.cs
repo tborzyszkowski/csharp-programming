@@ -67,6 +67,7 @@ public class Program
         foreach (var animal in animals)
         {
             animal.Eat();
+            // animal.Bark();
         }
         Console.WriteLine();
         

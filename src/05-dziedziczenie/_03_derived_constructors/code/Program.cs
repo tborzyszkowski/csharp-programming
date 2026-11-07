@@ -121,7 +121,9 @@ public class VirtualCallBase
 {
     public VirtualCallBase() => Describe();
 
-    public virtual void Describe() { }
+    public virtual void Describe() {
+        Console.WriteLine("VirtualCallBase.Describe() called");
+    }
 }
 
 public class VirtualCallDerived : VirtualCallBase
@@ -134,7 +136,10 @@ public class VirtualCallDerived : VirtualCallBase
 
     public string? Name => _name;
 
-    public override void Describe() => NameSeenInBaseConstructor = _name;
+    public override void Describe() {
+        Console.WriteLine("VirtualCallDerived.Describe() called");
+        NameSeenInBaseConstructor = _name;
+    }
 }
 
 public class Program
@@ -170,9 +175,19 @@ public class Program
 
         Console.WriteLine("6. Wywołanie metody wirtualnej w konstruktorze bazowym:");
         var virtualCall = new VirtualCallDerived("Rex");
-        Console.WriteLine($"   Widziane w konstruktorze bazowym: {virtualCall.NameSeenInBaseConstructor ?? "null"}");
-        Console.WriteLine($"   Po zakończeniu konstruktora:      {virtualCall.Name}");
-        Console.WriteLine();
+        VirtualCallBase virtualCallBase = new VirtualCallBase();
+
+        virtualCallBase.Describe();
+        virtualCall.Describe();
+
+        virtualCallBase = virtualCallBase;
+
+        virtualCallBase.Describe();
+        virtualCall.Describe();
+
+        // Console.WriteLine($"   Widziane w konstruktorze bazowym: {virtualCall.NameSeenInBaseConstructor ?? "null"}");
+        // Console.WriteLine($"   Po zakończeniu konstruktora:      {virtualCall.Name}");
+        // Console.WriteLine();
     }
 }
 
@@ -249,3 +264,4 @@ public class DerivedConstructorsTests
         Assert.Equal("Rex", obj.Name);
     }
 }
+
