@@ -440,19 +440,20 @@ class Program
         Console.WriteLine($"212°F = {c:F1}°C");
         
         // Demo 4: Access Modifiers
-        Console.WriteLine("\n▶ Demo 4: Private Methods in Interface (C# 11+)\n");
+        Console.WriteLine("\n▶ Demo 4: Private/Protected Methods in Interface (C# 8.0+)\n");
         IDataProcessor processor = new DataProcessor();
         processor.Process();
         
         // Demo 5: Plugin System
         Console.WriteLine("\n▶ Demo 5: Modern Plugin System\n");
+        // Default interface members są dostępne tylko przez typ interfejsu
         var logging = new LoggingPlugin();
         var metrics = new MetricsPlugin();
         
-        logging.Initialize();
+        ((IPluginV2)logging).Initialize();
         logging.Execute();
         
-        metrics.Initialize();
+        ((IPluginV2)metrics).Initialize();
         metrics.Execute();
         
         // Demo 6: Advanced Service

@@ -4,34 +4,31 @@ classDiagram
     
     %% Abstract Base Class
     class AnimalBase {
-        #name: string
-        +Name: string (property)
-        +Describe(): string (virtual)
-        +Sleep(): void (virtual)
-        +Speak(): void (abstract)
+        <<abstract>>
+        +AnimalBase(name)
+        +Sleep() void
+        +Speak()* void
+        +Describe()* string
     }
     
     %% Concrete Implementations
     class Dog {
-        +Dog(name: string)
-        +Speak(): void
-        -FetchBall(): void
+        +Dog(name)
+        +Speak() void
+        +Describe() string
     }
     
     class Cat {
-        +Cat(name: string)
-        +Speak(): void
-        -Scratch(): void
+        +Cat(name)
+        +Speak() void
+        +Describe() string
     }
     
     %% Inheritance Relationships
-    AnimalBase <|-- Dog: implements
-    AnimalBase <|-- Cat: implements
+    AnimalBase <|-- Dog
+    AnimalBase <|-- Cat
     
-    %% Abstract Method Notation
-    note for AnimalBase "Abstract base class<br/>Must implement: Speak()"
-    note for Dog "Dog must implement Speak()<br/>inherits: Sleep(), Describe()"
-    note for Cat "Cat must implement Speak()<br/>inherits: Sleep(), Describe()"
+    note for AnimalBase "Speak() i Describe() są abstrakcyjne (*)<br/>Sleep() jest konkretną, dziedziczoną metodą"
 ```
 
 ---
@@ -42,33 +39,39 @@ classDiagram
     
     %% Abstract Base Class
     class ShapeBase {
-        #sideLength: double
-        +Area(): double (abstract)
-        +Perimeter(): double (abstract)
-        +GetDescription(): string (virtual)
+        <<abstract>>
+        +Name string
+        +GetArea()* double
+        +GetPerimeter()* double
+        +GetDescription() string
     }
     
     %% Concrete Shape Classes
     class Circle {
-        -radius: double
-        +Circle(radius: double)
-        +Area(): double
-        +Perimeter(): double
+        -_radius double
+        +Circle(radius)
+        +Name string
+        +GetArea() double
+        +GetPerimeter() double
     }
     
     class Rectangle {
-        -width: double
-        -height: double
+        -_width double
+        -_height double
         +Rectangle(width, height)
-        +Area(): double
-        +Perimeter(): double
+        +Name string
+        +GetArea() double
+        +GetPerimeter() double
     }
     
     class Triangle {
-        -side1, side2, side3: double
-        +Triangle(s1, s2, s3)
-        +Area(): double
-        +Perimeter(): double
+        -_a double
+        -_b double
+        -_c double
+        +Triangle(a, b, c)
+        +Name string
+        +GetArea() double
+        +GetPerimeter() double
     }
     
     %% Relationships
@@ -76,7 +79,7 @@ classDiagram
     ShapeBase <|-- Rectangle
     ShapeBase <|-- Triangle
     
-    note for ShapeBase "Abstract Base Class<br/>Geometric Shapes"
+    note for ShapeBase "Klasa abstrakcyjna (*)<br/>GetDescription() ma domyślną implementację"
 ```
 
 ---
@@ -87,52 +90,48 @@ classDiagram
     
     %% Payment Abstract Base
     class PaymentMethodBase {
-        #cardNumber: string
-        +Authorize(amount: decimal): void (abstract)
-        +Charge(amount: decimal): void (abstract)
-        +PrintReceipt(amount, status): void (abstract)
+        <<abstract>>
+        +Authorize(amount)* void
+        +Charge(amount)* void
+        +Refund(amount)* void
+        +PrintReceipt(amount, status) void
     }
     
     class CreditCardPayment {
-        -cardNumber: string
-        -cvv: string
-        +CreditCardPayment(cardNum)
-        +Authorize(amount): void
-        +Charge(amount): void
-        +PrintReceipt(amount, status): void
+        +CreditCardPayment(cardNumber)
+        +Authorize(amount) void
+        +Charge(amount) void
+        +Refund(amount) void
     }
     
     class PayPalPayment {
-        -email: string
-        -password: string
         +PayPalPayment(email)
-        +Authorize(amount): void
-        +Charge(amount): void
-        +PrintReceipt(amount, status): void
+        +Authorize(amount) void
+        +Charge(amount) void
+        +Refund(amount) void
     }
     
     PaymentMethodBase <|-- CreditCardPayment
     PaymentMethodBase <|-- PayPalPayment
     
-    note for PaymentMethodBase "E-Commerce<br/>Payment Processing"
+    note for PaymentMethodBase "Klasa abstrakcyjna (*)<br/>PrintReceipt() dziedziczy domyślną implementację"
 ```
 
 ---
 
 ```mermaid
-graph TD
-    subgraph "Polymorphism at Runtime"
-        A["PaymentMethodBase[] payments"] -->|Payment 1| B["CreditCardPayment.Charge()"]
-        A -->|Payment 2| C["PayPalPayment.Charge()"]
-    end
-    
-    B -->|calls| D["Calls Stripe API"]
-    C -->|calls| E["Calls PayPal API"]
-    
-    D -->|success| F["PrintReceipt()"]
-    E -->|success| G["PrintReceipt()"]
-    
-    style A fill:#e1f5ff
-    style B fill:#c8e6c9
-    style C fill:#c8e6c9
+sequenceDiagram
+    participant Caller as Kod kliencki
+    participant Base as PaymentMethodBase (typ)
+    participant Card as CreditCardPayment
+    participant PayPal as PayPalPayment
+
+    Note over Caller,PayPal: foreach (var p in payments) p.Charge(amount);
+    Caller->>Base: Charge(amount)
+    Base->>Card: wywołanie przez vtable (obiekt to CreditCardPayment)
+    Card-->>Caller: logika kart płatniczych
+    Caller->>Base: Charge(amount)
+    Base->>PayPal: wywołanie przez vtable (obiekt to PayPalPayment)
+    PayPal-->>Caller: logika PayPal
+    Note over Caller: Wywołujący zna tylko typ bazowy
 ```

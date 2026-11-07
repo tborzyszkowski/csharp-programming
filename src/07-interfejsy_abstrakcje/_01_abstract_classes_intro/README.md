@@ -247,6 +247,8 @@ public class Parrot : AnimalBase
 ```csharp
 public abstract class BirdBase : AnimalBase
 {
+    protected BirdBase(string name) : base(name) { }
+
     public abstract int GetWingspan();
 }
 
@@ -254,10 +256,25 @@ public class Eagle : BirdBase
 {
     // Musi implementować WSZYSTKIE abstrakcyjne metody
     // zarówno z BirdBase jak i AnimalBase
-    public override void Speak() { }
-    public override string Describe() { }
-    public override int GetWingspan() { }
+    public Eagle(string name) : base(name) { }
+
+    public override void Speak() => Console.WriteLine("Krzyk orła");
+    public override string Describe() => "Orzeł przedni";
+    public override int GetWingspan() => 200;
 }
+```
+
+> 💡 **Dlaczego to ważne?** Łańcuch dziedziczenia `AnimalBase → BirdBase → Eagle` pokazuje, że
+> abstrakcyjność nie znika na kolejnym poziomie. `BirdBase` dodaje własny kontrakt (`GetWingspan()`),
+> ale `Speak()` i `Describe()` nadal muszą zostać zaimplementowane w klasie konkretnej.
+> Kompilator zgłosi błąd CS0534, jeśli którejkolwiek z nich zabraknie.
+
+```
+AnimalBase (abstract)   Speak*, Describe*   ← kontrakt poziomu 1
+   ▲
+BirdBase (abstract)     GetWingspan*        ← kontrakt poziomu 2
+   ▲
+Eagle (concrete)        implementuje WSZYSTKO
 ```
 
 ---

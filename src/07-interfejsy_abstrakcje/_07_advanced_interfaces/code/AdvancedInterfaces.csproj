@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="xunit" Version="2.6.6" />

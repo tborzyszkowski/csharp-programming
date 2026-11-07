@@ -5,33 +5,27 @@ classDiagram
     %% Interface Contract
     class ILogger {
         <<interface>>
-        +Log(message: string): void
-        +Error(error: string): void
+        +Name string
+        +Log(message) void
+        +Error(message) void
     }
     
     %% Multiple Implementations
     class ConsoleLogger {
-        +Log(message: string): void
-        +Error(error: string): void
+        +Log(message) void
+        +Error(message) void
     }
     
     class FileLogger {
-        +Log(message: string): void
-        +Error(error: string): void
-    }
-    
-    class DatabaseLogger {
-        -logs: List~string~
-        +Log(message: string): void
-        +Error(error: string): void
+        +Log(message) void
+        +Error(message) void
     }
     
     %% Implementation Relationships
-    ILogger <|.. ConsoleLogger: implements
-    ILogger <|.. FileLogger: implements
-    ILogger <|.. DatabaseLogger: implements
+    ILogger <|.. ConsoleLogger
+    ILogger <|.. FileLogger
     
-    note for ILogger "Contract: All must implement<br/>Log() and Error()"
+    note for ILogger "Kontrakt: każda implementacja<br/>musi dostarczyć Name, Log() i Error()"
 ```
 
 ---
@@ -72,55 +66,35 @@ classDiagram
     direction TB
     
     %% Repository Interface
-    class IRepository~T~ {
+    class IRepository {
         <<interface>>
-        +Add(item: T): void
-        +Remove(item: T): void
-        +GetAll(): List~T~
-        +GetById(id: int): T?
+        +Save(data) void
+        +Load() string
     }
     
-    %% Multiple Repository Implementations
-    class DatabaseRepository~T~ {
-        -connection: DbConnection
-        +Add(item: T): void
-        +Remove(item: T): void
-        +GetAll(): List~T~
-        +GetById(id: int): T?
+    class DatabaseRepository {
+        +Save(data) void
+        +Load() string
     }
     
-    class FileRepository~T~ {
-        -filePath: string
-        +Add(item: T): void
-        +Remove(item: T): void
-        +GetAll(): List~T~
-        +GetById(id: int): T?
-    }
-    
-    class InMemoryRepository~T~ {
-        -items: List~T~
-        +Add(item: T): void
-        +Remove(item: T): void
-        +GetAll(): List~T~
-        +GetById(id: int): T?
+    class FileRepository {
+        +Save(data) void
+        +Load() string
     }
     
     %% Consumer with Dependency Injection
-    class DataService~T~ {
-        -repository: IRepository~T~
-        +DataService(repo: IRepository~T~)
-        +SaveData(item: T): void
-        +LoadData(): List~T~
+    class DataService {
+        +DataService(repository)
+        +SaveData(data) void
+        +LoadData() void
     }
     
     %% Relationships
-    IRepository~T~ <|.. DatabaseRepository~T~
-    IRepository~T~ <|.. FileRepository~T~
-    IRepository~T~ <|.. InMemoryRepository~T~
+    IRepository <|.. DatabaseRepository
+    IRepository <|.. FileRepository
+    DataService --> IRepository
     
-    DataService~T~ --> IRepository~T~
-    
-    note for DataService "Depends on abstraction<br/>Not on concrete repo type"
+    note for DataService "Zależy od abstrakcji IRepository<br/>a nie od konkretnej klasy repozytorium"
 ```
 
 ---
@@ -146,20 +120,20 @@ graph LR
 
 ```mermaid
 sequenceDiagram
-    participant Client
-    participant App
-    participant ILogger
-    participant ConsoleLogger
+    participant Main as Main (composition root)
+    participant App as LooselyConfiguredApp
+    participant ILogger as ILogger
+    participant ConsoleLogger as ConsoleLogger
+
+    Main->>ConsoleLogger: new ConsoleLogger()
+    Main->>App: new LooselyConfiguredApp(logger)
+    App->>App: zapamiętuje referencję ILogger
+    Main->>App: Start()
+    App->>ILogger: Log("App started")
+    ILogger->>ConsoleLogger: wywołanie implementacji
+    ConsoleLogger-->>App: zakończono
     
-    Client->>+App: new App(logger)
-    App->>App: store ILogger reference
-    Client->>+App: Start()
-    App->>+ILogger: Log("App started")
-    ILogger->>+ConsoleLogger: calls implementation
-    ConsoleLogger->>ConsoleLogger: write to console
-    ConsoleLogger-->>ILogger: done
-    
-    note over App,ConsoleLogger: Client doesn't know about<br/>ConsoleLogger concrete type
+    Note over App,ConsoleLogger: LooselyConfiguredApp nie zna typu ConsoleLogger
 ```
 
 ---
