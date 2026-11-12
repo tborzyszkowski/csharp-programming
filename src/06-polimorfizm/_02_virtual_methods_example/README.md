@@ -4,6 +4,71 @@
 
 Rzeczywisty przykład systemu e-commerce z różnymi metodami płatności - pokazanie **polimorfizmu** w działaniu na praktycznym case'u biznesowym.
 
+## 🔀 Przykład: `new virtual` i `override`
+
+Poniższy przykład pokazuje, że `new virtual` nie przesłania istniejącej metody wirtualnej. Ukrywa ją i rozpoczyna **nową gałąź wirtualną**, którą można dalej przesłaniać przez `override`:
+
+```csharp
+using System;
+
+namespace _02NewVirtual {
+    class A {
+        public virtual void F() {
+            Console.WriteLine("A");
+        }
+    }
+    class B : A {
+        public override void F() {
+            Console.WriteLine("B");
+        }
+    }
+    class C : B {
+        public new virtual void F() {
+            Console.WriteLine("C");
+        }
+    }
+    class D : C {
+        public override void F() {
+            Console.WriteLine("D");
+        }
+    }
+    class Przyklad {
+        static void Main(string[] args) {
+            A a1 = new A();
+            a1.F();
+            A a2 = new B();
+            a2.F();
+            A a3 = new C();
+            a3.F();
+            A a4 = new D();
+            a4.F();
+            C c1 = new D();
+            c1.F();
+        }
+    }
+}
+```
+
+Wynik:
+
+```text
+A
+B
+B
+B
+D
+```
+
+| Wywołanie | Dlaczego? |
+|---|---|
+| `a1.F()` | Obiekt ma typ `A`, więc wykonuje `A.F`. |
+| `a2.F()` | `B.F` przesłania metodę `A.F`, więc wirtualne wywołanie trafia do `B.F`. |
+| `a3.F()` | `C.F` ukrywa metodę o tej samej nazwie, ale nie przesłania slotu `A.F`; ten slot nadal prowadzi do `B.F`. |
+| `a4.F()` | `D.F` przesłania nowy slot wprowadzony przez `C`, a nie pierwotny slot `A.F`; przez referencję `A` nadal wywołuje się `B.F`. |
+| `c1.F()` | Referencja `C` wybiera nową gałąź wirtualną; `D.F` ją przesłania, więc wynik to `D`. |
+
+`override` kontynuuje istniejącą gałąź wirtualną. `new virtual` tworzy kolejną, niezależną gałąź: wywołania przez typ bazowy `A` korzystają z oryginalnej metody wirtualnej, a wywołania przez `C` - z metody wprowadzonej w `C`. Więcej o różnicy między `new` i `override` znajduje się w [temacie 3](../_03_virtual_vs_new/README.md).
+
 ## 🎯 Problem Biznesowy
 
 Sklep internetowy musi obsługiwać wiele metod płatności:
@@ -52,13 +117,13 @@ payment.GenerateReceipt();
                  │
           (virtual dispatch)
                  │
-    ┌────────────┴────────────┬──────────────┐
-    │                         │              │
-┌───▼────────┐    ┌──────────▼──┐    ┌─────▼──────┐
-│ CreditCard │    │    PayPal   │    │   Bitcoin  │
-│ - Validate │    │ - Login OAuth│   │ - Wallet  │
-│ - Charge   │    │ - Transfer  │    │ - Sign Tx │
-└────────────┘    └─────────────┘    └────────────┘
+    ┌────────────┴───────────┬──────────────┐
+    │                        │              │
+┌───▼────────┐    ┌──────────▼───┐    ┌─────▼──────┐
+│ CreditCard │    │    PayPal    │    │   Bitcoin  │
+│ - Validate │    │ - Login OAuth│    │ - Wallet   │
+│ - Charge   │    │ - Transfer   │    │ - Sign Tx  │
+└────────────┘    └──────────────┘    └────────────┘
 ```
 
 ---
@@ -313,11 +378,13 @@ Po tym temacie powinieneś:
 
 Znajduje się w katalogu `code/`:
 - `Program.cs` - Pełny e-commerce payment system
+- `NewVirtualExample.cs` - przykład `new virtual` i `override`
 
 Uruchomienie:
 ```bash
 cd code
-dotnet run
+dotnet run                    # demonstracja e-commerce
+dotnet run -- --new-virtual   # przykład new virtual
 dotnet test
 ```
 

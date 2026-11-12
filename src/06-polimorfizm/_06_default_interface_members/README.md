@@ -11,8 +11,7 @@ Tradycyjnie interfejsy służyły głównie do deklarowania kontraktu:
 ```csharp
 public interface IPaymentMethod
 {
-    void Pay(decimal amount);      // Deklaracja - MUSI implementować
-    string GetTransactionId();      // Deklaracja - MUSI implementować
+    void Pay(decimal amount);      // Bez ciała: implementacja jest wymagana
 }
 ```
 
@@ -23,13 +22,52 @@ public interface IPaymentMethod
 {
     void Pay(decimal amount);
     
-    // ✅ Domyślna implementacja od C# 8
-    public string GetTransactionId()
-    {
-        return Guid.NewGuid().ToString();  // Kod w interface'ie!
-    }
+    // Domyślna implementacja od C# 8
+    public string GetDescription() => "Standardowa metoda płatności";
 }
 ```
+
+`Pay` nadal jest wymaganym kontraktem - każda klasa implementująca
+`IPaymentMethod` musi ją dostarczyć. `GetDescription` ma ciało, więc klasa może
+z niego skorzystać bez dodawania własnej implementacji.
+
+### Jak wywoływana jest metoda domyślna?
+
+Metoda domyślna należy do interfejsu. Dlatego wywołujemy ją przez zmienną typu
+interfejsu, a nie automatycznie przez zmienną konkretnej klasy:
+
+```csharp
+public class BasicPayment : IPaymentMethod
+{
+    public void Pay(decimal amount) { }
+}
+
+IPaymentMethod payment = new BasicPayment();
+Console.WriteLine(payment.GetDescription()); // "Standardowa metoda płatności"
+
+// BasicPayment concretePayment = new BasicPayment();
+// concretePayment.GetDescription(); // Błąd: ta metoda nie jest członkiem klasy BasicPayment
+```
+
+Jeśli klasa zadeklaruje publiczną metodę o tej samej sygnaturze, wywołanie
+przez interfejs użyje implementacji klasy zamiast domyślnej:
+
+```csharp
+public class CardPayment : IPaymentMethod
+{
+    public void Pay(decimal amount) { }
+    public string GetDescription() => "Płatność kartą";
+}
+
+IPaymentMethod payment = new CardPayment();
+Console.WriteLine(payment.GetDescription()); // "Płatność kartą"
+```
+
+To nadal jest wywołanie polimorficzne przez interfejs: wybór implementacji
+następuje na podstawie typu obiektu. Nie jest to metoda odziedziczona przez
+klasę tak jak metoda z klasy bazowej. Różni się też od metody rozszerzającej:
+metoda rozszerzająca jest zwykłą metodą statyczną wybieraną na podstawie typu
+widocznego w miejscu wywołania, a nie domyślną implementacją kontraktu interfejsu.
 
 ---
 
@@ -46,9 +84,18 @@ public interface ILogger
 }
 
 // 50 klas:
-public class ConsoleLogger : ILogger { }
-public class FileLogger : ILogger { }
-public class DatabaseLogger : ILogger { }
+public class ConsoleLogger : ILogger
+{
+    public void Log(string message) { /* dotychczasowe logowanie */ }
+}
+public class FileLogger : ILogger
+{
+    public void Log(string message) { /* dotychczasowe logowanie */ }
+}
+public class DatabaseLogger : ILogger
+{
+    public void Log(string message) { /* dotychczasowe logowanie */ }
+}
 // ... i 47 więcej
 ```
 
@@ -80,9 +127,16 @@ public interface ILogger
     }
 }
 
-// ✅ Istniejące klasy mogą pozostać bez zmian.
-// Klasa korzysta z metody przez referencję ILogger.
+// Dotychczasowe klasy nie muszą dopisywać LogError().
+ILogger logger = new ConsoleLogger();
+logger.LogError("Nie udało się zapisać danych");
 ```
+
+Domyślna metoda pozwala ewoluować interfejsowi bez wymuszania zmian w każdej
+istniejącej klasie implementującej. Klasa musi jednak nadal implementować
+wcześniejsze metody bez ciała, takie jak `Log`. Nowa metoda musi też mieć
+zachowanie sensowne dla wszystkich implementacji, które z niego skorzystają.
+Sama możliwość kompilacji nie gwarantuje, że to zachowanie jest właściwe.
 
 ---
 
@@ -92,19 +146,24 @@ public interface ILogger
 
 ```csharp
 public interface IDataRepository<T>
+    where T : class
 {
-    T GetById(int id);
+    T? GetById(int id);
     
-    // C# 8.0+: Default implementation
-    public IEnumerable<T> GetAll()
-    {
-        // Domyślna, prosta implementacja
-        return new List<T>();
-    }
+    // Domyślna metoda składa się z operacji wymaganej przez kontrakt
+    public bool Exists(int id) => GetById(id) is not null;
 }
 
-// Stare klasy się kompilują bez zmian
-// Nowe klasy mogą przesłonić GetAll
+Stara implementacja, która już ma `GetById`, może od razu użyć `Exists`.
+Może też udostępnić własną implementację `Exists`, np. zoptymalizowaną pod bazę
+danych. Domyślne `GetAll() => new List<T>()` byłoby niebezpiecznym przykładem:
+mogłoby zwracać pustą listę mimo tego, że repozytorium zawiera dane.
+
+Podobna pułapka występuje w demonstracyjnym `IRepository<T>` w pliku
+`code/Program.cs`: domyślne `Count()` zwraca `0`. `UserRepository` dostarcza
+własną implementację, ale inny niepusty magazyn danych bez nadpisania tej
+metody raportowałby błędny wynik. To przykład technicznego fallbacku, a nie
+dobrego domyślnego zachowania dla produkcyjnego repozytorium.
 ```
 
 ### 2. Metody oparte na innych członkach interfejsu
@@ -279,6 +338,18 @@ var distance = Read<Meters>("42.5");   // T.Parse rozwiązane statycznie, bez re
 
 To fundament mechanizmu *generic math* w .NET 7+ (np. `INumber<T>`, `IParsable<T>`).
 
+Warto rozróżnić te dwa rodzaje składowych:
+
+- `IConverter.Format(...)` jest konkretną metodą statyczną interfejsu. Wywołujesz
+  ją przez nazwę interfejsu; nie zależy od obiektu i nie jest wybierana
+  polimorficznie.
+- `static abstract TSelf Parse(...)` nie ma implementacji w interfejsie.
+  Wymaga implementacji statycznej w typie, a ograniczenie generyczne pozwala
+  metodzie takiej jak `Read<T>` wywołać `T.Parse(...)` bez tworzenia instancji.
+
+To różni się od domyślnej metody instancyjnej: ta ma ciało i działa na konkretnej
+referencji interfejsu, natomiast `static abstract` opisuje wymaganie wobec typu.
+
 ---
 
 ## ⚔️ Dwie domyślne implementacje tej samej metody
@@ -309,6 +380,17 @@ Console.WriteLine(g.Hello());   // "LOUD"
 ```
 
 Zasada: wywoływana jest **najbardziej szczegółowa** implementacja. Jeśli nie da się jej jednoznacznie wskazać (jak w `Broken`), musisz rozstrzygnąć konflikt sam.
+
+W praktyce:
+
+1. Gdy tylko jeden z interfejsów dostarcza domyślną implementację, można z niej
+   skorzystać.
+2. Gdy klasa dostarcza własną metodę `Hello`, wywołania przez oba interfejsy
+   korzystają z implementacji klasy.
+3. Gdy dwa niezależne interfejsy dostarczają różne implementacje, kompilator nie
+   zgaduje, którą wybrać - klasa musi rozstrzygnąć konflikt.
+4. Interfejs pochodny może wskazać bardziej szczegółową implementację dla
+   członka interfejsu bazowego, jak `ILoudGreeter` dla `IGreeterA.Hello`.
 
 ---
 
@@ -355,8 +437,15 @@ nie zastępują klasy abstrakcyjnej ani mechanizmu DI; powinny zawierać małe,
 stabilne zachowania domyślne i nie ukrywać istotnych zależności.
 
 Dodatkowo:
-- **Wymagają wsparcia runtime**: działają w .NET Core 3.0+ / .NET 5+, ale nie na .NET Framework ani w bibliotekach kierowanych na `netstandard2.0`.
-- **Dodanie domyślnej implementacji nie jest w pełni "darmowe"**: zmienia kontrakt typu i może zmienić wynik wyszukiwania "najbardziej szczegółowej" implementacji dla istniejących klas.
+- **Wymagają wsparcia runtime**: sama wersja języka kompilatora nie wystarczy.
+  Potrzebny jest runtime obsługujący tę funkcję (np. .NET Core 3.0+ lub .NET 5+);
+  nie jest ona obsługiwana przez .NET Framework.
+- **Kompatybilność nie oznacza poprawności dowolnego zachowania**: stary
+  implementator może skorzystać z nowej metody bez zmian, ale jej domyślna
+  logika musi być poprawna dla jego przypadku.
+- **Dodanie domyślnej implementacji może zmienić rozstrzyganie metod**:
+  w hierarchii interfejsów może pojawić się bardziej szczegółowa implementacja
+  albo konflikt, którego wcześniej nie było.
 - **Nie ma stanu instancji** - domyślna implementacja nie może mieć własnych pól.
 
 ---

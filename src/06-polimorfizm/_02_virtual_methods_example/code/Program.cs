@@ -298,8 +298,14 @@ public class BNPLDiscount : DiscountStrategy
 
 public class Program
 {
-    public static void Main()
+    public static void Main(string[] args)
     {
+        if (args.Length == 1 && args[0] == "--new-virtual")
+        {
+            _02NewVirtual.Przyklad.Run();
+            return;
+        }
+
         Console.WriteLine("╔════════════════════════════════════════════════════════════╗");
         Console.WriteLine("║  TEMAT 2: FUNKCJE WIRTUALNE W PRAKTYCE                     ║");
         Console.WriteLine("║  E-Commerce Payment System                                 ║");
