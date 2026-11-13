@@ -8,7 +8,7 @@ Od podstaw wirtualnych metod, przez praktyczne przykłady e-commerce, aż po now
 
 ---
 
-## 📋 Tematy (6 wykładów)
+## 📋 Tematy (7 wykładów)
 
 | # | Temat | Opis | Status | Code | Testy | Zadania |
 |---|-------|------|--------|------|-------|---------|
@@ -18,6 +18,7 @@ Od podstaw wirtualnych metod, przez praktyczne przykłady e-commerce, aż po now
 | 4 | [Metody Klasy Object](_04_object_methods/README.md) | ToString, Equals, GetHashCode | ✅ | ✅ | ✅ | - |
 | 5 | [Adapter + Factory](_05_adapter_factory/README.md) | Design patterns, payment integration | ✅ | ✅ | ✅ | - |
 | 6 | [Default Interface Members](_06_default_interface_members/README.md) | C# 8.0+, nowoczesne interfejsy | ✅ | ✅ | ✅ | - |
+| 7 | [Polimorfizm oparty na interfejsach](_07_interface_polymorphism/README.md) | `IShape`, `Circle`, `Rectangle`, late binding przez interfejs | ✅ | ✅ | ✅ | - |
 
 Zadania do samodzielnego wykonania: obecnie w [temacie 1](_01_virtual_methods_intro/tasks/README.md); pozostałe tematy mają testy i działający kod, który można modyfikować.
 
@@ -37,6 +38,8 @@ Temat 4: Metody Object (equality, hashing)
 Temat 5: Adapter + Factory (design patterns)
     ↓
 Temat 6: Nowoczesne C# (evolucja interfejsów)
+    ↓
+Temat 7: Polimorfizm przez interfejsy (kontrakt zamiast hierarchii)
 ```
 
 ### Nawigacja po module
@@ -49,6 +52,7 @@ Temat 6: Nowoczesne C# (evolucja interfejsów)
 | Temat 4 | [_04_object_methods](_04_object_methods/README.md) |
 | Temat 5 | [_05_adapter_factory](_05_adapter_factory/README.md) |
 | Temat 6 | [_06_default_interface_members](_06_default_interface_members/README.md) |
+| Temat 7 | [_07_interface_polymorphism](_07_interface_polymorphism/README.md) |
 | Poprzedni moduł | [05-dziedziczenie](../05-dziedziczenie/README.md) |
 | Następny moduł | [07-interfejsy_abstrakcje](../07-interfejsy_abstrakcje/README.md) |
 
@@ -245,6 +249,34 @@ public class ConsoleLogger : ILogger
 
 ---
 
+### Temat 7: Polimorfizm oparty na interfejsach
+
+**Kategoria**: Rodzaje polimorfizmu
+
+**Kluczowe Koncepty**:
+- Kod zależy od kontraktu (`IShape`), a nie od konkretnej klasy
+- Late binding: implementacja wybierana po rzeczywistym typie obiektu
+- Kontrakt niezależny od hierarchii dziedziczenia (klasy z różnych drzew mogą implementować ten sam interfejs)
+- Różnica względem dziedziczenia (`virtual`/`abstract`): „potrafi" zamiast „jest rodzajem"
+
+**Gdzie**: [`_07_interface_polymorphism/`](_07_interface_polymorphism/README.md)
+
+**Kod**:
+```csharp
+public interface IShape
+{
+    double GetArea();
+    double GetPerimeter();
+}
+
+// Losowo wybrane kształty – jeden kod dla wszystkich
+List<IShape> shapes = CreateRandomShapes(new Random(2024), 5);
+foreach (IShape shape in shapes)
+    Console.WriteLine($"{shape.GetArea():F2}");  // inny wynik dla Circle i Rectangle
+```
+
+---
+
 ## 💻 Jak Pracować
 
 ### Dla każdego tematu:
@@ -304,10 +336,10 @@ cat ../diagrams/*.mermaid  # Otwórz w markdown preview
 
 | Metrika | Wartość |
 |---------|---------|
-| Tematy | 6 |
-| README.md | 7 (6 + 1 główny) |
-| Program.cs | 6 (każdy z testami xUnit) |
-| .csproj | 6 (wszystkie .NET 9.0) |
+| Tematy | 7 |
+| README.md | 8 (7 + 1 główny) |
+| Program.cs | 7 (każdy z testami xUnit) |
+| .csproj | 7 (wszystkie .NET 9.0) |
 | Diagramy Mermaid | 1 plik `.mermaid` + diagramy osadzone w README tematów |
 | Zadania | 3 zadania (temat 1) |
 | Testy xUnit | 60+ testów |

@@ -264,7 +264,7 @@ Moduł obejmuje 7 tematów:
 
 **Cel:** Opanowanie polimorfizmu i wzorców projektowych opartych na metodach wirtualnych.
 
-Moduł obejmuje 6 tematów:
+Moduł obejmuje 7 tematów:
 
 1. Funkcje wirtualne – wstęp do polimorfizmu
 2. Praktyczne przykłady – payment gateway (real-world case study)
@@ -272,6 +272,7 @@ Moduł obejmuje 6 tematów:
 4. Metody klasy Object (ToString, Equals, GetHashCode)
 5. Adapter Pattern + Factory Pattern – praktyczne wzorce
 6. Default interface members (C# 8.0+) – nowoczesne interfejsy
+7. Polimorfizm oparty na interfejsach – `IShape`, `Circle`, `Rectangle` i late binding przez kontrakt ([opis i przykład](src/06-polimorfizm/_07_interface_polymorphism/README.md))
 
 **Dla kogo:** Po Modułu 5. Fundamentalny dla zrozumienia nowoczesnych architektur.
 
